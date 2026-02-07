@@ -178,8 +178,8 @@ export function Header() {
             Today's Deals
           </Link>
           
-          <Link to="/sell" className="nav-item whitespace-nowrap">
-            Sell
+          <Link to="/seller" className="nav-item whitespace-nowrap">
+            Seller Central
           </Link>
         </div>
       </nav>
