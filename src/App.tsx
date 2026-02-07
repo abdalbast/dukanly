@@ -8,6 +8,8 @@ import HomePage from "./pages/HomePage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import CategoryPage from "./pages/CategoryPage";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +27,8 @@ const App = () => (
             <Route path="/product/:id" element={<ProductDetailPage />} />
             <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
             <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/category/:slug/:subcategory" element={<CategoryPage />} />
             {/* Placeholder routes */}
