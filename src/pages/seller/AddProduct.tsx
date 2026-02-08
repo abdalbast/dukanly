@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ImagePlus, X, Save, Eye } from "lucide-react";
 import { useSeller } from "@/contexts/SellerContext";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
 const categories = [
@@ -30,8 +29,12 @@ const categories = [
 
 export default function AddProduct() {
   const navigate = useNavigate();
-  const { addProduct } = useSeller();
+  const { id } = useParams<{ id: string }>();
+  const { addProduct, updateProduct, products } = useSeller();
   const { toast } = useToast();
+
+  const isEditMode = Boolean(id);
+  const existingProduct = isEditMode ? products.find((p) => p.id === id) : null;
 
   const [formData, setFormData] = useState({
     title: "",
@@ -53,6 +56,29 @@ export default function AddProduct() {
   const [images, setImages] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load existing product data for edit mode
+  useEffect(() => {
+    if (existingProduct) {
+      setFormData({
+        title: existingProduct.title,
+        description: existingProduct.description || "",
+        category: existingProduct.category,
+        subcategory: existingProduct.subcategory || "",
+        brand: existingProduct.brand,
+        sku: existingProduct.sku,
+        price: existingProduct.price.toString(),
+        compareAtPrice: existingProduct.compareAtPrice?.toString() || "",
+        costPerItem: existingProduct.costPerItem?.toString() || "",
+        stock: existingProduct.stock.toString(),
+        lowStockThreshold: existingProduct.lowStockThreshold.toString(),
+        weight: existingProduct.weight?.toString() || "",
+        tags: existingProduct.tags?.join(", ") || "",
+        status: existingProduct.status === "archived" ? "draft" : existingProduct.status,
+      });
+      setImages(existingProduct.images);
+    }
+  }, [existingProduct]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -87,7 +113,7 @@ export default function AddProduct() {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    addProduct({
+    const productData = {
       title: formData.title,
       description: formData.description,
       images: images.length > 0 ? images : ["https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400"],
@@ -102,15 +128,24 @@ export default function AddProduct() {
       lowStockThreshold: parseInt(formData.lowStockThreshold) || 10,
       weight: formData.weight ? parseFloat(formData.weight) : undefined,
       tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      status: asDraft ? "draft" : "active",
-    });
+      status: asDraft ? "draft" as const : "active" as const,
+    };
 
-    toast({
-      title: asDraft ? "Draft saved" : "Product published",
-      description: asDraft
-        ? "Your product has been saved as a draft"
-        : "Your product is now live",
-    });
+    if (isEditMode && id) {
+      updateProduct(id, productData);
+      toast({
+        title: "Product updated",
+        description: "Your product has been updated successfully.",
+      });
+    } else {
+      addProduct(productData);
+      toast({
+        title: asDraft ? "Draft saved" : "Product published",
+        description: asDraft
+          ? "Your product has been saved as a draft"
+          : "Your product is now live",
+      });
+    }
 
     setIsSubmitting(false);
     navigate("/seller/products");
@@ -124,8 +159,12 @@ export default function AddProduct() {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">Add Product</h1>
-          <p className="text-muted-foreground">Add a new product to your catalog</p>
+          <h1 className="text-2xl font-bold">
+            {isEditMode ? "Edit Product" : "Add Product"}
+          </h1>
+          <p className="text-muted-foreground">
+            {isEditMode ? "Update your product details" : "Add a new product to your catalog"}
+          </p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -142,7 +181,7 @@ export default function AddProduct() {
             disabled={isSubmitting}
           >
             <Eye className="w-4 h-4 mr-2" />
-            Publish
+            {isEditMode ? "Update" : "Publish"}
           </Button>
         </div>
       </div>
@@ -304,7 +343,13 @@ export default function AddProduct() {
                   value={formData.sku}
                   onChange={handleInputChange}
                   placeholder="e.g., TG-WBH-001"
+                  disabled={isEditMode}
                 />
+                {isEditMode && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    SKU cannot be changed
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="stock">Stock Quantity</Label>

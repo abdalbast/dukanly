@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Heart, Share2, Truck, Shield, RotateCcw, Store, Check, Minus, Plus } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StarRating } from "@/components/StarRating";
@@ -8,12 +8,15 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { getProductById, mockProducts } from "@/data/mockData";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const product = id ? getProductById(id) : undefined;
 
@@ -37,11 +40,15 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
+    toast({
+      title: "Added to cart",
+      description: `${product.title.slice(0, 50)}... has been added to your cart.`,
+    });
   };
 
   const handleBuyNow = () => {
     addToCart(product, quantity);
-    // Navigate to checkout
+    navigate("/checkout");
   };
 
   return (
