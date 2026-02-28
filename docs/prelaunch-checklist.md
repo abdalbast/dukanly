@@ -6,6 +6,21 @@ Date:
 Owner:
 Release tag/commit:
 
+Automated baseline gate:
+
+```sh
+npm run prelaunch:gate
+```
+
+Optional strict gate (deployed smoke + E2E + load-test threshold assertions):
+
+```sh
+PRELAUNCH_BASE_URL=<url> \
+PLAYWRIGHT_BASE_URL=<url> \
+LOADTEST_RESULT_FILE=<path-to-loadtest-json> \
+npm run prelaunch:gate -- --with-e2e --with-loadtest-assert --with-audit
+```
+
 ## 1) Security review
 
 - [ ] Review auth and authorization matrix against implemented routes and Edge Function contracts.

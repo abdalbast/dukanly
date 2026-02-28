@@ -57,6 +57,7 @@ npm run check:bundle
 npm run test:e2e
 npm run loadtest:writes
 npm run prelaunch:smoke
+npm run prelaunch:gate
 ```
 
 Before first E2E run:

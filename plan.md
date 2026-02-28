@@ -249,7 +249,7 @@
 
 - [x] Final security review (authz matrix, secrets, dependency report). (baseline checklist + audit posture documented)
 - [ ] Run migration dry-run against staging clone.
-- [ ] Validate production env vars and Lovable Cloud deployment config.
+- [ ] Validate production env vars and Lovable Cloud deployment config. (automated env-key presence checks added in `prelaunch:gate`)
 - [x] Execute smoke tests post-deploy. (script + E2E instructions added)
 - [x] Prepare rollback steps and on-call ownership. (rollback runbook added)
 
@@ -270,6 +270,7 @@
 - Added pre-launch checklist with security/migration/env/deploy gates.
 - Added rollback runbook with incident triggers and rollback procedure.
 - Added prelaunch smoke script for deployed health endpoint plus E2E validation handoff.
+- Added automated `prelaunch:gate` runner for migration/env/smoke and optional load-test threshold assertions.
 
 ---
 

@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "loadtest:writes": "node scripts/loadtest-write-endpoints.mjs",
-    "prelaunch:smoke": "node scripts/prelaunch-smoke.mjs"
+    "prelaunch:smoke": "node scripts/prelaunch-smoke.mjs",
+    "prelaunch:gate": "node scripts/prelaunch-gate.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
