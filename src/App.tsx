@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { SellerProvider } from "@/contexts/SellerContext";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 
 // Main pages
 import HomePage from "./pages/HomePage";
@@ -44,6 +45,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
     <CartProvider>
       <SellerProvider>
         <TooltipProvider>
@@ -128,6 +130,7 @@ const App = () => (
         </TooltipProvider>
       </SellerProvider>
     </CartProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
