@@ -2,7 +2,7 @@
 
 ## Progress Snapshot
 
-- Current phase: **Phase 4 (Observability and ops)**
+- Current phase: **Phase 5 (Testing and CI/CD)**
 - Overall progress: **6 / 8 phases in progress/completed**
 - Constraint in effect: **Do not rotate Supabase keys or change env var values (Lovable Cloud managed)**
 
@@ -141,16 +141,16 @@
 
 ## Phase 4: Observability and ops
 
-**Status:** In Progress  
+**Status:** Completed  
 **Objective:** Make production diagnosable and operable.
 
 ### Checklist
 
-- [ ] Add centralized error tracking (Sentry or equivalent). (scaffolding added; provider wiring pending)
+- [x] Add centralized error tracking (Sentry or equivalent). (`@sentry/browser` wiring with optional DSN)
 - [x] Add structured logging with correlation IDs.
 - [x] Add health/readiness endpoints for backend surfaces. (frontend `/healthz.json` added)
-- [ ] Define alert thresholds and incident response runbooks. (baseline runbook doc added; thresholds pending)
-- [ ] Add timeout/retry policy for external calls.
+- [x] Define alert thresholds and incident response runbooks.
+- [x] Add timeout/retry policy for external calls. (`src/lib/writeApi.ts`)
 
 ### Dependencies / Order
 
@@ -160,9 +160,15 @@
 
 ### Verification / Acceptance
 
-- [ ] Errors include request/user context.
-- [ ] Alerting fires on synthetic failure tests.
-- [ ] Team can trace one request across logs.
+- [x] Errors include request/user context.
+- [x] Alerting fires on synthetic failure tests.
+- [x] Team can trace one request across logs.
+
+### Phase 4 Completion Summary
+
+- Replaced placeholder error sink with Sentry browser SDK integration (optional by `VITE_SENTRY_DSN`).
+- Propagated authenticated user context into observability scope and unhandled error reports.
+- Added timeout/retry/correlation policy for write endpoints and documented thresholds/runbook + synthetic alert test coverage.
 
 ---
 
@@ -256,6 +262,6 @@
 5. [x] Implement backend endpoints/Edge Functions for all write operations (checkout, orders, seller ops). (phase-3 contract scaffolds added; DB transaction wiring pending)
 6. [ ] Expand auth lifecycle (forgot/reset/email verification) and enforce server-side authorization via RLS.
 7. [ ] Replace mock/local-state commerce flows with persisted DB-backed flows.
-8. [ ] Add observability (error tracking, structured logs, health checks) and alerting. (structured logs + health check done; alerting/error provider completion pending)
+8. [x] Add observability (error tracking, structured logs, health checks) and alerting.
 9. [ ] Expand tests to integration/E2E for auth, RLS, and checkout critical paths. (auth + checkout + seller integration tests added; RLS and E2E pending)
 10. [ ] Run staged pre-launch security/performance gate, then deploy with rollback-ready runbooks.

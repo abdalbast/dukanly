@@ -60,6 +60,10 @@ async function invokeWrite<TPayload extends Record<string, unknown>, TResponse>(
 ): Promise<ApiResult<TResponse>> {
   const idempotencyKey = createIdempotencyKey();
   const correlationId = getCorrelationId();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
 
   if (import.meta.env.MODE === "test") {
     return {
@@ -101,6 +105,7 @@ async function invokeWrite<TPayload extends Record<string, unknown>, TResponse>(
       logger.info("Edge write request succeeded", {
         endpoint,
         idempotencyKey,
+        userId,
       });
 
       return { ok: true, data: data.data };
@@ -110,6 +115,7 @@ async function invokeWrite<TPayload extends Record<string, unknown>, TResponse>(
         endpoint,
         attempt,
         retry,
+        userId,
         error: error instanceof Error ? error.message : String(error),
       });
 

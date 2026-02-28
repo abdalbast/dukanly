@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import { setObservabilityUser } from "@/lib/observability";
 
 interface AuthContextType {
   user: User | null;
@@ -30,6 +31,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        setObservabilityUser({
+          id: session?.user?.id,
+          email: session?.user?.email,
+        });
         setLoading(false);
       }
     );
@@ -37,6 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setObservabilityUser({
+        id: session?.user?.id,
+        email: session?.user?.email,
+      });
       setLoading(false);
     });
 

@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/browser";
+
 interface LogContext {
   [key: string]: unknown;
 }
@@ -8,9 +10,20 @@ interface BrowserLogEvent {
   context?: LogContext;
   correlationId: string;
   timestamp: string;
+  userId?: string;
 }
 
+interface UserContext {
+  id?: string;
+  email?: string;
+}
+
+type ErrorReporter = (error: unknown, context?: LogContext) => void;
+
 let correlationId = crypto.randomUUID();
+let currentUser: UserContext = {};
+let didInit = false;
+let errorReporter: ErrorReporter = () => {};
 
 export function getCorrelationId() {
   return correlationId;
@@ -21,6 +34,17 @@ export function resetCorrelationId() {
   return correlationId;
 }
 
+export function setObservabilityUser(user: UserContext) {
+  currentUser = { ...user };
+  if (didInit) {
+    Sentry.setUser(currentUser.id ? { id: currentUser.id, email: currentUser.email } : null);
+  }
+}
+
+export function setErrorReporterForTests(reporter: ErrorReporter) {
+  errorReporter = reporter;
+}
+
 function buildEvent(level: BrowserLogEvent["level"], message: string, context?: LogContext): BrowserLogEvent {
   return {
     level,
@@ -28,6 +52,7 @@ function buildEvent(level: BrowserLogEvent["level"], message: string, context?: 
     context,
     correlationId,
     timestamp: new Date().toISOString(),
+    userId: currentUser.id,
   };
 }
 
@@ -64,42 +89,79 @@ function getErrorMessage(err: unknown) {
   return String(err);
 }
 
-function reportToSentry(err: unknown, context?: LogContext) {
-  const dsn = import.meta.env.VITE_SENTRY_DSN;
-  if (!dsn) return;
+function buildErrorContext(extra?: LogContext) {
+  return {
+    correlationId,
+    userId: currentUser.id,
+    userEmail: currentUser.email,
+    ...extra,
+  };
+}
 
-  // Placeholder integration point. Keep payload shape simple until SDK is adopted.
-  void fetch(dsn, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      message: getErrorMessage(err),
-      correlationId,
-      context,
-      timestamp: new Date().toISOString(),
-    }),
-  }).catch(() => {
-    // Avoid recursive logging loops on transport failure.
+function initRemoteErrorTracking() {
+  const dsn = import.meta.env.VITE_SENTRY_DSN;
+  if (!dsn) {
+    errorReporter = () => {};
+    return;
+  }
+
+  Sentry.init({
+    dsn,
+    tracesSampleRate: 0.1,
+    environment: import.meta.env.MODE,
+    initialScope: {
+      tags: { app: "dukanly-web" },
+    },
   });
+
+  if (currentUser.id) {
+    Sentry.setUser({ id: currentUser.id, email: currentUser.email });
+  }
+
+  errorReporter = (error: unknown, context?: LogContext) => {
+    Sentry.withScope((scope) => {
+      const merged = buildErrorContext(context);
+      scope.setTag("correlation_id", correlationId);
+      if (currentUser.id) scope.setUser({ id: currentUser.id, email: currentUser.email });
+      scope.setContext("request", merged);
+      Sentry.captureException(error instanceof Error ? error : new Error(getErrorMessage(error)));
+    });
+  };
 }
 
 export function initObservability() {
-  logger.info("Observability initialized", { correlationId });
+  if (didInit) return;
+  didInit = true;
+
+  initRemoteErrorTracking();
+
+  logger.info("Observability initialized", {
+    correlationId,
+    userId: currentUser.id,
+  });
 
   window.addEventListener("error", (event) => {
-    logger.error("Unhandled window error", {
+    const context = {
+      source: "window.error",
       message: event.message,
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
-    });
-    reportToSentry(event.error ?? event.message, { source: "window.error" });
+      userId: currentUser.id,
+    };
+
+    logger.error("Unhandled window error", context);
+    errorReporter(event.error ?? event.message, context);
   });
 
   window.addEventListener("unhandledrejection", (event) => {
-    logger.error("Unhandled promise rejection", {
+    const context = {
+      source: "window.unhandledrejection",
       reason: getErrorMessage(event.reason),
-    });
-    reportToSentry(event.reason, { source: "window.unhandledrejection" });
+      userId: currentUser.id,
+    };
+
+    logger.error("Unhandled promise rejection", context);
+    errorReporter(event.reason, context);
   });
 }
