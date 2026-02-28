@@ -59,6 +59,8 @@ export const ckb: Record<TranslationKey, string> = {
   "header.sellerCentral": "ناوەندی فرۆشیار",
   "header.shopByDepartment": "کڕین بەپێی بەش",
   "header.language": "زمان",
+  "header.hello": "سڵاو",
+  "header.signOut": "دەرچوون",
 
   // Footer
   "footer.backToTop": "گەڕانەوە بۆ سەرەوە",

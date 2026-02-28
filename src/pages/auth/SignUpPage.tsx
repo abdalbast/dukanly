@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "", agreeToTerms: false, subscribeToNews: true });
 
@@ -26,9 +28,13 @@ export default function SignUpPage() {
       return;
     }
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast({ title: t("auth.accountCreated"), description: t("auth.accountCreatedDesc") });
+    const { error } = await signUp(formData.email, formData.password, formData.name);
     setIsLoading(false);
+    if (error) {
+      toast({ title: t("auth.signUp"), description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: t("auth.accountCreated"), description: t("auth.accountCreatedDesc") });
     navigate("/");
   };
 
@@ -66,14 +72,6 @@ export default function SignUpPage() {
               </label>
               <Button type="submit" className="w-full btn-cta" disabled={isLoading}>{isLoading ? t("auth.creatingAccount") : t("auth.signUp")}</Button>
             </form>
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">{t("auth.orSignUpWith")}</span></div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" type="button">{t("auth.google")}</Button>
-              <Button variant="outline" type="button">{t("auth.apple")}</Button>
-            </div>
             <p className="text-center text-sm text-muted-foreground mt-6">{t("auth.alreadyHaveAccount")} <Link to="/auth/signin" className="text-info hover:underline">{t("auth.signInLink")}</Link></p>
           </div>
         </div>

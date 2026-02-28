@@ -7,20 +7,26 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignInPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast({ title: t("auth.welcomeBack"), description: t("auth.signInSuccess") });
+    const { error } = await signIn(formData.email, formData.password);
     setIsLoading(false);
+    if (error) {
+      toast({ title: t("auth.signIn"), description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: t("auth.welcomeBack"), description: t("auth.signInSuccess") });
     navigate("/");
   };
 
@@ -48,14 +54,6 @@ export default function SignInPage() {
               </label>
               <Button type="submit" className="w-full btn-cta" disabled={isLoading}>{isLoading ? t("auth.signingIn") : t("auth.signIn")}</Button>
             </form>
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">{t("auth.orContinueWith")}</span></div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" type="button">{t("auth.google")}</Button>
-              <Button variant="outline" type="button">{t("auth.apple")}</Button>
-            </div>
             <p className="text-center text-sm text-muted-foreground mt-6">{t("auth.newToMarketplace")} <Link to="/auth/signup" className="text-info hover:underline">{t("auth.createAnAccount")}</Link></p>
           </div>
           <p className="text-xs text-muted-foreground text-center mt-4">{t("auth.bySigningIn")} <Link to="/conditions" className="text-info hover:underline">{t("auth.conditionsOfUse")}</Link> {t("common.and")} <Link to="/privacy" className="text-info hover:underline">{t("auth.privacyNotice")}</Link></p>
