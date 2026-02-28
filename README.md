@@ -54,6 +54,7 @@ npm test
 npm run build
 npm run check:migrations
 npm run test:e2e
+npm run loadtest:writes
 ```
 
 Before first E2E run:
@@ -88,3 +89,7 @@ See `docs/api-hardening-phase3.md` for Edge Function write-surface contracts, va
 ## CI and Branch Protection
 
 See `docs/branch-protection.md` for required CI checks and branch protection setup.
+
+## Security and Performance
+
+See `docs/security-performance-phase6.md` for dependency audit posture, CSP/header strategy, route-splitting baseline, and load-test workflow.
