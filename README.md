@@ -53,6 +53,13 @@ npm run lint
 npm test
 npm run build
 npm run check:migrations
+npm run test:e2e
+```
+
+Before first E2E run:
+
+```sh
+npx playwright install chromium
 ```
 
 ## Package manager policy
@@ -77,3 +84,7 @@ See `docs/observability.md` for structured logging, global error capture, and he
 ## API hardening baseline
 
 See `docs/api-hardening-phase3.md` for Edge Function write-surface contracts, validation, idempotency, and rate-limit guardrails introduced for Phase 3.
+
+## CI and Branch Protection
+
+See `docs/branch-protection.md` for required CI checks and branch protection setup.

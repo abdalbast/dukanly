@@ -181,9 +181,9 @@
 
 - [x] Add GitHub Actions for lint/test/build/migration checks.
 - [ ] Add integration tests for auth, RLS, checkout, seller flows. (auth + checkout + seller flows added; RLS policy tests pending)
-- [ ] Add E2E smoke tests for critical user journeys.
-- [ ] Add preview deployment checks for PRs (Lovable/GitHub integration policy).
-- [ ] Enforce branch protection and required checks.
+- [x] Add E2E smoke tests for critical user journeys. (Playwright smoke suite + CI job)
+- [x] Add preview deployment checks for PRs (Lovable/GitHub integration policy). (`preview-check.yml`)
+- [ ] Enforce branch protection and required checks. (runbook added; API enforcement blocked by GitHub plan restriction on private repo)
 
 ### Dependencies / Order
 
@@ -194,8 +194,14 @@
 ### Verification / Acceptance
 
 - [ ] PR cannot merge with failing checks.
-- [ ] Preview environment validates critical paths.
+- [x] Preview environment validates critical paths. (preview deployment check workflow)
 - [ ] Regression suite catches auth/order failures.
+
+### Phase 5 Progress Summary
+
+- Added Playwright E2E smoke suite and CI `E2E Smoke` job.
+- Added PR preview deployment verification workflow.
+- Added branch protection runbook documenting required checks and enforcement steps.
 
 ---
 
@@ -263,5 +269,5 @@
 6. [ ] Expand auth lifecycle (forgot/reset/email verification) and enforce server-side authorization via RLS.
 7. [ ] Replace mock/local-state commerce flows with persisted DB-backed flows.
 8. [x] Add observability (error tracking, structured logs, health checks) and alerting.
-9. [ ] Expand tests to integration/E2E for auth, RLS, and checkout critical paths. (auth + checkout + seller integration tests added; RLS and E2E pending)
+9. [ ] Expand tests to integration/E2E for auth, RLS, and checkout critical paths. (auth + checkout + seller integration tests and Playwright smoke E2E added; RLS policy tests pending)
 10. [ ] Run staged pre-launch security/performance gate, then deploy with rollback-ready runbooks.

@@ -1,0 +1,57 @@
+name: Preview Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  verify-preview:
+    name: Verify PR Preview Deployment
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      deployments: read
+
+    steps:
+      - name: Require successful preview deployment for PR head SHA
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = context.payload.pull_request.head.sha;
+
+            const deployments = await github.paginate(github.rest.repos.listDeployments, {
+              owner,
+              repo,
+              sha,
+              per_page: 100,
+            });
+
+            if (!deployments.length) {
+              core.setFailed(`No deployments found for PR head SHA ${sha}. Ensure preview deploy is enabled.`);
+              return;
+            }
+
+            let hasSuccessfulPreview = false;
+
+            for (const deployment of deployments) {
+              const statuses = await github.paginate(github.rest.repos.listDeploymentStatuses, {
+                owner,
+                repo,
+                deployment_id: deployment.id,
+                per_page: 100,
+              });
+
+              const success = statuses.find((status) => status.state === "success");
+              if (success && success.environment_url) {
+                hasSuccessfulPreview = true;
+                core.info(`Preview found: ${success.environment_url}`);
+                break;
+              }
+            }
+
+            if (!hasSuccessfulPreview) {
+              core.setFailed("No successful preview deployment with environment_url found for this PR head SHA.");
+            }
