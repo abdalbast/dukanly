@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { SellerProfile, SellerProduct, SellerOrder, SellerSettings } from "@/types/seller";
 import {
   mockSellerProfile,
@@ -7,6 +7,8 @@ import {
   mockSellerSettings,
   mockSellerAnalytics,
 } from "@/data/sellerMockData";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SellerContextType {
   // Profile
@@ -33,17 +35,46 @@ interface SellerContextType {
   
   // Role
   isSeller: boolean;
-  becomeSeller: () => void;
+  isSellerLoading: boolean;
+  becomeSeller: () => Promise<void>;
 }
 
 const SellerContext = createContext<SellerContextType | undefined>(undefined);
 
 export function SellerProvider({ children }: { children: React.ReactNode }) {
-  const [isSeller, setIsSeller] = useState(true); // For demo, default to seller
+  const { user } = useAuth();
+  const [isSeller, setIsSeller] = useState(false);
+  const [isSellerLoading, setIsSellerLoading] = useState(true);
   const [profile, setProfile] = useState<SellerProfile>(mockSellerProfile);
   const [products, setProducts] = useState<SellerProduct[]>(mockSellerProducts);
   const [orders, setOrders] = useState<SellerOrder[]>(mockSellerOrders);
   const [settings, setSettings] = useState<SellerSettings>(mockSellerSettings);
+
+  // Check seller status from database
+  useEffect(() => {
+    const checkSellerStatus = async () => {
+      if (!user) {
+        setIsSeller(false);
+        setIsSellerLoading(false);
+        return;
+      }
+      try {
+        const { data, error } = await supabase.rpc('is_seller');
+        if (error) {
+          console.error('Error checking seller status:', error);
+          setIsSeller(false);
+        } else {
+          setIsSeller(!!data);
+        }
+      } catch {
+        setIsSeller(false);
+      }
+      setIsSellerLoading(false);
+    };
+    
+    setIsSellerLoading(true);
+    checkSellerStatus();
+  }, [user]);
 
   const updateProfile = useCallback((updates: Partial<SellerProfile>) => {
     setProfile((prev) => ({ ...prev, ...updates }));
@@ -107,9 +138,21 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
     setSettings((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  const becomeSeller = useCallback(() => {
+  const becomeSeller = useCallback(async () => {
+    if (!user) return;
+    
+    const { error } = await supabase.from('sellers').insert({
+      user_id: user.id,
+      store_name: 'My Store',
+    });
+    
+    if (error) {
+      console.error('Error becoming seller:', error);
+      return;
+    }
+    
     setIsSeller(true);
-  }, []);
+  }, [user]);
 
   return (
     <SellerContext.Provider
@@ -127,6 +170,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
         updateSettings,
         analytics: mockSellerAnalytics,
         isSeller,
+        isSellerLoading,
         becomeSeller,
       }}
     >
