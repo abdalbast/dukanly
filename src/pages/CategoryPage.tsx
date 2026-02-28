@@ -3,29 +3,28 @@ import { ChevronRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { categories, getProductsByCategory, mockProducts } from "@/data/mockData";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function CategoryPage() {
   const { slug, subcategory } = useParams<{ slug: string; subcategory?: string }>();
-
+  const { t } = useLanguage();
   const category = categories.find((c) => c.slug === slug);
   const categoryProducts = slug ? getProductsByCategory(slug) : mockProducts;
-
   const displayProducts = categoryProducts.length > 0 ? categoryProducts : mockProducts;
 
   return (
     <Layout>
-      {/* Breadcrumb */}
       <div className="bg-card border-b border-border">
         <div className="container py-2">
           <nav className="breadcrumb">
-            <Link to="/">Home</Link>
-            <ChevronRight className="w-3 h-3" />
+            <Link to="/">{t("common.home")}</Link>
+            <ChevronRight className="w-3 h-3 rtl:rotate-180" />
             {category ? (
               <>
                 <Link to={`/category/${category.slug}`}>{category.name}</Link>
                 {subcategory && (
                   <>
-                    <ChevronRight className="w-3 h-3" />
+                    <ChevronRight className="w-3 h-3 rtl:rotate-180" />
                     <span className="text-foreground capitalize">{subcategory}</span>
                   </>
                 )}
@@ -36,38 +35,20 @@ export default function CategoryPage() {
           </nav>
         </div>
       </div>
-
       <div className="container py-6">
-        {/* Category Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold capitalize">
-            {category?.name || slug || "All Products"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {displayProducts.length} products
-          </p>
+          <h1 className="text-2xl font-bold capitalize">{category?.name || slug || t("category.allProducts")}</h1>
+          <p className="text-muted-foreground mt-1">{displayProducts.length} {t("common.products")}</p>
         </div>
-
-        {/* Subcategories */}
         {category?.subcategories && !subcategory && (
           <div className="flex flex-wrap gap-2 mb-6">
             {category.subcategories.map((sub) => (
-              <Link
-                key={sub.id}
-                to={`/category/${category.slug}/${sub.slug}`}
-                className="filter-chip"
-              >
-                {sub.name}
-              </Link>
+              <Link key={sub.id} to={`/category/${category.slug}/${sub.slug}`} className="filter-chip">{sub.name}</Link>
             ))}
           </div>
         )}
-
-        {/* Products Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {displayProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {displayProducts.map((product) => (<ProductCard key={product.id} product={product} />))}
         </div>
       </div>
     </Layout>
