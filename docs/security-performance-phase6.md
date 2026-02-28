@@ -4,12 +4,12 @@
 
 Actions taken:
 - Ran `npm audit fix` to reduce known issues.
-- Confirmed no production dependency vulnerabilities via:
-  - `npm audit --omit=dev`
+- Confirmed no remaining dependency vulnerabilities after upgrades via:
+  - `npm audit`
 
 Current state:
 - Production deps: `0` vulnerabilities.
-- Remaining dev-only vulnerabilities are tied to tooling upgrade paths (for example major Vite/esbuild jumps).
+- Dev deps: `0` vulnerabilities.
 
 ## Security headers strategy
 
@@ -32,6 +32,10 @@ Implemented:
   - `seller-products-list`
   - `seller-orders-list`
   - enforced `limit` max `100` and `offset` max `10000`
+- Bundle-budget enforcement script:
+  - `scripts/check-bundle-budget.mjs`
+  - checks entry chunk size and total JS size
+  - wired into `npm run check` and CI workflow
 
 Expected impact:
 - Smaller initial JS payload for first paint.

@@ -53,6 +53,7 @@ npm run lint
 npm test
 npm run build
 npm run check:migrations
+npm run check:bundle
 npm run test:e2e
 npm run loadtest:writes
 ```
