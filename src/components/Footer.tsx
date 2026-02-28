@@ -1,34 +1,37 @@
 import { Link } from "react-router-dom";
-
-const footerLinks = {
-  "Get to Know Us": [
-    { label: "About Us", href: "/about" },
-    { label: "Careers", href: "/careers" },
-    { label: "Press Center", href: "/press" },
-    { label: "Investor Relations", href: "/investors" },
-  ],
-  "Make Money with Us": [
-    { label: "Sell products on Marketplace", href: "/sell" },
-    { label: "Become an Affiliate", href: "/affiliate" },
-    { label: "Advertise Your Products", href: "/advertise" },
-    { label: "Self-Publish with Us", href: "/publish" },
-  ],
-  "Payment Products": [
-    { label: "Marketplace Card", href: "/card" },
-    { label: "Shop with Points", href: "/points" },
-    { label: "Reload Your Balance", href: "/reload" },
-    { label: "Gift Cards", href: "/gift-cards" },
-  ],
-  "Let Us Help You": [
-    { label: "Your Account", href: "/account" },
-    { label: "Your Orders", href: "/orders" },
-    { label: "Shipping Rates & Policies", href: "/shipping" },
-    { label: "Returns & Replacements", href: "/returns" },
-    { label: "Help", href: "/help" },
-  ],
-};
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export function Footer() {
+  const { t } = useLanguage();
+
+  const footerLinks = {
+    [t("footer.getToKnowUs")]: [
+      { label: t("footer.aboutUs"), href: "/about" },
+      { label: t("footer.careers"), href: "/careers" },
+      { label: t("footer.pressCenter"), href: "/press" },
+      { label: t("footer.investorRelations"), href: "/investors" },
+    ],
+    [t("footer.makeMoneyWithUs")]: [
+      { label: t("footer.sellProducts"), href: "/sell" },
+      { label: t("footer.becomeAffiliate"), href: "/affiliate" },
+      { label: t("footer.advertise"), href: "/advertise" },
+      { label: t("footer.selfPublish"), href: "/publish" },
+    ],
+    [t("footer.paymentProducts")]: [
+      { label: t("footer.marketplaceCard"), href: "/card" },
+      { label: t("footer.shopWithPoints"), href: "/points" },
+      { label: t("footer.reloadBalance"), href: "/reload" },
+      { label: t("footer.giftCards"), href: "/gift-cards" },
+    ],
+    [t("footer.letUsHelpYou")]: [
+      { label: t("footer.yourAccount"), href: "/account" },
+      { label: t("footer.yourOrders"), href: "/orders" },
+      { label: t("footer.shippingRates"), href: "/shipping" },
+      { label: t("footer.returnsReplacements"), href: "/returns" },
+      { label: t("footer.help"), href: "/help" },
+    ],
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground">
       {/* Back to Top */}
@@ -36,7 +39,7 @@ export function Footer() {
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         className="w-full py-3 text-sm hover:bg-primary-foreground/10 transition-colors"
       >
-        Back to top
+        {t("footer.backToTop")}
       </button>
 
       {/* Main Footer Links */}
@@ -75,18 +78,18 @@ export function Footer() {
             
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-primary-foreground/70">
               <Link to="/conditions" className="hover:text-primary-foreground hover:underline">
-                Conditions of Use
+                {t("footer.conditionsOfUse")}
               </Link>
               <Link to="/privacy" className="hover:text-primary-foreground hover:underline">
-                Privacy Notice
+                {t("footer.privacyNotice")}
               </Link>
               <Link to="/interest-ads" className="hover:text-primary-foreground hover:underline">
-                Interest-Based Ads
+                {t("footer.interestBasedAds")}
               </Link>
             </div>
 
             <p className="text-xs text-primary-foreground/50">
-              © 2024 Marketplace, Inc.
+              {t("footer.copyright")}
             </p>
           </div>
         </div>
