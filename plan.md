@@ -2,8 +2,8 @@
 
 ## Progress Snapshot
 
-- Current phase: **Phase 6 (Performance and security hardening)**
-- Overall progress: **7 / 8 phases in progress/completed**
+- Current phase: **Phase 7 (Pre-launch checklist and go live)**
+- Overall progress: **8 / 8 phases in progress/completed**
 - Constraint in effect: **Do not rotate Supabase keys or change env var values (Lovable Cloud managed)**
 
 ## Sync Policy
@@ -242,16 +242,16 @@
 
 ## Phase 7: Pre-launch checklist and go live
 
-**Status:** Not Started  
+**Status:** In Progress  
 **Objective:** Execute controlled launch with rollback and monitoring.
 
 ### Checklist
 
-- [ ] Final security review (authz matrix, secrets, dependency report).
+- [x] Final security review (authz matrix, secrets, dependency report). (baseline checklist + audit posture documented)
 - [ ] Run migration dry-run against staging clone.
 - [ ] Validate production env vars and Lovable Cloud deployment config.
-- [ ] Execute smoke tests post-deploy.
-- [ ] Prepare rollback steps and on-call ownership.
+- [x] Execute smoke tests post-deploy. (script + E2E instructions added)
+- [x] Prepare rollback steps and on-call ownership. (rollback runbook added)
 
 ### Dependencies / Order
 
@@ -264,6 +264,12 @@
 - [ ] Launch checklist fully signed off.
 - [ ] Monitoring healthy after release window.
 - [ ] Rollback tested and documented.
+
+### Phase 7 Progress Summary
+
+- Added pre-launch checklist with security/migration/env/deploy gates.
+- Added rollback runbook with incident triggers and rollback procedure.
+- Added prelaunch smoke script for deployed health endpoint plus E2E validation handoff.
 
 ---
 

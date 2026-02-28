@@ -56,6 +56,7 @@ npm run check:migrations
 npm run check:bundle
 npm run test:e2e
 npm run loadtest:writes
+npm run prelaunch:smoke
 ```
 
 Before first E2E run:
@@ -94,3 +95,7 @@ See `docs/branch-protection.md` for required CI checks and branch protection set
 ## Security and Performance
 
 See `docs/security-performance-phase6.md` for dependency audit posture, CSP/header strategy, route-splitting baseline, and load-test workflow.
+
+## Pre-Launch
+
+See `docs/prelaunch-checklist.md` and `docs/rollback-runbook.md` for release gating, smoke validation, and rollback steps.
