@@ -263,7 +263,7 @@ export const mockProducts: ProductWithOffer[] = [
       id: "o7",
       productId: "7",
       sellerId: "s6",
-      sellerName: "Marketplace",
+      sellerName: "Dukanly",
       price: 139.99,
       originalPrice: 149.99,
       currency: "USD",

@@ -32,7 +32,7 @@ export function SellerLayout() {
           </div>
           <h1 className="text-2xl font-bold mb-3">Start Selling</h1>
           <p className="text-muted-foreground mb-6">
-            Join thousands of sellers on our marketplace. Set up your store and start
+            Join thousands of sellers on Dukanly. Set up your store and start
             reaching millions of customers.
           </p>
           <div className="space-y-3">

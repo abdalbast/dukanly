@@ -46,8 +46,7 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="shrink-0 flex items-center gap-1">
             <div className="text-xl font-bold tracking-tight">
-              <span className="text-accent">market</span>
-              <span>place</span>
+              <span className="text-accent">Dukan</span><span>ly</span>
             </div>
           </Link>
 
