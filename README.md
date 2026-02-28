@@ -73,3 +73,7 @@ See `docs/database-workflow.md` for migration naming policy, rollback note requi
 ## Observability
 
 See `docs/observability.md` for structured logging, global error capture, and health endpoint guidance.
+
+## API hardening baseline
+
+See `docs/api-hardening-phase3.md` for Edge Function write-surface contracts, validation, idempotency, and rate-limit guardrails introduced for Phase 3.

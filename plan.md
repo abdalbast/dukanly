@@ -2,8 +2,8 @@
 
 ## Progress Snapshot
 
-- Current phase: **Phase 2 (Auth and authorisation)**
-- Overall progress: **5 / 8 phases in progress/completed**
+- Current phase: **Phase 3 (API hardening and validation)**
+- Overall progress: **6 / 8 phases in progress/completed**
 - Constraint in effect: **Do not rotate Supabase keys or change env var values (Lovable Cloud managed)**
 
 ## Sync Policy
@@ -108,16 +108,16 @@
 
 ## Phase 3: API hardening and validation
 
-**Status:** Not Started  
+**Status:** In Progress  
 **Objective:** Move business logic out of client into server-controlled interfaces.
 
 ### Checklist
 
-- [ ] Create backend endpoints/Edge Functions for checkout, order creation, seller product/order management.
-- [ ] Add schema validation for all request payloads.
-- [ ] Add idempotency keys for order/payment writes.
-- [ ] Standardize error model and HTTP status mapping.
-- [ ] Add anti-abuse controls (rate limits/captcha where needed).
+- [x] Create backend endpoints/Edge Functions for checkout, order creation, seller product/order management. (contract scaffolds added in `supabase/functions/*`)
+- [x] Add schema validation for all request payloads. (Zod validation in shared middleware)
+- [x] Add idempotency keys for order/payment writes. (required `idempotency-key` header + replay cache scaffold)
+- [x] Standardize error model and HTTP status mapping. (shared `{ data, error }` envelope + typed errors)
+- [x] Add anti-abuse controls (rate limits/captcha where needed). (baseline in-memory per-route/IP limiter)
 
 ### Dependencies / Order
 
@@ -127,7 +127,7 @@
 
 ### Verification / Acceptance
 
-- [ ] No critical write path remains client-only.
+- [ ] No critical write path remains client-only. (pending DB write wiring from client to Edge Functions)
 - [ ] Replayed requests do not duplicate orders/payments.
 - [ ] Invalid payloads are rejected consistently.
 
@@ -247,7 +247,7 @@
 2. [x] Keep `.env` out of git tracking for active branch.
 3. [ ] Establish CI (lint, test, build, migration checks) and make it mandatory for merges.
 4. [x] Design full commerce data model and implement migrations with FK/indexes.
-5. [ ] Implement backend endpoints/Edge Functions for all write operations (checkout, orders, seller ops).
+5. [x] Implement backend endpoints/Edge Functions for all write operations (checkout, orders, seller ops). (phase-3 contract scaffolds added; DB transaction wiring pending)
 6. [ ] Expand auth lifecycle (forgot/reset/email verification) and enforce server-side authorization via RLS.
 7. [ ] Replace mock/local-state commerce flows with persisted DB-backed flows.
 8. [ ] Add observability (error tracking, structured logs, health checks) and alerting. (structured logs + health check done; alerting/error provider completion pending)
