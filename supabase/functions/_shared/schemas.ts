@@ -1,11 +1,11 @@
 import { z } from "npm:zod@3.23.8";
 
-const uuid = z.string().uuid();
+const id = z.string().min(1).max(128);
 
 export const checkoutSchema = z.object({
-  cartId: uuid,
-  shippingAddressId: uuid,
-  billingAddressId: uuid.optional(),
+  cartId: id,
+  shippingAddressId: id,
+  billingAddressId: id.optional(),
   paymentMethodId: z.string().min(1).max(128),
   deliveryOption: z.enum(["standard", "express", "next-day"]),
   currencyCode: z.string().length(3).transform((v) => v.toUpperCase()),
@@ -13,9 +13,9 @@ export const checkoutSchema = z.object({
 });
 
 export const createOrderSchema = z.object({
-  sourceCartId: uuid,
-  shippingAddressId: uuid,
-  billingAddressId: uuid.optional(),
+  sourceCartId: id,
+  shippingAddressId: id,
+  billingAddressId: id.optional(),
   currencyCode: z.string().length(3).transform((v) => v.toUpperCase()),
   note: z.string().max(500).optional(),
 });
@@ -30,7 +30,7 @@ export const sellerProductUpsertSchema = z.object({
 });
 
 export const sellerOrderUpdateSchema = z.object({
-  orderId: uuid,
+  orderId: id,
   status: z.enum(["confirmed", "processing", "shipped", "delivered", "cancelled", "refunded"]),
   fulfillmentStatus: z.enum(["unfulfilled", "partial", "fulfilled", "returned"]).optional(),
   trackingNumber: z.string().max(120).optional(),

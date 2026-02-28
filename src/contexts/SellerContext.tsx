@@ -9,6 +9,7 @@ import {
 } from "@/data/sellerMockData";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { upsertSellerProduct, updateSellerOrder } from "@/lib/writeApi";
 
 interface SellerContextType {
   // Profile
@@ -17,14 +18,18 @@ interface SellerContextType {
   
   // Products
   products: SellerProduct[];
-  addProduct: (product: Omit<SellerProduct, "id" | "sellerId" | "createdAt" | "updatedAt">) => void;
-  updateProduct: (id: string, updates: Partial<SellerProduct>) => void;
-  deleteProduct: (id: string) => void;
+  addProduct: (product: Omit<SellerProduct, "id" | "sellerId" | "createdAt" | "updatedAt">) => Promise<void>;
+  updateProduct: (id: string, updates: Partial<SellerProduct>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
   
   // Orders
   orders: SellerOrder[];
-  updateOrderStatus: (id: string, status: SellerOrder["status"]) => void;
-  updateFulfillmentStatus: (id: string, status: SellerOrder["fulfillmentStatus"], trackingNumber?: string) => void;
+  updateOrderStatus: (id: string, status: SellerOrder["status"]) => Promise<void>;
+  updateFulfillmentStatus: (
+    id: string,
+    status: SellerOrder["fulfillmentStatus"],
+    trackingNumber?: string,
+  ) => Promise<void>;
   
   // Settings
   settings: SellerSettings;
@@ -81,7 +86,20 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addProduct = useCallback(
-    (product: Omit<SellerProduct, "id" | "sellerId" | "createdAt" | "updatedAt">) => {
+    async (product: Omit<SellerProduct, "id" | "sellerId" | "createdAt" | "updatedAt">) => {
+      const write = await upsertSellerProduct({
+        sku: product.sku,
+        title: product.title,
+        description: product.description,
+        status: product.status,
+        currencyCode: "USD",
+        basePrice: product.price,
+      });
+
+      if (!write.ok) {
+        throw new Error(write.failure?.message ?? "Failed to save product.");
+      }
+
       const now = new Date().toISOString();
       const newProduct: SellerProduct = {
         ...product,
@@ -95,19 +113,49 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
     [profile.id]
   );
 
-  const updateProduct = useCallback((id: string, updates: Partial<SellerProduct>) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
-      )
-    );
-  }, []);
+  const updateProduct = useCallback(
+    async (id: string, updates: Partial<SellerProduct>) => {
+      const existing = products.find((p) => p.id === id);
+      if (!existing) return;
 
-  const deleteProduct = useCallback((id: string) => {
+      const merged = { ...existing, ...updates };
+
+      const write = await upsertSellerProduct({
+        sku: merged.sku,
+        title: merged.title,
+        description: merged.description,
+        status: merged.status,
+        currencyCode: "USD",
+        basePrice: merged.price,
+      });
+
+      if (!write.ok) {
+        throw new Error(write.failure?.message ?? "Failed to update product.");
+      }
+
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
+        )
+      );
+    },
+    [products],
+  );
+
+  const deleteProduct = useCallback(async (id: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
-  const updateOrderStatus = useCallback((id: string, status: SellerOrder["status"]) => {
+  const updateOrderStatus = useCallback(async (id: string, status: SellerOrder["status"]) => {
+    const write = await updateSellerOrder({
+      orderId: id,
+      status,
+    });
+
+    if (!write.ok) {
+      throw new Error(write.failure?.message ?? "Failed to update order status.");
+    }
+
     setOrders((prev) =>
       prev.map((o) =>
         o.id === id ? { ...o, status, updatedAt: new Date().toISOString() } : o
@@ -116,7 +164,21 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateFulfillmentStatus = useCallback(
-    (id: string, fulfillmentStatus: SellerOrder["fulfillmentStatus"], trackingNumber?: string) => {
+    async (id: string, fulfillmentStatus: SellerOrder["fulfillmentStatus"], trackingNumber?: string) => {
+      const nextStatus: SellerOrder["status"] =
+        fulfillmentStatus === "fulfilled" ? "shipped" : "processing";
+
+      const write = await updateSellerOrder({
+        orderId: id,
+        status: nextStatus,
+        fulfillmentStatus,
+        trackingNumber,
+      });
+
+      if (!write.ok) {
+        throw new Error(write.failure?.message ?? "Failed to update fulfillment status.");
+      }
+
       setOrders((prev) =>
         prev.map((o) =>
           o.id === id

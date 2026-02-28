@@ -25,7 +25,12 @@ All write surfaces use shared middleware from `supabase/functions/_shared`:
 ## Current behavior
 
 Phase 3 endpoints currently return validated, accepted contract payloads and metadata.
-Database writes are intentionally deferred until:
+Client write surfaces now invoke these endpoints for:
+- checkout submission
+- seller product create/update
+- seller order status/fulfillment updates
+
+Database transactions are intentionally deferred until:
 1. full RLS/policy matrix completion (Phase 2), and
 2. server-owned transaction flow implementation (remaining Phase 3).
 

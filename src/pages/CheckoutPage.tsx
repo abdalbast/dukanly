@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { submitCheckout } from "@/lib/writeApi";
 import {
   Dialog,
   DialogContent,
@@ -123,6 +125,7 @@ const mockPaymentMethods: PaymentMethod[] = [
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { activeItems, subtotal, clearCart } = useCart();
+  const { toast } = useToast();
   
   const [addresses] = useState<Address[]>(mockAddresses);
   const [selectedAddressId, setSelectedAddressId] = useState(
@@ -158,8 +161,26 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const result = await submitCheckout({
+      cartId: "active-cart",
+      shippingAddressId: selectedAddressId,
+      billingAddressId: selectedAddressId,
+      paymentMethodId: selectedPaymentId,
+      deliveryOption: selectedDelivery as "standard" | "express" | "next-day",
+      currencyCode: "USD",
+      clientTotal: orderTotal,
+    });
+
+    if (!result.ok) {
+      toast({
+        title: "Checkout failed",
+        description: result.failure?.message ?? "Could not submit checkout request.",
+        variant: "destructive",
+      });
+      setIsPlacingOrder(false);
+      return;
+    }
+
     clearCart();
     navigate("/order-confirmation");
   };

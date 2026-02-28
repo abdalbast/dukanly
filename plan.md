@@ -2,7 +2,7 @@
 
 ## Progress Snapshot
 
-- Current phase: **Phase 3 (API hardening and validation)**
+- Current phase: **Phase 4 (Observability and ops)**
 - Overall progress: **6 / 8 phases in progress/completed**
 - Constraint in effect: **Do not rotate Supabase keys or change env var values (Lovable Cloud managed)**
 
@@ -108,7 +108,7 @@
 
 ## Phase 3: API hardening and validation
 
-**Status:** In Progress  
+**Status:** Completed  
 **Objective:** Move business logic out of client into server-controlled interfaces.
 
 ### Checklist
@@ -127,9 +127,15 @@
 
 ### Verification / Acceptance
 
-- [ ] No critical write path remains client-only. (pending DB write wiring from client to Edge Functions)
-- [ ] Replayed requests do not duplicate orders/payments.
-- [ ] Invalid payloads are rejected consistently.
+- [x] No critical write path remains client-only.
+- [x] Replayed requests do not duplicate orders/payments. (idempotency-key replay cache baseline)
+- [x] Invalid payloads are rejected consistently.
+
+### Phase 3 Completion Summary
+
+- Added Edge Function write contracts for checkout, orders, seller products, and seller orders.
+- Added shared middleware for auth, role checks, schema validation, standardized error envelope, idempotency, and basic rate limiting.
+- Wired checkout and seller write paths to call Edge Functions through a shared client helper with retry/timeout and correlation headers.
 
 ---
 
