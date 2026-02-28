@@ -57,6 +57,8 @@ export const en = {
   "header.sellerCentral": "Seller Central",
   "header.shopByDepartment": "Shop by Department",
   "header.language": "Language",
+  "header.hello": "Hello",
+  "header.signOut": "Sign Out",
 
   // Footer
   "footer.backToTop": "Back to top",

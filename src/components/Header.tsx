@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, ChevronDown, Menu, ShoppingCart, User, Heart, Package, Globe } from "lucide-react";
+import { Search, MapPin, ChevronDown, Menu, ShoppingCart, Globe, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { categories } from "@/data/mockData";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -20,6 +21,7 @@ export function Header() {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { user, signOut } = useAuth();
   const { t, language, setLanguage } = useLanguage();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -28,6 +30,13 @@ export function Header() {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "";
 
   return (
     <header className="sticky top-0 z-50">
@@ -109,21 +118,30 @@ export function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="hidden sm:flex flex-col items-start px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded">
-                  <span className="text-[10px] text-primary-foreground/70">{t("header.helloSignIn")}</span>
+                  <span className="text-[10px] text-primary-foreground/70">
+                    {user ? `${t("header.hello")}, ${displayName}` : t("header.helloSignIn")}
+                  </span>
                   <span className="text-xs font-semibold flex items-center gap-0.5">
                     {t("header.accountAndLists")} <ChevronDown className="w-3 h-3" />
                   </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <div className="p-4 text-center border-b border-border">
-                  <Button asChild className="w-full btn-cta mb-2">
-                    <Link to="/auth/signin">{t("header.signIn")}</Link>
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    {t("header.newCustomer")} <Link to="/auth/signup" className="text-info hover:underline">{t("header.startHere")}</Link>
-                  </p>
-                </div>
+                {!user ? (
+                  <div className="p-4 text-center border-b border-border">
+                    <Button asChild className="w-full btn-cta mb-2">
+                      <Link to="/auth/signin">{t("header.signIn")}</Link>
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      {t("header.newCustomer")} <Link to="/auth/signup" className="text-info hover:underline">{t("header.startHere")}</Link>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-3 border-b border-border">
+                    <p className="text-sm font-semibold">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-2 p-2">
                   <div>
                     <p className="font-semibold text-sm mb-1">{t("header.yourLists")}</p>
@@ -144,6 +162,15 @@ export function Header() {
                     </DropdownMenuItem>
                   </div>
                 </div>
+                {user && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                      <LogOut className="w-4 h-4 mr-2 rtl:mr-0 rtl:ml-2" />
+                      {t("header.signOut")}
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
