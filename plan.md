@@ -215,7 +215,7 @@
 - [ ] Resolve `npm audit` high/moderate vulnerabilities via upgrades/pins. (production deps remediated; dev tooling advisories remain)
 - [x] Add CSP/security headers strategy (at hosting edge or proxy).
 - [x] Reduce bundle size with route-level code splitting.
-- [ ] Add pagination and query limits for list endpoints.
+- [x] Add pagination and query limits for list endpoints.
 - [x] Load test checkout/order APIs. (baseline load-test runner added; env token required to execute)
 
 ### Dependencies / Order

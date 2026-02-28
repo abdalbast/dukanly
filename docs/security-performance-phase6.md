@@ -28,6 +28,10 @@ Notes:
 
 Implemented:
 - Route-level lazy loading in `src/App.tsx` with `React.lazy` + `Suspense` fallback.
+- Pagination guardrails for list endpoints:
+  - `seller-products-list`
+  - `seller-orders-list`
+  - enforced `limit` max `100` and `offset` max `10000`
 
 Expected impact:
 - Smaller initial JS payload for first paint.

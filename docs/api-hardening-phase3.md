@@ -9,6 +9,8 @@ Implemented function surfaces:
 - `orders` (order-creation contract)
 - `seller-products` (seller product upsert contract)
 - `seller-orders` (seller order status update contract)
+- `seller-products-list` (seller products list contract with capped pagination)
+- `seller-orders-list` (seller orders list contract with capped pagination)
 
 ## Shared guardrails
 

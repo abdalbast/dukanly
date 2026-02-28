@@ -35,3 +35,8 @@ export const sellerOrderUpdateSchema = z.object({
   fulfillmentStatus: z.enum(["unfulfilled", "partial", "fulfilled", "returned"]).optional(),
   trackingNumber: z.string().max(120).optional(),
 });
+
+export const paginationQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+  offset: z.coerce.number().int().min(0).max(10_000).default(0),
+});
