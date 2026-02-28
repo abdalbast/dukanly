@@ -1,4 +1,11 @@
 
+-- Rollback notes:
+-- 1) Drop trigger `update_profiles_updated_at` on `public.profiles`.
+-- 2) Drop trigger `on_auth_user_created` on `auth.users`.
+-- 3) Drop functions `public.update_updated_at_column` and `public.handle_new_user` if unused elsewhere.
+-- 4) Drop policies on `public.profiles`.
+-- 5) Drop table `public.profiles`.
+
 -- Create profiles table
 CREATE TABLE public.profiles (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,

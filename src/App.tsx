@@ -24,6 +24,10 @@ import OrdersPage from "./pages/OrdersPage";
 import ListsPage from "./pages/ListsPage";
 import SignInPage from "./pages/auth/SignInPage";
 import SignUpPage from "./pages/auth/SignUpPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
+import { RequireAuth } from "./components/auth/RequireAuth";
 
 // Info pages
 import AboutPage from "./pages/AboutPage";
@@ -68,18 +72,20 @@ const App = () => (
                   {/* Auth Routes */}
                   <Route path="/auth/signin" element={<SignInPage />} />
                   <Route path="/auth/signup" element={<SignUpPage />} />
-                  <Route path="/auth/forgot-password" element={<SignInPage />} />
+                  <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
                   
                   {/* User Account Routes */}
-                  <Route path="/account" element={<AccountPage />} />
-                  <Route path="/account/security" element={<AccountPage />} />
-                  <Route path="/account/addresses" element={<AccountPage />} />
-                  <Route path="/account/payment" element={<AccountPage />} />
-                  <Route path="/account/notifications" element={<AccountPage />} />
-                  <Route path="/orders" element={<OrdersPage />} />
-                  <Route path="/lists" element={<ListsPage />} />
-                  <Route path="/lists/wishlist" element={<ListsPage />} />
-                  <Route path="/gift-cards" element={<AccountPage />} />
+                  <Route path="/account" element={<RequireAuth><AccountPage /></RequireAuth>} />
+                  <Route path="/account/security" element={<RequireAuth><AccountPage /></RequireAuth>} />
+                  <Route path="/account/addresses" element={<RequireAuth><AccountPage /></RequireAuth>} />
+                  <Route path="/account/payment" element={<RequireAuth><AccountPage /></RequireAuth>} />
+                  <Route path="/account/notifications" element={<RequireAuth><AccountPage /></RequireAuth>} />
+                  <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
+                  <Route path="/lists" element={<RequireAuth><ListsPage /></RequireAuth>} />
+                  <Route path="/lists/wishlist" element={<RequireAuth><ListsPage /></RequireAuth>} />
+                  <Route path="/gift-cards" element={<RequireAuth><AccountPage /></RequireAuth>} />
                   
                   {/* Info Pages */}
                   <Route path="/about" element={<AboutPage />} />

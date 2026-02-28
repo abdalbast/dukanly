@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,18 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignInPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
   const { signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
+
+  const resolveRedirectTarget = () => {
+    const redirect = searchParams.get("redirect");
+    if (!redirect || !redirect.startsWith("/")) return "/";
+    return redirect;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +34,7 @@ export default function SignInPage() {
       return;
     }
     toast({ title: t("auth.welcomeBack"), description: t("auth.signInSuccess") });
-    navigate("/");
+    navigate(resolveRedirectTarget(), { replace: true });
   };
 
   return (
