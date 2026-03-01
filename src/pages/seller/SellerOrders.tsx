@@ -48,9 +48,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { SellerOrder } from "@/types/seller";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SellerOrders() {
   const { orders, updateOrderStatus, updateFulfillmentStatus } = useSeller();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [fulfillmentFilter, setFulfillmentFilter] = useState<string>("all");
@@ -109,11 +111,19 @@ export default function SellerOrders() {
     setFulfillDialogOpen(true);
   };
 
-  const confirmFulfill = () => {
+  const confirmFulfill = async () => {
     if (selectedOrder) {
-      updateFulfillmentStatus(selectedOrder.id, "fulfilled", trackingNumber || undefined);
-      setFulfillDialogOpen(false);
-      setSelectedOrder(null);
+      try {
+        await updateFulfillmentStatus(selectedOrder.id, "fulfilled", trackingNumber || undefined);
+        setFulfillDialogOpen(false);
+        setSelectedOrder(null);
+      } catch (error) {
+        toast({
+          title: "Fulfillment update failed",
+          description: error instanceof Error ? error.message : "Could not update order fulfillment.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -298,7 +308,20 @@ export default function SellerOrders() {
                         <DropdownMenuSeparator />
                         {order.status === "pending" && (
                           <DropdownMenuItem
-                            onClick={() => updateOrderStatus(order.id, "processing")}
+                            onClick={async () => {
+                              try {
+                                await updateOrderStatus(order.id, "processing");
+                              } catch (error) {
+                                toast({
+                                  title: "Order update failed",
+                                  description:
+                                    error instanceof Error
+                                      ? error.message
+                                      : "Could not update order status.",
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
                           >
                             <Package className="w-4 h-4 mr-2" />
                             Start Processing
@@ -308,7 +331,20 @@ export default function SellerOrders() {
                           order.status !== "delivered" && (
                             <DropdownMenuItem
                               className="text-destructive"
-                              onClick={() => updateOrderStatus(order.id, "cancelled")}
+                              onClick={async () => {
+                                try {
+                                  await updateOrderStatus(order.id, "cancelled");
+                                } catch (error) {
+                                  toast({
+                                    title: "Order cancel failed",
+                                    description:
+                                      error instanceof Error
+                                        ? error.message
+                                        : "Could not cancel order.",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }}
                             >
                               <XCircle className="w-4 h-4 mr-2" />
                               Cancel Order

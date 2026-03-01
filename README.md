@@ -1,73 +1,113 @@
-# Welcome to your Lovable project
+# Dukanly
 
-## Project info
+Dukanly is a React + TypeScript commerce frontend built with Vite, shadcn-ui, and Supabase.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Development setup
 
-## How can I edit this code?
+Prerequisites:
+- Node.js 20+
+- npm 10+
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Install dependencies:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+npm ci
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Environment variables
 
-# Step 3: Install the necessary dependencies.
-npm i
+Create a local env file from the template:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```sh
+cp .env.example .env
+```
+
+Required variables:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_PROJECT_ID`
+- `VITE_SENTRY_DSN` (optional)
+
+Edge function payment variables (server-only, do not expose to browser):
+- `FIB_CLIENT_ID`
+- `FIB_CLIENT_SECRET`
+- `FIB_BASE_URL_STAGE`
+- `FIB_BASE_URL_PROD`
+- `FIB_ENV_MODE` (`stage` or `prod`)
+- `FIB_CALLBACK_PUBLIC_URL`
+- `PAYMENTS_FIB_ENABLED_REGIONS` (comma-separated, defaults to `KRD`)
+- `COD_MAX_AMOUNT_IQD`
+- `COD_MAX_DAILY_ORDERS_PER_PHONE`
+
+Note:
+- Supabase auth and environment values are managed by Lovable Cloud.
+- Do not rotate or modify key values as part of this repository workflow.
+
+## Run locally
+
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Quality gates
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Run the full local gate:
 
-**Use GitHub Codespaces**
+```sh
+npm run check
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Equivalent commands:
 
-## What technologies are used for this project?
+```sh
+npm run lint
+npm test
+npm run build
+npm run check:migrations
+npm run check:bundle
+npm run test:e2e
+npm run loadtest:writes
+npm run prelaunch:smoke
+npm run prelaunch:gate
+```
 
-This project is built with:
+Before first E2E run:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```sh
+npx playwright install chromium
+```
 
-## How can I deploy this project?
+## Package manager policy
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+This repo is npm-standardized:
+- Use npm commands only.
+- Keep `package-lock.json` as the single lockfile.
+- Do not add Bun/Yarn/pnpm lockfiles.
 
-## Can I connect a custom domain to my Lovable project?
+## Architecture baseline
 
-Yes, you can!
+See `docs/architecture-baseline.md` for current system boundaries and target backend boundaries used for phased implementation.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Database workflow
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+See `docs/database-workflow.md` for migration naming policy, rollback note requirements, and local seed/reset flow.
+
+## Observability
+
+See `docs/observability.md` for structured logging, global error capture, and health endpoint guidance.
+
+## API hardening baseline
+
+See `docs/api-hardening-phase3.md` for Edge Function write-surface contracts, validation, idempotency, and rate-limit guardrails introduced for Phase 3.
+
+## CI and Branch Protection
+
+See `docs/branch-protection.md` for required CI checks and branch protection setup.
+
+## Security and Performance
+
+See `docs/security-performance-phase6.md` for dependency audit posture, CSP/header strategy, route-splitting baseline, and load-test workflow.
+
+## Pre-Launch
+
+See `docs/prelaunch-checklist.md` and `docs/rollback-runbook.md` for release gating, smoke validation, and rollback steps.

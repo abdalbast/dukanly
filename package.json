@@ -4,13 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run check:refresh && vite",
     "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build:dev": "npm run check:refresh && vite build --mode development",
     "lint": "eslint .",
+    "check:refresh": "node scripts/check-react-refresh-compat.mjs",
+    "check:migrations": "node scripts/check-migrations.mjs",
+    "check:bundle": "node scripts/check-bundle-budget.mjs",
+    "check": "npm run lint && npm test && npm run build && npm run check:bundle",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "loadtest:writes": "node scripts/loadtest-write-endpoints.mjs",
+    "prelaunch:smoke": "node scripts/prelaunch-smoke.mjs",
+    "prelaunch:gate": "node scripts/prelaunch-gate.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -41,6 +49,7 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@sentry/browser": "^10.40.0",
     "@supabase/supabase-js": "^2.98.0",
     "@tanstack/react-query": "^5.83.0",
     "class-variance-authority": "^0.7.1",
@@ -66,13 +75,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react-swc": "^3.11.0",
+    "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.32.0",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -84,7 +94,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
-    "vite": "^5.4.19",
+    "vite": "^7.3.1",
     "vitest": "^3.2.4"
   }
 }

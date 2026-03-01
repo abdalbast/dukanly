@@ -131,20 +131,30 @@ export default function AddProduct() {
       status: asDraft ? "draft" as const : "active" as const,
     };
 
-    if (isEditMode && id) {
-      updateProduct(id, productData);
+    try {
+      if (isEditMode && id) {
+        await updateProduct(id, productData);
+        toast({
+          title: "Product updated",
+          description: "Your product has been updated successfully.",
+        });
+      } else {
+        await addProduct(productData);
+        toast({
+          title: asDraft ? "Draft saved" : "Product published",
+          description: asDraft
+            ? "Your product has been saved as a draft"
+            : "Your product is now live",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Product updated",
-        description: "Your product has been updated successfully.",
+        title: "Save failed",
+        description: error instanceof Error ? error.message : "Could not save product.",
+        variant: "destructive",
       });
-    } else {
-      addProduct(productData);
-      toast({
-        title: asDraft ? "Draft saved" : "Product published",
-        description: asDraft
-          ? "Your product has been saved as a draft"
-          : "Your product is now live",
-      });
+      setIsSubmitting(false);
+      return;
     }
 
     setIsSubmitting(false);

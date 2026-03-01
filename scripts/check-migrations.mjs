@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+import fs from "node:fs";
+import path from "node:path";
+
+const root = process.cwd();
+const migrationsDir = path.join(root, "supabase", "migrations");
+const configPath = path.join(root, "supabase", "config.toml");
+const seedPath = path.join(root, "supabase", "seed.sql");
+
+const expectedName = /^\d{14}_[a-z0-9_\-]+\.sql$/;
+
+function fail(message) {
+  console.error(`Migration check failed: ${message}`);
+  process.exit(1);
+}
+
+if (!fs.existsSync(migrationsDir)) {
+  fail("`supabase/migrations` directory is missing.");
+}
+
+const migrationFiles = fs
+  .readdirSync(migrationsDir)
+  .filter((file) => file.endsWith(".sql"))
+  .sort();
+
+if (migrationFiles.length === 0) {
+  fail("No migration files found in `supabase/migrations`.");
+}
+
+const seenTimestamps = new Set();
+let previousFile = "";
+
+for (const file of migrationFiles) {
+  if (!expectedName.test(file)) {
+    fail(`Invalid migration filename: ${file}`);
+  }
+
+  if (previousFile && file < previousFile) {
+    fail(`Migrations are not lexicographically ordered: ${previousFile} then ${file}`);
+  }
+  previousFile = file;
+
+  const timestamp = file.slice(0, 14);
+  if (seenTimestamps.has(timestamp)) {
+    fail(`Duplicate migration timestamp detected: ${timestamp}`);
+  }
+  seenTimestamps.add(timestamp);
+
+  const migrationPath = path.join(migrationsDir, file);
+  const body = fs.readFileSync(migrationPath, "utf8");
+
+  if (!body.trim()) {
+    fail(`Migration file is empty: ${file}`);
+  }
+
+  if (!/rollback notes?/i.test(body)) {
+    fail(`Migration is missing rollback notes header: ${file}`);
+  }
+}
+
+if (!fs.existsSync(configPath)) {
+  fail("`supabase/config.toml` is missing.");
+}
+
+const config = fs.readFileSync(configPath, "utf8");
+if (!/^\s*\[db\.seed\]/m.test(config)) {
+  fail("`[db.seed]` section missing in `supabase/config.toml`.");
+}
+
+if (!/\bsql_paths\s*=\s*\[\s*"\.\/seed\.sql"\s*\]/.test(config)) {
+  fail("`supabase/config.toml` must include `sql_paths = [\"./seed.sql\"]`.");
+}
+
+if (!fs.existsSync(seedPath)) {
+  fail("`supabase/seed.sql` is missing.");
+}
+
+const seedBody = fs.readFileSync(seedPath, "utf8");
+if (!seedBody.trim()) {
+  fail("`supabase/seed.sql` is empty.");
+}
+
+console.log(`Migration check passed for ${migrationFiles.length} migration(s).`);

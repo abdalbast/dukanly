@@ -1,4 +1,10 @@
 
+-- Rollback notes:
+-- 1) Drop trigger `update_sellers_updated_at` on `public.sellers`.
+-- 2) Drop function `public.is_seller`.
+-- 3) Drop policies on `public.sellers`.
+-- 4) Drop table `public.sellers`.
+
 -- Create sellers table
 CREATE TABLE public.sellers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,0 +1,359 @@
+import { HttpError, parseJson } from "../_shared/http.ts";
+import { checkoutSchema } from "../_shared/schemas.ts";
+import { handleWrite } from "../_shared/write-handler.ts";
+import { getAdminClient } from "../_shared/db.ts";
+import { log } from "../_shared/log.ts";
+import { createFibPayment } from "../_shared/payments/fib-client.ts";
+import { applyPaymentTransition } from "../_shared/payments/reconcile.ts";
+import type { PaymentMethod, PaymentState } from "../_shared/payments/types.ts";
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuid(value: string): boolean {
+  return UUID_RE.test(value);
+}
+
+function normalizeRegion(value: string): string {
+  return value.trim().toUpperCase();
+}
+
+function generateOrderNumber() {
+  return `DK-${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${crypto
+    .randomUUID()
+    .slice(0, 8)
+    .toUpperCase()}`;
+}
+
+function getFibEnabledRegions(): Set<string> {
+  const raw = Deno.env.get("PAYMENTS_FIB_ENABLED_REGIONS") || "KRD";
+  return new Set(raw.split(",").map((value) => normalizeRegion(value)).filter(Boolean));
+}
+
+function assertKurdistanCurrency(regionCode: string, currencyCode: string) {
+  if (regionCode === "KRD" && currencyCode !== "IQD") {
+    throw new HttpError(
+      422,
+      "invalid_currency",
+      "Kurdistan checkout must use IQD for launch payment flows.",
+    );
+  }
+}
+
+async function validateDualCurrencyPricing(itemRefs: string[], currencyCode: string) {
+  const uuidRefs = itemRefs.filter((value) => isUuid(value));
+  if (uuidRefs.length === 0) {
+    return;
+  }
+
+  const admin = getAdminClient();
+  const { data, error } = await admin
+    .from("product_prices")
+    .select("product_id")
+    .in("product_id", uuidRefs)
+    .eq("currency_code", currencyCode);
+
+  if (error) {
+    throw new HttpError(500, "database_error", "Failed to validate dual-currency prices.", error.message);
+  }
+
+  const available = new Set((data ?? []).map((row) => String(row.product_id)));
+  const missing = uuidRefs.filter((ref) => !available.has(ref));
+
+  if (missing.length > 0) {
+    throw new HttpError(422, "missing_currency_price", "Missing currency price for one or more products.", {
+      currencyCode,
+      missingProductRefs: missing,
+    });
+  }
+}
+
+async function evaluateCodRisk(input: {
+  regionCode: string;
+  countryCode: string;
+  clientTotal: number;
+  customerPhone?: string;
+}) {
+  const maxAmount = Number(Deno.env.get("COD_MAX_AMOUNT_IQD") || 1500000);
+  const maxDailyPerPhone = Number(Deno.env.get("COD_MAX_DAILY_ORDERS_PER_PHONE") || 3);
+  const zoneEligible = input.regionCode === "KRD" && input.countryCode === "IQ";
+  const amountWithinLimit = input.clientTotal <= maxAmount;
+  let dailyLimitWithinThreshold = true;
+
+  if (input.customerPhone) {
+    const admin = getAdminClient();
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await admin
+      .from("payments")
+      .select("raw_provider_payload")
+      .eq("provider", "cod")
+      .gte("created_at", since);
+
+    if (error) {
+      throw new HttpError(500, "database_error", "Failed to evaluate COD risk controls.", error.message);
+    }
+
+    const countForPhone = (data ?? []).filter((row) => {
+      const payload = row.raw_provider_payload as Record<string, unknown> | null;
+      return payload?.customerPhone === input.customerPhone;
+    }).length;
+
+    dailyLimitWithinThreshold = countForPhone < maxDailyPerPhone;
+  }
+
+  if (!zoneEligible) {
+    throw new HttpError(422, "cod_zone_not_supported", "Cash on delivery is only enabled in Kurdistan at launch.");
+  }
+
+  if (!amountWithinLimit) {
+    throw new HttpError(422, "cod_amount_exceeded", "Cash on delivery amount exceeds launch risk threshold.", {
+      maxAmount,
+    });
+  }
+
+  if (!dailyLimitWithinThreshold) {
+    throw new HttpError(422, "cod_daily_limit_exceeded", "Cash on delivery daily order limit exceeded for phone.", {
+      maxDailyPerPhone,
+    });
+  }
+
+  return {
+    zoneEligible,
+    amountWithinLimit,
+    dailyLimitWithinThreshold,
+    phoneVerification: "placeholder",
+  };
+}
+
+function mapInitialState(method: PaymentMethod): PaymentState {
+  return method === "fib" ? "payment_pending" : "cod_pending";
+}
+
+Deno.serve((req) =>
+  handleWrite(req, "checkout", async ({ auth, idempotencyKey, correlationId }) => {
+    const payload = await parseJson(req, checkoutSchema);
+
+    const regionCode = normalizeRegion(payload.regionCode);
+    const countryCode = payload.countryCode.toUpperCase();
+    const paymentMethod = payload.paymentMethod as PaymentMethod;
+
+    assertKurdistanCurrency(regionCode, payload.currencyCode);
+    await validateDualCurrencyPricing(
+      payload.lineItems.map((item) => item.productRef),
+      payload.currencyCode,
+    );
+
+    const serverItemTotal = payload.lineItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    if (payload.clientTotal + 0.01 < serverItemTotal) {
+      throw new HttpError(422, "invalid_client_total", "Client total is less than computed line-item total.", {
+        serverItemTotal,
+        clientTotal: payload.clientTotal,
+      });
+    }
+
+    const fibEnabledRegions = getFibEnabledRegions();
+    if (paymentMethod === "fib" && !fibEnabledRegions.has(regionCode)) {
+      throw new HttpError(422, "fib_not_enabled", "FIB is not enabled for this region.", {
+        regionCode,
+      });
+    }
+
+    const codRisk = paymentMethod === "cod"
+      ? await evaluateCodRisk({
+        regionCode,
+        countryCode,
+        clientTotal: payload.clientTotal,
+        customerPhone: payload.customerPhone,
+      })
+      : null;
+
+    const admin = getAdminClient();
+    const orderNumber = generateOrderNumber();
+    const initialState = mapInitialState(paymentMethod);
+
+    const { data: orderData, error: orderError } = await admin
+      .from("orders")
+      .insert({
+        order_number: orderNumber,
+        user_id: auth.userId,
+        status: "pending",
+        payment_status: paymentMethod === "cod" ? "pending" : "pending",
+        fulfillment_status: "unfulfilled",
+        currency_code: payload.currencyCode,
+        subtotal_amount: serverItemTotal,
+        shipping_amount: 0,
+        tax_amount: 0,
+        total_amount: payload.clientTotal,
+        source_cart_id: isUuid(payload.cartId) ? payload.cartId : null,
+        shipping_address_id: isUuid(payload.shippingAddressId) ? payload.shippingAddressId : null,
+        billing_address_id: payload.billingAddressId && isUuid(payload.billingAddressId) ? payload.billingAddressId : null,
+        payment_method: paymentMethod,
+        payment_state: initialState,
+        payment_state_reason: null,
+        region_code: regionCode,
+      })
+      .select("id, order_number, payment_state")
+      .single();
+
+    if (orderError || !orderData) {
+      throw new HttpError(500, "database_error", "Failed to create order.", orderError?.message);
+    }
+
+    const { data: paymentData, error: paymentError } = await admin
+      .from("payments")
+      .insert({
+        order_id: orderData.id,
+        provider: paymentMethod,
+        amount: payload.clientTotal,
+        currency_code: payload.currencyCode,
+        status: "initiated",
+        idempotency_key: `${auth.userId}:${idempotencyKey}:${paymentMethod}`,
+        raw_provider_payload: {
+          customerPhone: payload.customerPhone ?? null,
+          regionCode,
+          countryCode,
+        },
+      })
+      .select("id")
+      .single();
+
+    if (paymentError || !paymentData) {
+      throw new HttpError(500, "database_error", "Failed to create payment row.", paymentError?.message);
+    }
+
+    const reservationRows = payload.lineItems.map((item) => ({
+      order_id: orderData.id,
+      product_id: isUuid(item.productRef) ? item.productRef : null,
+      product_ref: item.productRef,
+      quantity: item.quantity,
+      state: "reserved",
+    }));
+
+    const { error: reservationError } = await admin
+      .from("inventory_reservations")
+      .insert(reservationRows);
+
+    if (reservationError) {
+      throw new HttpError(500, "database_error", "Failed to reserve inventory.", reservationError.message);
+    }
+
+    const baseResponse = {
+      orderId: orderData.id,
+      orderNumber: orderData.order_number,
+      paymentMethod,
+      paymentState: initialState,
+      reservationSummary: {
+        reservedItems: reservationRows.length,
+        reservedQuantity: reservationRows.reduce((sum, row) => sum + row.quantity, 0),
+      },
+    };
+
+    if (paymentMethod === "cod") {
+      await applyPaymentTransition({
+        paymentId: paymentData.id,
+        currentOrderState: initialState,
+        nextState: "cod_pending",
+        source: "checkout",
+        providerStatus: "COD_PENDING",
+        rawPayload: {
+          codRisk,
+          customerPhone: payload.customerPhone ?? null,
+        },
+      });
+
+      log("info", "checkout.cod_created", {
+        correlationId,
+        userId: auth.userId,
+        orderId: orderData.id,
+        paymentId: paymentData.id,
+        paymentState: "cod_pending",
+      });
+
+      return {
+        action: "checkout.submit",
+        accepted: true,
+        userId: auth.userId,
+        requestId: `${auth.userId}:${idempotencyKey}`,
+        ...baseResponse,
+        codRisk,
+      };
+    }
+
+    const callbackBase = Deno.env.get("FIB_CALLBACK_PUBLIC_URL");
+    if (!callbackBase || !callbackBase.startsWith("https://")) {
+      throw new HttpError(500, "config_error", "FIB callback URL is missing or not HTTPS.");
+    }
+
+    const fibPayment = await createFibPayment({
+      amount: Math.round(payload.clientTotal),
+      currency: "IQD",
+      statusCallbackUrl: callbackBase,
+      description: payload.description,
+    });
+
+    const { error: paymentUpdateError } = await admin
+      .from("payments")
+      .update({
+        provider_payment_id: fibPayment.paymentId,
+        provider_status: "UNPAID",
+        valid_until: fibPayment.validUntil,
+        status_callback_url: callbackBase,
+        raw_provider_payload: {
+          paymentId: fibPayment.paymentId,
+          readableCode: fibPayment.readableCode,
+          businessAppLink: fibPayment.businessAppLink ?? null,
+          corporateAppLink: fibPayment.corporateAppLink ?? null,
+          qrCode: fibPayment.qrCode,
+          validUntil: fibPayment.validUntil,
+        },
+      })
+      .eq("id", paymentData.id);
+
+    if (paymentUpdateError) {
+      throw new HttpError(
+        500,
+        "database_error",
+        "Failed to persist FIB payment mapping.",
+        paymentUpdateError.message,
+      );
+    }
+
+    await applyPaymentTransition({
+      paymentId: paymentData.id,
+      currentOrderState: initialState,
+      nextState: "payment_pending",
+      source: "checkout",
+      providerStatus: "UNPAID",
+      validUntil: fibPayment.validUntil,
+      rawPayload: {
+        paymentId: fibPayment.paymentId,
+      },
+    });
+
+    log("info", "checkout.fib_created", {
+      correlationId,
+      userId: auth.userId,
+      orderId: orderData.id,
+      paymentId: paymentData.id,
+      providerPaymentId: fibPayment.paymentId,
+      paymentState: "payment_pending",
+      validUntil: fibPayment.validUntil,
+    });
+
+    return {
+      action: "checkout.submit",
+      accepted: true,
+      userId: auth.userId,
+      requestId: `${auth.userId}:${idempotencyKey}`,
+      ...baseResponse,
+      fib: {
+        paymentId: fibPayment.paymentId,
+        qrCode: fibPayment.qrCode,
+        readableCode: fibPayment.readableCode,
+        businessAppLink: fibPayment.businessAppLink ?? null,
+        corporateAppLink: fibPayment.corporateAppLink ?? null,
+        validUntil: fibPayment.validUntil,
+      },
+    };
+  }),
+);

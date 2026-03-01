@@ -46,9 +46,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SellerProduct } from "@/types/seller";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SellerProducts() {
   const { products, deleteProduct, updateProduct } = useSeller();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");
@@ -79,16 +81,32 @@ export default function SellerProducts() {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (productToDelete) {
-      deleteProduct(productToDelete.id);
-      setDeleteDialogOpen(false);
-      setProductToDelete(null);
+      try {
+        await deleteProduct(productToDelete.id);
+        setDeleteDialogOpen(false);
+        setProductToDelete(null);
+      } catch (error) {
+        toast({
+          title: "Delete failed",
+          description: error instanceof Error ? error.message : "Could not delete product.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const handleStatusChange = (productId: string, newStatus: SellerProduct["status"]) => {
-    updateProduct(productId, { status: newStatus });
+  const handleStatusChange = async (productId: string, newStatus: SellerProduct["status"]) => {
+    try {
+      await updateProduct(productId, { status: newStatus });
+    } catch (error) {
+      toast({
+        title: "Status update failed",
+        description: error instanceof Error ? error.message : "Could not update product status.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getStockBadge = (product: SellerProduct) => {
@@ -248,14 +266,14 @@ export default function SellerProducts() {
                         <DropdownMenuSeparator />
                         {product.status !== "archived" ? (
                           <DropdownMenuItem
-                            onClick={() => handleStatusChange(product.id, "archived")}
+                            onClick={() => void handleStatusChange(product.id, "archived")}
                           >
                             <Archive className="w-4 h-4 mr-2" />
                             Archive
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
-                            onClick={() => handleStatusChange(product.id, "active")}
+                            onClick={() => void handleStatusChange(product.id, "active")}
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             Restore

@@ -5,8 +5,8 @@ import {
   Plus, 
   Truck, 
   CreditCard, 
+  Banknote,
   ShieldCheck, 
-  ChevronRight,
   Clock,
   Package,
   Check
@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
+import { submitCheckout } from "@/lib/writeApi";
 import {
   Dialog,
   DialogContent,
@@ -46,33 +48,31 @@ interface DeliveryOption {
 }
 
 interface PaymentMethod {
-  id: string;
-  type: "card" | "bank" | "gift";
+  id: "fib" | "cod";
+  type: "fib" | "cod";
   label: string;
-  lastFour?: string;
-  expiryDate?: string;
-  isDefault: boolean;
+  description: string;
 }
 
 const mockAddresses: Address[] = [
   {
     id: "addr-1",
-    name: "John Doe",
-    street: "123 Main Street, Apt 4B",
-    city: "New York",
-    state: "NY",
-    zip: "10001",
-    country: "United States",
+    name: "Kurdistan Launch Customer",
+    street: "100 Gulan Street",
+    city: "Erbil",
+    state: "Erbil Governorate",
+    zip: "44001",
+    country: "Iraq",
     isDefault: true,
   },
   {
     id: "addr-2",
-    name: "John Doe",
-    street: "456 Work Avenue, Floor 12",
-    city: "New York",
-    state: "NY",
-    zip: "10002",
-    country: "United States",
+    name: "Kurdistan Launch Customer",
+    street: "21 Salim Street",
+    city: "Sulaymaniyah",
+    state: "Sulaymaniyah Governorate",
+    zip: "46001",
+    country: "Iraq",
     isDefault: false,
   },
 ];
@@ -103,26 +103,24 @@ const deliveryOptions: DeliveryOption[] = [
 
 const mockPaymentMethods: PaymentMethod[] = [
   {
-    id: "card-1",
-    type: "card",
-    label: "Visa ending in",
-    lastFour: "4242",
-    expiryDate: "12/25",
-    isDefault: true,
+    id: "fib",
+    type: "fib",
+    label: "Pay with FIB",
+    description: "Complete payment using FIB app links or QR code.",
   },
   {
-    id: "card-2",
-    type: "card",
-    label: "Mastercard ending in",
-    lastFour: "8888",
-    expiryDate: "03/26",
-    isDefault: false,
+    id: "cod",
+    type: "cod",
+    label: "Cash on Delivery",
+    description: "Pay in cash when your order is delivered.",
   },
 ];
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { activeItems, subtotal, clearCart } = useCart();
+  const { toast } = useToast();
+  const exchangeRateUsdToIqd = 1300;
   
   const [addresses] = useState<Address[]>(mockAddresses);
   const [selectedAddressId, setSelectedAddressId] = useState(
@@ -130,9 +128,8 @@ export default function CheckoutPage() {
   );
   const [selectedDelivery, setSelectedDelivery] = useState(deliveryOptions[0].id);
   const [paymentMethods] = useState<PaymentMethod[]>(mockPaymentMethods);
-  const [selectedPaymentId, setSelectedPaymentId] = useState(
-    mockPaymentMethods.find((p) => p.isDefault)?.id || mockPaymentMethods[0]?.id
-  );
+  const [selectedPaymentId, setSelectedPaymentId] = useState<"fib" | "cod">("cod");
+  const [customerPhone, setCustomerPhone] = useState("+964");
   const [deliveryInstructions, setDeliveryInstructions] = useState("");
   const [isGiftOrder, setIsGiftOrder] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
@@ -146,22 +143,67 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     zip: "",
-    country: "United States",
+    country: "Iraq",
   });
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
   const selectedDeliveryOption = deliveryOptions.find((d) => d.id === selectedDelivery);
   const shippingCost = selectedDeliveryOption?.price || 0;
-  const taxRate = 0.08;
+  const taxRate = 0.02;
   const taxAmount = subtotal * taxRate;
   const orderTotal = subtotal + shippingCost + taxAmount;
+  const orderTotalIqd = Math.round(orderTotal * exchangeRateUsdToIqd);
+  const lineItems = activeItems.map((item) => ({
+    productRef: item.product.id,
+    title: item.product.title,
+    quantity: item.quantity,
+    unitPrice: Math.round(item.product.offer.price * exchangeRateUsdToIqd),
+    currencyCode: "IQD",
+  }));
 
   const handlePlaceOrder = async () => {
     setIsPlacingOrder(true);
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const result = await submitCheckout({
+      cartId: "active-cart",
+      shippingAddressId: selectedAddressId,
+      billingAddressId: selectedAddressId,
+      paymentMethod: selectedPaymentId,
+      deliveryOption: selectedDelivery as "standard" | "express" | "next-day",
+      currencyCode: "IQD",
+      clientTotal: orderTotalIqd,
+      regionCode: "KRD",
+      countryCode: "IQ",
+      customerPhone,
+      description: "Dukanly checkout payment",
+      lineItems,
+    });
+
+    if (!result.ok) {
+      toast({
+        title: "Checkout failed",
+        description: result.failure?.message ?? "Could not submit checkout request.",
+        variant: "destructive",
+      });
+      setIsPlacingOrder(false);
+      return;
+    }
+
+    if (result.data.paymentMethod === "fib" && result.data.fib) {
+      navigate(`/checkout/payment/${result.data.orderId}`, {
+        state: {
+          payment: result.data,
+        },
+      });
+      setIsPlacingOrder(false);
+      return;
+    }
+
     clearCart();
-    navigate("/order-confirmation");
+    navigate("/order-confirmation", {
+      state: {
+        order: result.data,
+      },
+    });
   };
 
   if (activeItems.length === 0) {
@@ -407,22 +449,16 @@ export default function CheckoutPage() {
 
             {/* 3. Payment Method */}
             <section className="bg-card border border-border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center">
-                    3
-                  </span>
-                  Payment Method
-                </h2>
-                <Button variant="outline" size="sm">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Card
-                </Button>
-              </div>
+              <h2 className="font-semibold flex items-center gap-2 mb-4">
+                <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center">
+                  3
+                </span>
+                Payment Method
+              </h2>
 
               <RadioGroup
                 value={selectedPaymentId}
-                onValueChange={setSelectedPaymentId}
+                onValueChange={(value) => setSelectedPaymentId(value as "fib" | "cod")}
                 className="space-y-3"
               >
                 {paymentMethods.map((method) => (
@@ -437,25 +473,36 @@ export default function CheckoutPage() {
                     <RadioGroupItem value={method.id} className="mt-1" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <CreditCard className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">
-                          {method.label} {method.lastFour}
-                        </span>
-                        {method.isDefault && (
-                          <span className="text-xs bg-secondary px-2 py-0.5 rounded">
-                            Default
-                          </span>
+                        {method.type === "fib" ? (
+                          <CreditCard className="w-4 h-4 text-muted-foreground" />
+                        ) : (
+                          <Banknote className="w-4 h-4 text-muted-foreground" />
                         )}
+                        <span className="font-medium">{method.label}</span>
                       </div>
-                      {method.expiryDate && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Expires {method.expiryDate}
-                        </p>
-                      )}
+                      <p className="text-sm text-muted-foreground mt-1">{method.description}</p>
                     </div>
                   </label>
                 ))}
               </RadioGroup>
+
+              {selectedPaymentId === "cod" && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <Label htmlFor="customer-phone" className="text-sm font-medium">
+                    Phone Number for COD verification
+                  </Label>
+                  <Input
+                    id="customer-phone"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="+9647XXXXXXXX"
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Launch risk controls require a valid delivery phone number for COD orders.
+                  </p>
+                </div>
+              )}
 
               {/* Gift Card / Promo Code */}
               <div className="mt-4 pt-4 border-t border-border">
@@ -527,7 +574,7 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                     <p className="text-sm font-medium">
-                      ${(item.product.offer.price * item.quantity).toFixed(2)}
+                      {Math.round(item.product.offer.price * item.quantity * exchangeRateUsdToIqd).toLocaleString()} IQD
                     </p>
                   </div>
                 ))}
@@ -536,7 +583,7 @@ export default function CheckoutPage() {
               <div className="border-t border-border pt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{Math.round(subtotal * exchangeRateUsdToIqd).toLocaleString()} IQD</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
@@ -544,20 +591,20 @@ export default function CheckoutPage() {
                     {shippingCost === 0 ? (
                       <span className="text-success">FREE</span>
                     ) : (
-                      `$${shippingCost.toFixed(2)}`
+                      `${Math.round(shippingCost * exchangeRateUsdToIqd).toLocaleString()} IQD`
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax (estimated)</span>
-                  <span>${taxAmount.toFixed(2)}</span>
+                  <span>{Math.round(taxAmount * exchangeRateUsdToIqd).toLocaleString()} IQD</span>
                 </div>
               </div>
 
               <div className="border-t border-border pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Order Total</span>
-                  <span>${orderTotal.toFixed(2)}</span>
+                  <span>{orderTotalIqd.toLocaleString()} IQD</span>
                 </div>
               </div>
 

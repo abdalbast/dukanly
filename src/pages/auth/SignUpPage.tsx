@@ -28,14 +28,21 @@ export default function SignUpPage() {
       return;
     }
     setIsLoading(true);
-    const { error } = await signUp(formData.email, formData.password, formData.name);
+    const { error, needsEmailVerification } = await signUp(formData.email, formData.password, formData.name);
     setIsLoading(false);
     if (error) {
       toast({ title: t("auth.signUp"), description: error.message, variant: "destructive" });
       return;
     }
+
+    if (needsEmailVerification) {
+      toast({ title: t("auth.accountCreated"), description: t("auth.verifyEmailAfterSignUp") });
+      navigate(`/auth/verify-email?email=${encodeURIComponent(formData.email)}`);
+      return;
+    }
+
     toast({ title: t("auth.accountCreated"), description: t("auth.accountCreatedDesc") });
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   return (
