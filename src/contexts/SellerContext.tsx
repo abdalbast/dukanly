@@ -2,8 +2,6 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { SellerProfile, SellerProduct, SellerOrder, SellerSettings } from "@/types/seller";
 import {
   mockSellerProfile,
-  mockSellerProducts,
-  mockSellerOrders,
   mockSellerSettings,
   mockSellerAnalytics,
 } from "@/data/sellerMockData";
@@ -46,14 +44,55 @@ interface SellerContextType {
 
 const SellerContext = createContext<SellerContextType | undefined>(undefined);
 
+interface DbProduct {
+  id: string;
+  seller_id: string;
+  sku: string;
+  title: string;
+  description: string | null;
+  status: string;
+  base_price: number;
+  original_price: number | null;
+  brand: string | null;
+  category: string | null;
+  subcategory: string | null;
+  images: string[];
+  stock: number;
+  created_at: string;
+  updated_at: string;
+}
+
+function mapDbToSellerProduct(row: DbProduct): SellerProduct {
+  return {
+    id: row.id,
+    sellerId: row.seller_id,
+    title: row.title,
+    description: row.description ?? "",
+    images: Array.isArray(row.images) ? row.images : [],
+    category: row.category ?? "",
+    subcategory: row.subcategory ?? undefined,
+    brand: row.brand ?? "",
+    sku: row.sku,
+    price: Number(row.base_price),
+    compareAtPrice: row.original_price ? Number(row.original_price) : undefined,
+    stock: row.stock ?? 0,
+    lowStockThreshold: 20,
+    status: (row.status as "active" | "draft" | "archived") ?? "draft",
+    tags: [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 export function SellerProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [isSeller, setIsSeller] = useState(false);
   const [isSellerLoading, setIsSellerLoading] = useState(true);
   const [profile, setProfile] = useState<SellerProfile>(mockSellerProfile);
-  const [products, setProducts] = useState<SellerProduct[]>(mockSellerProducts);
-  const [orders, setOrders] = useState<SellerOrder[]>(mockSellerOrders);
+  const [products, setProducts] = useState<SellerProduct[]>([]);
+  const [orders, setOrders] = useState<SellerOrder[]>([]);
   const [settings, setSettings] = useState<SellerSettings>(mockSellerSettings);
+  const [sellerId, setSellerId] = useState<string | null>(null);
 
   // Check seller status from database
   useEffect(() => {
@@ -71,6 +110,23 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
         } else {
           setIsSeller(!!data);
         }
+
+        // Get seller ID
+        const { data: sellerData } = await supabase
+          .from('sellers')
+          .select('id, store_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (sellerData) {
+          setSellerId(sellerData.id);
+          setProfile((prev) => ({
+            ...prev,
+            id: sellerData.id,
+            userId: user.id,
+            storeName: sellerData.store_name,
+          }));
+        }
       } catch {
         setIsSeller(false);
       }
@@ -80,6 +136,149 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
     setIsSellerLoading(true);
     checkSellerStatus();
   }, [user]);
+
+  // Fetch seller's products from database
+  useEffect(() => {
+    if (!sellerId) return;
+
+    const fetchProducts = async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('seller_id', sellerId)
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        setProducts((data as unknown as DbProduct[]).map(mapDbToSellerProduct));
+      }
+    };
+
+    fetchProducts();
+  }, [sellerId]);
+
+  // Fetch seller's orders from database
+  useEffect(() => {
+    if (!sellerId) return;
+
+    const fetchOrders = async () => {
+      const { data, error } = await supabase
+        .from('order_items')
+        .select(`
+          id,
+          quantity,
+          unit_price,
+          line_total,
+          order_id,
+          product_id,
+          products (id, title, images),
+          orders (
+            id,
+            order_number,
+            user_id,
+            status,
+            fulfillment_status,
+            payment_status,
+            total_amount,
+            shipping_amount,
+            tax_amount,
+            subtotal_amount,
+            currency_code,
+            created_at,
+            updated_at
+          )
+        `)
+        .eq('seller_id', sellerId)
+        .order('created_at', { ascending: false });
+
+      if (error || !data) return;
+
+      // Group order items by order_id
+      const orderMap = new Map<string, SellerOrder>();
+      for (const item of data as unknown as Array<{
+        id: string;
+        quantity: number;
+        unit_price: number;
+        line_total: number;
+        order_id: string;
+        product_id: string;
+        products: { id: string; title: string; images: string[] } | null;
+        orders: {
+          id: string;
+          order_number: string;
+          user_id: string;
+          status: string;
+          fulfillment_status: string;
+          payment_status: string;
+          total_amount: number;
+          shipping_amount: number;
+          tax_amount: number;
+          subtotal_amount: number;
+          currency_code: string;
+          created_at: string;
+          updated_at: string;
+        } | null;
+      }>) {
+        if (!item.orders) continue;
+        const ord = item.orders;
+
+        if (!orderMap.has(ord.id)) {
+          const statusMap: Record<string, SellerOrder["status"]> = {
+            pending: "pending",
+            processing: "processing",
+            shipped: "shipped",
+            delivered: "delivered",
+            cancelled: "cancelled",
+          };
+          const fulfillmentMap: Record<string, SellerOrder["fulfillmentStatus"]> = {
+            unfulfilled: "unfulfilled",
+            partial: "partial",
+            fulfilled: "fulfilled",
+          };
+          const paymentMap: Record<string, SellerOrder["paymentStatus"]> = {
+            pending: "pending",
+            paid: "paid",
+            refunded: "refunded",
+          };
+
+          orderMap.set(ord.id, {
+            id: ord.id,
+            orderNumber: ord.order_number,
+            sellerId: sellerId!,
+            customerId: ord.user_id,
+            customerName: "Customer",
+            customerEmail: "",
+            items: [],
+            subtotal: Number(ord.subtotal_amount) || 0,
+            shippingCost: Number(ord.shipping_amount) || 0,
+            tax: Number(ord.tax_amount) || 0,
+            total: Number(ord.total_amount) || 0,
+            status: statusMap[ord.status] ?? "pending",
+            fulfillmentStatus: fulfillmentMap[ord.fulfillment_status] ?? "unfulfilled",
+            paymentStatus: paymentMap[ord.payment_status] ?? "pending",
+            shippingAddress: { name: "", street: "", city: "", state: "", zip: "", country: "" },
+            shippingMethod: "Standard",
+            createdAt: ord.created_at,
+            updatedAt: ord.updated_at,
+          });
+        }
+
+        const order = orderMap.get(ord.id)!;
+        order.items.push({
+          id: item.id,
+          productId: item.product_id,
+          productTitle: item.products?.title ?? "Product",
+          productImage: (item.products?.images as string[])?.[0] ?? "/placeholder.svg",
+          quantity: item.quantity,
+          price: Number(item.unit_price),
+          total: Number(item.line_total) || Number(item.unit_price) * item.quantity,
+        });
+      }
+
+      setOrders(Array.from(orderMap.values()));
+    };
+
+    fetchOrders();
+  }, [sellerId]);
 
   const updateProfile = useCallback((updates: Partial<SellerProfile>) => {
     setProfile((prev) => ({ ...prev, ...updates }));
@@ -100,17 +299,19 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
         throw new Error(write.failure?.message ?? "Failed to save product.");
       }
 
-      const now = new Date().toISOString();
-      const newProduct: SellerProduct = {
-        ...product,
-        id: `sp-${Date.now()}`,
-        sellerId: profile.id,
-        createdAt: now,
-        updatedAt: now,
-      };
-      setProducts((prev) => [newProduct, ...prev]);
+      // Refetch products
+      if (sellerId) {
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .eq('seller_id', sellerId)
+          .order('created_at', { ascending: false });
+        if (data) {
+          setProducts((data as unknown as DbProduct[]).map(mapDbToSellerProduct));
+        }
+      }
     },
-    [profile.id]
+    [sellerId]
   );
 
   const updateProduct = useCallback(

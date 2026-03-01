@@ -6,7 +6,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { searchProducts, mockProducts } from "@/data/mockData";
+import { useSearchProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 type SortOption = "relevance" | "price-low" | "price-high" | "rating" | "newest";
@@ -20,7 +20,7 @@ export default function SearchResultsPage() {
   const [filters, setFilters] = useState({ primeOnly: false, deals: false, minRating: 0, brands: [] as string[] });
   const [showFilters, setShowFilters] = useState(false);
 
-  const baseProducts = query ? searchProducts(query) : mockProducts;
+  const { data: baseProducts = [] } = useSearchProducts(query);
 
   const filteredProducts = useMemo(() => {
     let products = [...baseProducts];

@@ -7,19 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, Package, Truck, CheckCircle, RotateCcw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-
-interface Order { id: string; orderNumber: string; date: string; status: "processing" | "shipped" | "delivered" | "cancelled"; total: number; items: { id: string; title: string; image: string; price: number; quantity: number; }[]; }
-
-const mockOrders: Order[] = [
-  { id: "1", orderNumber: "ORD-12345678", date: "2024-02-01", status: "delivered", total: 124.99, items: [{ id: "item1", title: "Sony WH-1000XM5 Wireless Noise Canceling Headphones", image: "/placeholder.svg", price: 348.00, quantity: 1 }] },
-  { id: "2", orderNumber: "ORD-12345679", date: "2024-01-28", status: "shipped", total: 89.95, items: [{ id: "item2", title: "Instant Pot Duo Plus 9-in-1 Electric Pressure Cooker", image: "/placeholder.svg", price: 79.95, quantity: 1 }] },
-];
+import { useOrders, type Order } from "@/hooks/useOrders";
 
 export default function OrdersPage() {
   const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [timeFilter, setTimeFilter] = useState("all");
   const locale = language === "ckb" ? "ckb" : "en-US";
+
+  const { data: orders = [], isLoading } = useOrders();
 
   const getStatusBadge = (status: Order["status"]) => {
     const map = {
@@ -51,7 +47,11 @@ export default function OrdersPage() {
             </SelectContent>
           </Select>
         </div>
-        {mockOrders.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading orders...</p>
+          </div>
+        ) : orders.length === 0 ? (
           <div className="bg-card border border-border rounded-lg p-12 text-center">
             <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">{t("orders.noOrdersYet")}</h2>
@@ -60,7 +60,7 @@ export default function OrdersPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {mockOrders.map((order) => (
+            {orders.map((order) => (
               <div key={order.id} className="bg-card border border-border rounded-lg overflow-hidden">
                 <div className="bg-muted/50 p-4 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex flex-wrap gap-6 text-sm">

@@ -2,15 +2,18 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Truck, Shield, Clock, Percent } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { mockProducts, categories } from "@/data/mockData";
+import { categories } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import heroBanner from "@/assets/hero-banner.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const dealsProducts = mockProducts.filter((p) => p.isLimitedDeal || p.offer.originalPrice);
-  const bestSellers = mockProducts.filter((p) => p.isBestSeller);
-  const trendingProducts = mockProducts.slice(0, 8);
+  const { data: products = [], isLoading } = useProducts();
+
+  const dealsProducts = products.filter((p) => p.isLimitedDeal || p.offer.originalPrice);
+  const bestSellers = products.filter((p) => p.isBestSeller);
+  const trendingProducts = products.slice(0, 8);
 
   return (
     <Layout>
@@ -93,7 +96,7 @@ export default function HomePage() {
       </section>
 
       {/* Today's Deals */}
-      {dealsProducts.length > 0 && (
+      {!isLoading && dealsProducts.length > 0 && (
         <section className="container py-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="section-header mb-0">{t("home.todaysDeals")}</h2>
@@ -110,7 +113,7 @@ export default function HomePage() {
       )}
 
       {/* Best Sellers */}
-      {bestSellers.length > 0 && (
+      {!isLoading && bestSellers.length > 0 && (
         <section className="bg-secondary/50 py-8">
           <div className="container">
             <div className="flex items-center justify-between mb-4">
@@ -146,19 +149,21 @@ export default function HomePage() {
       </section>
 
       {/* Trending Products */}
-      <section className="container py-6 pb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="section-header mb-0">{t("home.trendingNow")}</h2>
-          <Link to="/trending" className="text-sm text-info hover:underline flex items-center gap-1">
-            {t("common.seeMore")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {trendingProducts.slice(0, 6).map((product) => (
-            <ProductCard key={product.id} product={product} variant="compact" />
-          ))}
-        </div>
-      </section>
+      {!isLoading && trendingProducts.length > 0 && (
+        <section className="container py-6 pb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="section-header mb-0">{t("home.trendingNow")}</h2>
+            <Link to="/trending" className="text-sm text-info hover:underline flex items-center gap-1">
+              {t("common.seeMore")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {trendingProducts.slice(0, 6).map((product) => (
+              <ProductCard key={product.id} product={product} variant="compact" />
+            ))}
+          </div>
+        </section>
+      )}
     </Layout>
   );
 }

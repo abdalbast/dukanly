@@ -7,7 +7,7 @@ import { PriceDisplay } from "@/components/PriceDisplay";
 import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { getProductById, mockProducts } from "@/data/mockData";
+import { useProductById, useProductsByCategory } from "@/hooks/useProducts";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -20,7 +20,18 @@ export default function ProductDetailPage() {
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const product = id ? getProductById(id) : undefined;
+  const { data: product, isLoading } = useProductById(id);
+  const { data: relatedProducts = [] } = useProductsByCategory(product?.category);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="container py-12 text-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!product) {
     return (
@@ -34,7 +45,7 @@ export default function ProductDetailPage() {
   }
 
   const { offer } = product;
-  const relatedProducts = mockProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 5);
+  const filteredRelated = relatedProducts.filter((p) => p.id !== product.id).slice(0, 5);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
@@ -167,11 +178,11 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {relatedProducts.length > 0 && (
+        {filteredRelated.length > 0 && (
           <section className="mt-12">
             <h2 className="section-header">{t("product.customersAlsoViewed")}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {relatedProducts.map((p) => (<ProductCard key={p.id} product={p} />))}
+              {filteredRelated.map((p) => (<ProductCard key={p.id} product={p} />))}
             </div>
           </section>
         )}
