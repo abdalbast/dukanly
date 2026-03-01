@@ -59,7 +59,7 @@ function shouldRetry(err: unknown): boolean {
   return msg.includes("timed out") || msg.includes("network") || msg.includes("fetch");
 }
 
-async function invokeWrite<TPayload extends Record<string, unknown>, TResponse>(
+async function invokeWrite<TPayload extends object, TResponse>(
   endpoint: EndpointName,
   payload: TPayload,
 ): Promise<ApiResult<TResponse>> {
@@ -115,7 +115,7 @@ async function invokeWrite<TPayload extends Record<string, unknown>, TResponse>(
       return {
         ok: true,
         data: {
-          orderId: (payload as { orderId: string }).orderId,
+          orderId: (payload as unknown as { orderId: string }).orderId,
           paymentId: "test-payment",
           paymentMethod: "fib",
           paymentState: "paid",

@@ -147,9 +147,10 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateOrderStatus = useCallback(async (id: string, status: SellerOrder["status"]) => {
+    const writeStatus = status === "pending" ? "confirmed" : status;
     const write = await updateSellerOrder({
       orderId: id,
-      status,
+      status: writeStatus as "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded",
     });
 
     if (!write.ok) {
@@ -165,7 +166,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
 
   const updateFulfillmentStatus = useCallback(
     async (id: string, fulfillmentStatus: SellerOrder["fulfillmentStatus"], trackingNumber?: string) => {
-      const nextStatus: SellerOrder["status"] =
+      const nextStatus: "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded" =
         fulfillmentStatus === "fulfilled" ? "shipped" : "processing";
 
       const write = await updateSellerOrder({
