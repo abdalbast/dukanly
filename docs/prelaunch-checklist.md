@@ -50,6 +50,28 @@ npm run prelaunch:gate -- --with-e2e --with-loadtest-assert --with-audit
 - [ ] Verify health endpoint:
   - `<deployment-url>/healthz.json`
 
+## Load Test Token (Supabase access token)
+
+Use a normal signed-in user session token as `LOADTEST_BEARER_TOKEN`.
+
+Option A: Browser DevTools
+1. Sign in on the deployed app.
+2. Open DevTools -> Application -> Local Storage -> your app origin.
+3. Find key like `sb-<project-ref>-auth-token`.
+4. Parse JSON and copy `access_token`.
+
+Option B: Browser Console
+1. Sign in on the deployed app.
+2. In console, run:
+
+```js
+const key = Object.keys(localStorage).find((k) => k.includes("auth-token"));
+const token = key ? JSON.parse(localStorage.getItem(key)).access_token : null;
+console.log(token);
+```
+
+3. Use that value as `LOADTEST_BEARER_TOKEN` for `npm run loadtest:writes`.
+
 ## 5) Rollback plan and ownership
 
 - [ ] Document rollback trigger thresholds.

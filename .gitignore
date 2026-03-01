@@ -35,3 +35,4 @@ supabase/.temp/
 # Playwright artifacts
 test-results/
 playwright-report/
+.playwright-cli/

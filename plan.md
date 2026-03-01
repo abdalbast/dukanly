@@ -250,7 +250,7 @@
 - [x] Final security review (authz matrix, secrets, dependency report). (baseline checklist + audit posture documented)
 - [ ] Run migration dry-run against staging clone.
 - [ ] Validate production env vars and Lovable Cloud deployment config. (automated env-key presence checks added in `prelaunch:gate`)
-- [x] Execute smoke tests post-deploy. (script + E2E instructions added)
+- [x] Execute smoke tests post-deploy. (script + E2E instructions added; current `dukanly.lovable.app` health/smoke checks failing and need redeploy/version alignment)
 - [x] Prepare rollback steps and on-call ownership. (rollback runbook added)
 
 ### Dependencies / Order
