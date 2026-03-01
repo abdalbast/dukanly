@@ -24,6 +24,25 @@ let correlationId = crypto.randomUUID();
 let currentUser: UserContext = {};
 let didInit = false;
 let errorReporter: ErrorReporter = () => {};
+const seenSuppressedPreviewReasons = new Set<string>();
+
+function isLovablePreviewHost(hostname: string): boolean {
+  return (
+    hostname === "lovable.dev" ||
+    hostname.endsWith(".lovable.dev") ||
+    hostname.endsWith(".lovableproject.com") ||
+    hostname.endsWith(".lovableproject-dev.com")
+  );
+}
+
+function shouldSuppressLovablePreviewNoise(reason: string): boolean {
+  const value = reason.toLowerCase();
+  return (
+    (value.includes("failed to fetch") && value.includes("posthog.com")) ||
+    (value.includes("failed to fetch") && value.includes("otel-faro.p.l5e.io")) ||
+    value.includes("err_blocked_by_client")
+  );
+}
 
 export function getCorrelationId() {
   return correlationId;
@@ -155,9 +174,24 @@ export function initObservability() {
   });
 
   window.addEventListener("unhandledrejection", (event) => {
+    const reason = getErrorMessage(event.reason);
+
+    if (
+      isLovablePreviewHost(window.location.hostname) &&
+      shouldSuppressLovablePreviewNoise(reason)
+    ) {
+      // Avoid noisy third-party telemetry failures in Lovable preview (often ad-blocker/network-policy).
+      event.preventDefault();
+      if (!seenSuppressedPreviewReasons.has(reason)) {
+        seenSuppressedPreviewReasons.add(reason);
+        logger.warn("Suppressed Lovable preview telemetry rejection", { reason });
+      }
+      return;
+    }
+
     const context = {
       source: "window.unhandledrejection",
-      reason: getErrorMessage(event.reason),
+      reason,
       userId: currentUser.id,
     };
 
