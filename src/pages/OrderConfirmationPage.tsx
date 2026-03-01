@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CheckCircle, Package, Truck, Calendar } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,11 +8,22 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function OrderConfirmationPage() {
   const { t, language } = useLanguage();
-  const orderNumber = `ORD-${Date.now().toString().slice(-8)}`;
+  const location = useLocation();
+  const state = (location.state as {
+    order?: {
+      orderId?: string;
+      orderNumber?: string;
+      paymentMethod?: "fib" | "cod";
+      paymentState?: string;
+    };
+  } | null) ?? null;
+  const orderNumber = state?.order?.orderNumber ?? `ORD-${Date.now().toString().slice(-8)}`;
   const estimatedDelivery = new Date();
   estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
   const suggestedProducts = mockProducts.slice(4, 8);
   const locale = language === "ckb" ? "ckb" : "en-US";
+  const paymentMethod = state?.order?.paymentMethod ?? "cod";
+  const paymentState = state?.order?.paymentState ?? "cod_pending";
 
   return (
     <Layout>
@@ -30,6 +41,14 @@ export default function OrderConfirmationPage() {
                 <p className="font-semibold text-lg">{orderNumber}</p>
               </div>
               <Button variant="outline" size="sm" asChild><Link to="/orders">{t("orderConfirmation.viewOrder")}</Link></Button>
+            </div>
+            <div className="mb-4 p-3 rounded-lg bg-secondary/40 text-sm">
+              <p>
+                Payment method: <span className="font-medium uppercase">{paymentMethod}</span>
+              </p>
+              <p>
+                Payment state: <span className="font-medium">{paymentState}</span>
+              </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="flex items-start gap-3">

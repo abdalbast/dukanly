@@ -44,10 +44,22 @@ function payloadFor(endpoint, index) {
   return {
     cartId: `lt-cart-${index}`,
     shippingAddressId: `lt-address-${index}`,
-    paymentMethodId: "pm-loadtest",
+    paymentMethod: "cod",
     deliveryOption: "standard",
-    currencyCode: "USD",
-    clientTotal: 100,
+    currencyCode: "IQD",
+    clientTotal: 130000,
+    regionCode: "KRD",
+    countryCode: "IQ",
+    customerPhone: `+964750000${String(index).padStart(3, "0")}`,
+    lineItems: [
+      {
+        productRef: `lt-product-${index}`,
+        title: `Load Test Product ${index}`,
+        quantity: 1,
+        unitPrice: 130000,
+        currencyCode: "IQD",
+      },
+    ],
   };
 }
 

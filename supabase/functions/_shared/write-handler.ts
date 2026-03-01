@@ -11,6 +11,7 @@ import { enforceRateLimit } from "./rate-limit.ts";
 export interface WriteContext {
   auth: AuthContext;
   idempotencyKey: string;
+  correlationId: string;
 }
 
 export async function handleWrite<T>(
@@ -31,6 +32,7 @@ export async function handleWrite<T>(
 
     const auth = await requireAuth(req);
     const idempotencyKey = readIdempotencyKey(req);
+    const correlationId = req.headers.get("x-correlation-id")?.trim() || crypto.randomUUID();
     const cacheKey = buildIdempotencyCacheKey(routeKey, auth.userId, idempotencyKey);
     const cached = getCachedResponse(cacheKey);
 
@@ -38,7 +40,7 @@ export async function handleWrite<T>(
       return cached;
     }
 
-    const data = await run({ auth, idempotencyKey });
+    const data = await run({ auth, idempotencyKey, correlationId });
     const response = success({
       ...data,
       meta: {

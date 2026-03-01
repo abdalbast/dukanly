@@ -41,6 +41,13 @@ npm run prelaunch:gate -- --with-e2e --with-loadtest-assert --with-audit
   - `VITE_SUPABASE_PUBLISHABLE_KEY`
   - `VITE_SUPABASE_PROJECT_ID`
   - `VITE_SENTRY_DSN` (if used)
+  - `FIB_CLIENT_ID` / `FIB_CLIENT_SECRET` (server-only)
+  - `FIB_BASE_URL_STAGE` / `FIB_BASE_URL_PROD`
+  - `FIB_ENV_MODE`
+  - `FIB_CALLBACK_PUBLIC_URL`
+  - `PAYMENTS_FIB_ENABLED_REGIONS`
+  - `COD_MAX_AMOUNT_IQD`
+  - `COD_MAX_DAILY_ORDERS_PER_PHONE`
 - [ ] Confirm values are not rotated/changed from managed source unless planned by owner.
 
 ## 4) Post-deploy smoke tests

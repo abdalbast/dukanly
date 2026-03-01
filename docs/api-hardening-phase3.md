@@ -52,5 +52,5 @@ curl -i \
   -H 'content-type: application/json' \
   -H 'authorization: Bearer <access-token>' \
   -H 'idempotency-key: 1234567890abcdef' \
-  -d '{"cartId":"00000000-0000-0000-0000-000000000001","shippingAddressId":"00000000-0000-0000-0000-000000000002","paymentMethodId":"pm_demo","deliveryOption":"standard","currencyCode":"usd","clientTotal":109.99}'
+  -d '{"cartId":"00000000-0000-0000-0000-000000000001","shippingAddressId":"00000000-0000-0000-0000-000000000002","paymentMethod":"cod","deliveryOption":"standard","currencyCode":"iqd","clientTotal":130000,"regionCode":"KRD","countryCode":"IQ","lineItems":[{"productRef":"sku-demo","title":"Demo","quantity":1,"unitPrice":130000,"currencyCode":"IQD"}]}'
 ```

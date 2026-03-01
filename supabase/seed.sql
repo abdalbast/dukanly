@@ -79,6 +79,16 @@ BEGIN
   FROM public.products
   WHERE seller_id = seed_seller_id AND sku = 'SEED-HEADPHONES-001';
 
+  INSERT INTO public.product_prices (product_id, currency_code, unit_price)
+  VALUES
+    (product_phone_id, 'USD', 699.00),
+    (product_phone_id, 'IQD', 908700.00),
+    (product_headphones_id, 'USD', 129.00),
+    (product_headphones_id, 'IQD', 167700.00)
+  ON CONFLICT (product_id, currency_code) DO UPDATE
+    SET unit_price = EXCLUDED.unit_price,
+        updated_at = now();
+
   INSERT INTO public.inventory (product_id, quantity_on_hand, reserved_quantity, reorder_point)
   VALUES
     (product_phone_id, 50, 2, 10),
@@ -118,6 +128,8 @@ BEGIN
     source_cart_id,
     status,
     payment_status,
+    payment_method,
+    payment_state,
     fulfillment_status,
     currency_code,
     shipping_address_id,
@@ -128,6 +140,8 @@ BEGIN
     seed_user_id,
     cart_id,
     'processing',
+    'paid',
+    'fib',
     'paid',
     'partial',
     'USD',
@@ -155,7 +169,7 @@ BEGIN
   INSERT INTO public.payments (order_id, provider, provider_payment_id, idempotency_key, amount, currency_code, status, processed_at)
   VALUES (
     seed_order_id,
-    'seed-gateway',
+    'fib',
     'seed-payment-0001',
     'seed-payment-idempotency-0001',
     889.24,

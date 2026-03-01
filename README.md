@@ -28,6 +28,17 @@ Required variables:
 - `VITE_SUPABASE_PROJECT_ID`
 - `VITE_SENTRY_DSN` (optional)
 
+Edge function payment variables (server-only, do not expose to browser):
+- `FIB_CLIENT_ID`
+- `FIB_CLIENT_SECRET`
+- `FIB_BASE_URL_STAGE`
+- `FIB_BASE_URL_PROD`
+- `FIB_ENV_MODE` (`stage` or `prod`)
+- `FIB_CALLBACK_PUBLIC_URL`
+- `PAYMENTS_FIB_ENABLED_REGIONS` (comma-separated, defaults to `KRD`)
+- `COD_MAX_AMOUNT_IQD`
+- `COD_MAX_DAILY_ORDERS_PER_PHONE`
+
 Note:
 - Supabase auth and environment values are managed by Lovable Cloud.
 - Do not rotate or modify key values as part of this repository workflow.

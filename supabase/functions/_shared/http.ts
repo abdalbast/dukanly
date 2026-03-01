@@ -2,7 +2,7 @@ import { z, ZodError } from "npm:zod@3.23.8";
 
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, content-type, idempotency-key, x-forwarded-for",
+  "Access-Control-Allow-Headers": "authorization, content-type, idempotency-key, x-forwarded-for, x-correlation-id",
   "Access-Control-Allow-Methods": "GET,POST,PATCH,OPTIONS",
 };
 

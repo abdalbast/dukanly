@@ -4,7 +4,12 @@ import { getCorrelationId, logger } from "@/lib/observability";
 const REQUEST_TIMEOUT_MS = 8000;
 const RETRY_DELAYS_MS = [250, 750];
 
-type EndpointName = "checkout" | "orders" | "seller-products" | "seller-orders";
+type EndpointName =
+  | "checkout"
+  | "orders"
+  | "seller-products"
+  | "seller-orders"
+  | "payment-status";
 
 interface ApiFailure {
   code?: string;
@@ -66,6 +71,64 @@ async function invokeWrite<TPayload extends Record<string, unknown>, TResponse>(
   const userId = session?.user?.id;
 
   if (import.meta.env.MODE === "test") {
+    if (endpoint === "checkout") {
+      const checkoutPayload = payload as unknown as CheckoutRequest;
+      const orderId = `test-order-${Date.now()}`;
+      const orderNumber = `DK-TEST-${Date.now().toString().slice(-6)}`;
+      const base = {
+        orderId,
+        orderNumber,
+        paymentMethod: checkoutPayload.paymentMethod,
+        paymentState: checkoutPayload.paymentMethod === "fib" ? "payment_pending" : "cod_pending",
+        reservationSummary: {
+          reservedItems: checkoutPayload.lineItems.length,
+          reservedQuantity: checkoutPayload.lineItems.reduce((sum, line) => sum + line.quantity, 0),
+        },
+      } as CheckoutResponse;
+
+      const data = checkoutPayload.paymentMethod === "fib"
+        ? {
+          ...base,
+          fib: {
+            paymentId: `fib-test-${Date.now()}`,
+            qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6bK3sAAAAASUVORK5CYII=",
+            readableCode: "TEST12345",
+            businessAppLink: "https://fib.iq",
+            corporateAppLink: "https://fib.iq",
+            validUntil: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+          },
+        }
+        : {
+          ...base,
+          codRisk: {
+            zoneEligible: true,
+            amountWithinLimit: true,
+            dailyLimitWithinThreshold: true,
+            phoneVerification: "placeholder",
+          },
+        };
+
+      return { ok: true, data: data as unknown as TResponse };
+    }
+
+    if (endpoint === "payment-status") {
+      return {
+        ok: true,
+        data: {
+          orderId: (payload as { orderId: string }).orderId,
+          paymentId: "test-payment",
+          paymentMethod: "fib",
+          paymentState: "paid",
+          terminal: true,
+          providerStatus: "PAID",
+          validUntil: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+          paidAt: new Date().toISOString(),
+          declineReason: null,
+          lastReconciledAt: new Date().toISOString(),
+        } as unknown as TResponse,
+      };
+    }
+
     return {
       ok: true,
       data: {
@@ -135,17 +198,88 @@ export interface CheckoutRequest {
   cartId: string;
   shippingAddressId: string;
   billingAddressId?: string;
-  paymentMethodId: string;
+  paymentMethod: "fib" | "cod";
   deliveryOption: "standard" | "express" | "next-day";
   currencyCode: string;
   clientTotal: number;
+  regionCode: string;
+  countryCode: string;
+  customerPhone?: string;
+  description?: string;
+  lineItems: Array<{
+    productRef: string;
+    title: string;
+    quantity: number;
+    unitPrice: number;
+    currencyCode: string;
+  }>;
+}
+
+export interface CheckoutResponse {
+  orderId: string;
+  orderNumber: string;
+  paymentMethod: "fib" | "cod";
+  paymentState:
+    | "payment_pending"
+    | "payment_authorised"
+    | "payment_failed"
+    | "payment_expired"
+    | "payment_cancelled"
+    | "cod_pending"
+    | "paid";
+  reservationSummary: {
+    reservedItems: number;
+    reservedQuantity: number;
+  };
+  fib?: {
+    paymentId: string;
+    qrCode: string;
+    readableCode: string;
+    businessAppLink?: string | null;
+    corporateAppLink?: string | null;
+    validUntil: string;
+  };
+  codRisk?: {
+    zoneEligible: boolean;
+    amountWithinLimit: boolean;
+    dailyLimitWithinThreshold: boolean;
+    phoneVerification: string;
+  };
 }
 
 export function submitCheckout(payload: CheckoutRequest) {
-  return invokeWrite<CheckoutRequest, { request: CheckoutRequest; meta: Record<string, unknown> }>(
+  return invokeWrite<CheckoutRequest, CheckoutResponse>(
     "checkout",
     payload,
   );
+}
+
+export interface PaymentStatusRequest {
+  orderId: string;
+}
+
+export interface PaymentStatusResponse {
+  orderId: string;
+  paymentId: string;
+  paymentMethod: "fib" | "cod";
+  paymentState:
+    | "payment_pending"
+    | "payment_authorised"
+    | "payment_failed"
+    | "payment_expired"
+    | "payment_cancelled"
+    | "cod_pending"
+    | "paid";
+  terminal: boolean;
+  providerStatus: string | null;
+  validUntil: string | null;
+  paidAt: string | null;
+  declineReason: string | null;
+  lastReconciledAt: string;
+}
+
+export function getPaymentStatus(payload: PaymentStatusRequest) {
+  return invokeWrite<PaymentStatusRequest, PaymentStatusResponse>("payment-status", payload);
 }
 
 export interface CreateOrderRequest {

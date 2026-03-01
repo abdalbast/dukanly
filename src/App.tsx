@@ -15,6 +15,7 @@ const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 const CartPage = lazy(() => import("./pages/CartPage"));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const CheckoutPaymentPage = lazy(() => import("./pages/CheckoutPaymentPage"));
 const OrderConfirmationPage = lazy(() => import("./pages/OrderConfirmationPage"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -70,6 +71,7 @@ const App = () => (
                     <Route path="/search" element={<SearchResultsPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/checkout/payment/:orderId" element={<CheckoutPaymentPage />} />
                     <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                     <Route path="/category/:slug" element={<CategoryPage />} />
                     <Route path="/category/:slug/:subcategory" element={<CategoryPage />} />

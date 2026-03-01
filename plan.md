@@ -5,6 +5,7 @@
 - Current phase: **Phase 7 (Pre-launch checklist and go live)**
 - Overall progress: **8 / 8 phases in progress/completed**
 - Constraint in effect: **Do not rotate Supabase keys or change env var values (Lovable Cloud managed)**
+- Payments launch stream: **FIB + COD implementation in progress (Kurdistan-first, dual-currency checkout contract)**
 
 ## Sync Policy
 

@@ -10,6 +10,7 @@ Implemented:
 - Optional Sentry browser integration via `VITE_SENTRY_DSN`.
 - Static health endpoint at `/healthz.json`.
 - Timeout/retry policy for Edge write calls (`src/lib/writeApi.ts`).
+- Structured payment lifecycle logs in Edge Functions for checkout, callback, and poll reconciliation.
 
 ## Correlation IDs
 
@@ -70,3 +71,4 @@ Synthetic verification:
 - Replace placeholder remote error transport with official Sentry SDK integration.
 - Add backend correlation propagation once server/Edge APIs are in place.
 - Add alert thresholds once centralized telemetry pipeline is selected.
+- Add log shipping for payment lifecycle events and alert rules for repeated `payment_failed`/`payment_expired` spikes.
