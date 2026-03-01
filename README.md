@@ -24,7 +24,7 @@ cp .env.example .env
 
 Required variables:
 - `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_ANON_KEY` (preferred) or `VITE_SUPABASE_PUBLISHABLE_KEY` (legacy)
 - `VITE_SUPABASE_PROJECT_ID`
 - `VITE_SENTRY_DSN` (optional)
 

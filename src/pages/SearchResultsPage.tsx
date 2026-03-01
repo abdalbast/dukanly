@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { Grid3X3, List, ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
@@ -13,6 +13,7 @@ type SortOption = "relevance" | "price-low" | "price-high" | "rating" | "newest"
 
 export default function SearchResultsPage() {
   const { t } = useLanguage();
+  const { brand: brandParam, sellerId: sellerIdParam } = useParams();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -20,7 +21,30 @@ export default function SearchResultsPage() {
   const [filters, setFilters] = useState({ primeOnly: false, deals: false, minRating: 0, brands: [] as string[] });
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: baseProducts = [] } = useSearchProducts(query);
+  const { data: fetchedProducts = [] } = useSearchProducts(query);
+
+  const baseProducts = useMemo(() => {
+    let products = [...fetchedProducts];
+
+    if (brandParam) {
+      const normalizedBrand = decodeURIComponent(brandParam).toLowerCase();
+      products = products.filter((p) => p.brand.toLowerCase() === normalizedBrand);
+    }
+
+    if (sellerIdParam) {
+      products = products.filter((p) => p.offer.sellerId === sellerIdParam);
+    }
+
+    return products;
+  }, [brandParam, fetchedProducts, sellerIdParam]);
+
+  const pageTitle = brandParam
+    ? `Brand: ${decodeURIComponent(brandParam)}`
+    : sellerIdParam
+      ? `Seller: ${sellerIdParam}`
+      : query
+        ? t("search.resultsFor").replace("{query}", query)
+        : t("search.allProducts");
 
   const filteredProducts = useMemo(() => {
     let products = [...baseProducts];
@@ -45,9 +69,7 @@ export default function SearchResultsPage() {
     <Layout>
       <div className="container py-6">
         <div className="mb-6">
-          <h1 className="text-lg font-medium">
-            {query ? (<>{t("search.resultsFor").replace("{query}", query)}</>) : t("search.allProducts")}
-          </h1>
+          <h1 className="text-lg font-medium">{pageTitle}</h1>
           <p className="text-sm text-muted-foreground mt-1">{filteredProducts.length} {t("common.results")}</p>
         </div>
         <div className="flex gap-6">
