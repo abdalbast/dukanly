@@ -2,15 +2,19 @@ import { useParams, Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { categories, getProductsByCategory, mockProducts } from "@/data/mockData";
+import { categories } from "@/data/mockData";
+import { useProductsByCategory, useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function CategoryPage() {
   const { slug, subcategory } = useParams<{ slug: string; subcategory?: string }>();
   const { t } = useLanguage();
   const category = categories.find((c) => c.slug === slug);
-  const categoryProducts = slug ? getProductsByCategory(slug) : mockProducts;
-  const displayProducts = categoryProducts.length > 0 ? categoryProducts : mockProducts;
+
+  const { data: categoryProducts = [] } = useProductsByCategory(slug);
+  const { data: allProducts = [] } = useProducts();
+
+  const displayProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
 
   return (
     <Layout>

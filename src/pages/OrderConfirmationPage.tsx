@@ -3,12 +3,13 @@ import { CheckCircle, Package, Truck, Calendar } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
-import { mockProducts } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function OrderConfirmationPage() {
   const { t, language } = useLanguage();
   const location = useLocation();
+  const { data: products = [] } = useProducts();
   const state = (location.state as {
     order?: {
       orderId?: string;
@@ -20,7 +21,7 @@ export default function OrderConfirmationPage() {
   const orderNumber = state?.order?.orderNumber ?? `ORD-${Date.now().toString().slice(-8)}`;
   const estimatedDelivery = new Date();
   estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
-  const suggestedProducts = mockProducts.slice(4, 8);
+  const suggestedProducts = products.slice(4, 8);
   const locale = language === "ckb" ? "ckb" : "en-US";
   const paymentMethod = state?.order?.paymentMethod ?? "cod";
   const paymentState = state?.order?.paymentState ?? "cod_pending";
@@ -82,12 +83,14 @@ export default function OrderConfirmationPage() {
             <Button variant="outline" asChild><Link to="/orders">{t("orderConfirmation.trackOrder")}</Link></Button>
           </div>
         </div>
-        <section className="mt-16">
-          <h2 className="section-header text-center">{t("orderConfirmation.youMightAlsoLike")}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {suggestedProducts.map((product) => (<ProductCard key={product.id} product={product} />))}
-          </div>
-        </section>
+        {suggestedProducts.length > 0 && (
+          <section className="mt-16">
+            <h2 className="section-header text-center">{t("orderConfirmation.youMightAlsoLike")}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {suggestedProducts.map((product) => (<ProductCard key={product.id} product={product} />))}
+            </div>
+          </section>
+        )}
       </div>
     </Layout>
   );

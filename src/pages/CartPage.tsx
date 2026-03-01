@@ -5,17 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/contexts/CartContext";
 import { ProductCard } from "@/components/ProductCard";
-import { mockProducts } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function CartPage() {
   const { t } = useLanguage();
   const { activeItems, savedItems, removeFromCart, updateQuantity, toggleSaveForLater, toggleGift, subtotal, itemCount } = useCart();
+  const { data: products = [] } = useProducts();
 
   const shippingThreshold = 35;
   const shippingProgress = Math.min((subtotal / shippingThreshold) * 100, 100);
   const freeShipping = subtotal >= shippingThreshold;
-  const suggestedProducts = mockProducts.slice(0, 4);
+  const suggestedProducts = products.slice(0, 4);
 
   if (activeItems.length === 0 && savedItems.length === 0) {
     return (

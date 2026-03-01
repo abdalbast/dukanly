@@ -7,15 +7,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { Plus, Heart, Lock, Globe, MoreHorizontal, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { mockProducts } from "@/data/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import { ProductCard } from "@/components/ProductCard";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface WishList { id: string; name: string; isPrivate: boolean; items: string[]; createdAt: string; }
 
 const mockLists: WishList[] = [
-  { id: "1", name: "Wish List", isPrivate: true, items: ["1", "2", "3"], createdAt: "2024-01-15" },
-  { id: "2", name: "Birthday Ideas", isPrivate: false, items: ["4", "5"], createdAt: "2024-01-20" },
+  { id: "1", name: "Wish List", isPrivate: true, items: [], createdAt: "2024-01-15" },
+  { id: "2", name: "Birthday Ideas", isPrivate: false, items: [], createdAt: "2024-01-20" },
 ];
 
 export default function ListsPage() {
@@ -24,6 +24,7 @@ export default function ListsPage() {
   const [selectedList, setSelectedList] = useState<WishList | null>(lists[0] || null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
+  const { data: products = [] } = useProducts();
 
   const handleCreateList = () => {
     if (newListName.trim()) {
@@ -40,7 +41,7 @@ export default function ListsPage() {
     if (selectedList?.id === listId) setSelectedList(lists[0] || null);
   };
 
-  const listProducts = selectedList ? mockProducts.filter((p) => selectedList.items.includes(p.id)) : [];
+  const listProducts = selectedList ? products.filter((p) => selectedList.items.includes(p.id)) : [];
 
   return (
     <Layout>
