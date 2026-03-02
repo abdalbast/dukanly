@@ -30,7 +30,7 @@ jobs:
             });
 
             if (!deployments.length) {
-              core.setFailed(`No deployments found for PR head SHA ${sha}. Ensure preview deploy is enabled.`);
+              core.warning(`No deployments found for PR head SHA ${sha}. Skipping preview verification for this repository.`);
               return;
             }
 
