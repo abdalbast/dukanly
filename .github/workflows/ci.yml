@@ -44,6 +44,10 @@ jobs:
     name: E2E Smoke
     runs-on: ubuntu-latest
     needs: quality
+    env:
+      # Placeholder values are sufficient for UI smoke tests; real values come from runtime secrets.
+      VITE_SUPABASE_URL: https://test-project.supabase.co
+      VITE_SUPABASE_ANON_KEY: test-anon-key
 
     steps:
       - name: Checkout

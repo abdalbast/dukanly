@@ -6,7 +6,6 @@ import path from "node:path";
 
 const requiredEnvKeys = [
   "VITE_SUPABASE_URL",
-  "VITE_SUPABASE_PUBLISHABLE_KEY",
   "VITE_SUPABASE_PROJECT_ID",
   "FIB_CLIENT_ID",
   "FIB_CLIENT_SECRET",
@@ -64,6 +63,13 @@ const assertEnvPresence = () => {
   const missingRequired = requiredEnvKeys.filter((key) => !process.env[key]);
   if (missingRequired.length > 0) {
     fail(`Missing required env keys: ${missingRequired.join(", ")}`);
+  }
+
+  const hasSupabaseBrowserKey = Boolean(
+    process.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  );
+  if (!hasSupabaseBrowserKey) {
+    fail("Missing required env key: set VITE_SUPABASE_ANON_KEY (preferred) or VITE_SUPABASE_PUBLISHABLE_KEY.");
   }
 
   const missingOptional = optionalEnvKeys.filter((key) => !process.env[key]);

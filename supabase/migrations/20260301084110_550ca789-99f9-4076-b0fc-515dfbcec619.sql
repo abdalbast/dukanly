@@ -1,3 +1,8 @@
+-- Rollback notes:
+-- This migration introduces and alters multiple commerce tables, triggers, and RLS policies.
+-- Rollback should be executed with a dedicated down migration that drops only the objects
+-- introduced here in reverse dependency order after confirming production data retention needs.
+-- Do not run destructive rollback steps directly in production without a verified backup.
 
 -- =============================================
 -- Commerce Tables + RLS Migration

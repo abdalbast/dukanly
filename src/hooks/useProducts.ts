@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { ProductWithOffer } from "@/types/product";
+import pelinSoapBarsImage from "@/assets/pelin/0T7A0075.webp";
+import pelinBodyWashImage from "@/assets/pelin/0T7A0072.webp";
+import pelinGiftBasketImage from "@/assets/pelin/0T7A0070.webp";
+import pelinHairCleanserImage from "@/assets/pelin/0T7A0091.webp";
 
 interface DbProduct {
   id: string;
@@ -27,13 +31,42 @@ interface DbProduct {
   sellers: { id: string; store_name: string } | null;
 }
 
+function resolvePelinFallbackImages(row: DbProduct): string[] {
+  if ((row.brand ?? "").toLowerCase() !== "pelin products") return [];
+
+  const fingerprint = `${row.sku} ${row.title}`.toLowerCase();
+  if (fingerprint.includes("turmeric") || fingerprint.includes("soap bars")) {
+    return [pelinSoapBarsImage];
+  }
+  if (fingerprint.includes("body wash") || fingerprint.includes("purifying")) {
+    return [pelinBodyWashImage];
+  }
+  if (fingerprint.includes("gift basket") || fingerprint.includes("5 piece")) {
+    return [pelinGiftBasketImage];
+  }
+  if (fingerprint.includes("hair cleanser") || fingerprint.includes("olive") || fingerprint.includes("laurel")) {
+    return [pelinHairCleanserImage, pelinBodyWashImage];
+  }
+
+  return [pelinGiftBasketImage];
+}
+
 function mapDbToProduct(row: DbProduct): ProductWithOffer {
   const seller = row.sellers;
+  const normalizedImages = Array.isArray(row.images) ? row.images.filter(Boolean) : [];
+  const fallbackImages = resolvePelinFallbackImages(row);
+  const images =
+    normalizedImages.length > 0
+      ? normalizedImages
+      : fallbackImages.length > 0
+        ? fallbackImages
+        : ["/placeholder.svg"];
+
   return {
     id: row.id,
     title: row.title,
     description: row.description ?? "",
-    images: Array.isArray(row.images) ? row.images : ["/placeholder.svg"],
+    images,
     category: row.category ?? "",
     subcategory: row.subcategory ?? undefined,
     brand: row.brand ?? "",

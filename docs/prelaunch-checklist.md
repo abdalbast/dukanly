@@ -25,7 +25,7 @@ npm run prelaunch:gate -- --with-e2e --with-loadtest-assert --with-audit
 
 - [ ] Review auth and authorization matrix against implemented routes and Edge Function contracts.
 - [ ] Confirm `npm audit` is clean (`npm audit`).
-- [ ] Confirm no secrets are committed (`git grep -n "VITE_SUPABASE_PUBLISHABLE_KEY\|SUPABASE_SERVICE_ROLE_KEY"`).
+- [ ] Confirm no secrets are committed (`git grep -n "VITE_SUPABASE_ANON_KEY\|VITE_SUPABASE_PUBLISHABLE_KEY\|SUPABASE_SERVICE_ROLE_KEY"`).
 
 ## 2) Migration dry-run
 
@@ -38,7 +38,7 @@ npm run prelaunch:gate -- --with-e2e --with-loadtest-assert --with-audit
 
 - [ ] Validate required env keys exist in Lovable Cloud:
   - `VITE_SUPABASE_URL`
-  - `VITE_SUPABASE_PUBLISHABLE_KEY`
+  - `VITE_SUPABASE_ANON_KEY` (preferred) or `VITE_SUPABASE_PUBLISHABLE_KEY` (legacy)
   - `VITE_SUPABASE_PROJECT_ID`
   - `VITE_SENTRY_DSN` (if used)
   - `FIB_CLIENT_ID` / `FIB_CLIENT_SECRET` (server-only)

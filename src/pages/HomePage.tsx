@@ -13,6 +13,7 @@ export default function HomePage() {
 
   const dealsProducts = products.filter((p) => p.isLimitedDeal || p.offer.originalPrice);
   const bestSellers = products.filter((p) => p.isBestSeller);
+  const pelinProducts = products.filter((p) => p.brand.toLowerCase() === "pelin products");
   const trendingProducts = products.slice(0, 8);
 
   return (
@@ -127,6 +128,23 @@ export default function HomePage() {
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Featured Brand */}
+      {!isLoading && pelinProducts.length > 0 && (
+        <section className="container py-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="section-header mb-0">Featured Brand: Pelin Products</h2>
+            <Link to="/brand/Pelin%20Products" className="text-sm text-info hover:underline flex items-center gap-1">
+              Shop Pelin Products <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {pelinProducts.slice(0, 4).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </section>
       )}
