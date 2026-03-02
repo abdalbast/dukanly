@@ -1,4 +1,4 @@
-import { z } from "npm:zod@3.23.8";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const id = z.string().min(1).max(128);
 const currencyCode = z.string().length(3).transform((v) => v.toUpperCase());

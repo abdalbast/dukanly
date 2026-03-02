@@ -28,7 +28,7 @@ export async function handleWrite<T>(
       throw new HttpError(405, "method_not_allowed", "Only POST/PATCH requests are supported.");
     }
 
-    enforceRateLimit(req, routeKey);
+    await enforceRateLimit(req, routeKey);
 
     const auth = await requireAuth(req);
     const idempotencyKey = readIdempotencyKey(req);

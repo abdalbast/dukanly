@@ -330,6 +330,13 @@ export type Database = {
             referencedRelation: "sellers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "order_items_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -629,6 +636,13 @@ export type Database = {
             referencedRelation: "sellers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -655,6 +669,27 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          client_ip: string
+          request_count: number
+          route_key: string
+          window_start: string
+        }
+        Insert: {
+          client_ip: string
+          request_count?: number
+          route_key: string
+          window_start: string
+        }
+        Update: {
+          client_ip?: string
+          request_count?: number
+          route_key?: string
+          window_start?: string
         }
         Relationships: []
       }
@@ -740,13 +775,49 @@ export type Database = {
             referencedRelation: "sellers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "shipments_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      sellers_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          is_verified: boolean | null
+          store_name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          store_name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          store_name?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      check_rate_limit: {
+        Args: {
+          p_client_ip: string
+          p_max_requests?: number
+          p_route_key: string
+          p_window_ms?: number
+        }
+        Returns: boolean
+      }
       is_seller: { Args: never; Returns: boolean }
     }
     Enums: {
