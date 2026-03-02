@@ -1,41 +1,38 @@
+import { getAdminClient } from "./db.ts";
 import { HttpError } from "./http.ts";
-
-type Counter = {
-  count: number;
-  resetAt: number;
-};
 
 const DEFAULT_WINDOW_MS = 60 * 1000;
 const DEFAULT_MAX_REQUESTS_PER_WINDOW = 60;
-const counters = new Map<string, Counter>();
 
 function getClientIp(req: Request): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
 }
 
-export function enforceRateLimit(
+export async function enforceRateLimit(
   req: Request,
   routeKey: string,
   options?: { windowMs?: number; maxRequests?: number },
-): void {
+): Promise<void> {
   const windowMs = options?.windowMs ?? DEFAULT_WINDOW_MS;
   const maxRequests = options?.maxRequests ?? DEFAULT_MAX_REQUESTS_PER_WINDOW;
-  const now = Date.now();
   const ip = getClientIp(req);
-  const key = `${routeKey}:${ip}`;
-  const existing = counters.get(key);
 
-  if (!existing || existing.resetAt <= now) {
-    counters.set(key, { count: 1, resetAt: now + windowMs });
+  const admin = getAdminClient();
+
+  const { data, error } = await admin.rpc("check_rate_limit", {
+    p_route_key: routeKey,
+    p_client_ip: ip,
+    p_window_ms: windowMs,
+    p_max_requests: maxRequests,
+  });
+
+  if (error) {
+    // If rate limiting DB fails, allow the request (fail open) but log
+    console.error("Rate limit check failed:", error.message);
     return;
   }
 
-  existing.count += 1;
-  counters.set(key, existing);
-
-  if (existing.count > maxRequests) {
-    throw new HttpError(429, "rate_limited", "Too many requests. Please retry in a minute.", {
-      retryAfterMs: existing.resetAt - now,
-    });
+  if (data === true) {
+    throw new HttpError(429, "rate_limited", "Too many requests. Please retry in a minute.");
   }
 }

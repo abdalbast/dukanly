@@ -1,4 +1,4 @@
-import { z, ZodError } from "npm:zod@3.23.8";
+import { z, ZodError } from "https://esm.sh/zod@3.23.8";
 
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

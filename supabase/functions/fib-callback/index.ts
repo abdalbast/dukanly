@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
       throw new HttpError(405, "method_not_allowed", "Only POST is supported.");
     }
 
-    enforceRateLimit(req, "fib-callback", { maxRequests: 120, windowMs: 60_000 });
+    await enforceRateLimit(req, "fib-callback", { maxRequests: 120, windowMs: 60_000 });
     const correlationId = getCorrelationId(req);
     const payload = await parseJson(req, fibCallbackSchema);
 
