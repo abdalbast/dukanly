@@ -6,7 +6,7 @@ import { log } from "../_shared/log.ts";
 import { createFibPayment } from "../_shared/payments/fib-client.ts";
 import { applyPaymentTransition } from "../_shared/payments/reconcile.ts";
 import type { PaymentMethod, PaymentState } from "../_shared/payments/types.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
+import Stripe from "npm:stripe@18.5.0";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -202,26 +202,43 @@ Deno.serve((req) =>
       throw new HttpError(500, "database_error", "Failed to create order.", orderError?.message);
     }
 
-    const { data: paymentData, error: paymentError } = await admin
-      .from("payments")
-      .insert({
-        order_id: orderData.id,
-        provider: paymentMethod,
-        amount: payload.clientTotal,
-        currency_code: payload.currencyCode,
-        status: "initiated",
-        idempotency_key: `${auth.userId}:${idempotencyKey}:${paymentMethod}`,
-        raw_provider_payload: {
-          customerPhone: payload.customerPhone ?? null,
-          regionCode,
-          countryCode,
-        },
-      })
-      .select("id")
-      .single();
+    const idemKey = `${auth.userId}:${idempotencyKey}:${paymentMethod}`;
 
-    if (paymentError || !paymentData) {
-      throw new HttpError(500, "database_error", "Failed to create payment row.", paymentError?.message);
+    // Check if payment already exists for this idempotency key (retry-safe)
+    const { data: existingPayment } = await admin
+      .from("payments")
+      .select("id")
+      .eq("idempotency_key", idemKey)
+      .maybeSingle();
+
+    let paymentData: { id: string };
+
+    if (existingPayment) {
+      paymentData = existingPayment;
+      log("info", "checkout.payment_reused", { correlationId, paymentId: existingPayment.id, idemKey });
+    } else {
+      const { data: newPayment, error: paymentError } = await admin
+        .from("payments")
+        .insert({
+          order_id: orderData.id,
+          provider: paymentMethod,
+          amount: payload.clientTotal,
+          currency_code: payload.currencyCode,
+          status: "initiated",
+          idempotency_key: idemKey,
+          raw_provider_payload: {
+            customerPhone: payload.customerPhone ?? null,
+            regionCode,
+            countryCode,
+          },
+        })
+        .select("id")
+        .single();
+
+      if (paymentError || !newPayment) {
+        throw new HttpError(500, "database_error", "Failed to create payment row.", paymentError?.message);
+      }
+      paymentData = newPayment;
     }
 
     const reservationRows = payload.lineItems.map((item) => ({
@@ -291,24 +308,48 @@ Deno.serve((req) =>
 
       const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
+      // Stripe does not support IQD — convert to USD for Stripe checkout
+      const stripeCurrency = "usd";
+      const exchangeRate = Number(Deno.env.get("IQD_TO_USD_RATE") || "0.000769"); // ~1/1300
+
       const origin = req.headers.get("origin") || "https://dukanly.lovable.app";
-      const session = await stripe.checkout.sessions.create({
-        mode: "payment",
-        line_items: payload.lineItems.map((item) => ({
-          price_data: {
-            currency: payload.currencyCode.toLowerCase(),
-            product_data: { name: item.title },
-            unit_amount: Math.round(item.unitPrice),
-          },
-          quantity: item.quantity,
-        })),
-        metadata: {
-          order_id: orderData.id,
-          payment_id: paymentData.id,
-        },
-        success_url: `${origin}/order-confirmation?order_id=${orderData.id}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/checkout?cancelled=true`,
+      log("info", "checkout.stripe_creating_session", {
+        correlationId,
+        origin,
+        lineItemCount: payload.lineItems.length,
+        originalCurrency: payload.currencyCode,
+        stripeCurrency,
       });
+
+      let session;
+      try {
+        session = await stripe.checkout.sessions.create({
+          mode: "payment",
+          line_items: payload.lineItems.map((item) => ({
+            price_data: {
+              currency: stripeCurrency,
+              product_data: { name: item.title },
+              // Convert IQD unit price to USD cents
+              unit_amount: payload.currencyCode === "IQD"
+                ? Math.max(50, Math.round(item.unitPrice * exchangeRate * 100))
+                : Math.round(item.unitPrice * 100),
+            },
+            quantity: item.quantity,
+          })),
+          metadata: {
+            order_id: orderData.id,
+            payment_id: paymentData.id,
+            original_currency: payload.currencyCode,
+            original_total: String(payload.clientTotal),
+          },
+          success_url: `${origin}/order-confirmation?order_id=${orderData.id}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${origin}/checkout?cancelled=true`,
+        });
+      } catch (stripeErr: unknown) {
+        const msg = stripeErr instanceof Error ? stripeErr.message : String(stripeErr);
+        log("error", "checkout.stripe_session_error", { correlationId, error: msg });
+        throw new HttpError(502, "stripe_error", "Failed to create Stripe checkout session.", msg);
+      }
 
       const { error: stripeUpdateError } = await admin
         .from("payments")
