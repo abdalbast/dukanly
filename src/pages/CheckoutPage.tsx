@@ -47,9 +47,9 @@ interface DeliveryOption {
   estimatedDays: string;
 }
 
-interface PaymentMethod {
-  id: "fib" | "cod";
-  type: "fib" | "cod";
+interface PaymentMethodOption {
+  id: "fib" | "cod" | "stripe";
+  type: "fib" | "cod" | "stripe";
   label: string;
   description: string;
 }
@@ -101,7 +101,13 @@ const deliveryOptions: DeliveryOption[] = [
   },
 ];
 
-const mockPaymentMethods: PaymentMethod[] = [
+const mockPaymentMethods: PaymentMethodOption[] = [
+  {
+    id: "stripe",
+    type: "stripe",
+    label: "Pay with Card",
+    description: "Secure card payment powered by Stripe.",
+  },
   {
     id: "fib",
     type: "fib",
@@ -127,8 +133,8 @@ export default function CheckoutPage() {
     mockAddresses.find((a) => a.isDefault)?.id || mockAddresses[0]?.id
   );
   const [selectedDelivery, setSelectedDelivery] = useState(deliveryOptions[0].id);
-  const [paymentMethods] = useState<PaymentMethod[]>(mockPaymentMethods);
-  const [selectedPaymentId, setSelectedPaymentId] = useState<"fib" | "cod">("cod");
+  const [paymentMethods] = useState<PaymentMethodOption[]>(mockPaymentMethods);
+  const [selectedPaymentId, setSelectedPaymentId] = useState<"fib" | "cod" | "stripe">("stripe");
   const [customerPhone, setCustomerPhone] = useState("+964");
   const [deliveryInstructions, setDeliveryInstructions] = useState("");
   const [isGiftOrder, setIsGiftOrder] = useState(false);
@@ -185,6 +191,12 @@ export default function CheckoutPage() {
         variant: "destructive",
       });
       setIsPlacingOrder(false);
+      return;
+    }
+
+    // Stripe: redirect to Stripe Checkout
+    if (result.data.paymentMethod === "stripe" && result.data.stripe?.sessionUrl) {
+      window.location.href = result.data.stripe.sessionUrl;
       return;
     }
 
@@ -458,7 +470,7 @@ export default function CheckoutPage() {
 
               <RadioGroup
                 value={selectedPaymentId}
-                onValueChange={(value) => setSelectedPaymentId(value as "fib" | "cod")}
+                onValueChange={(value) => setSelectedPaymentId(value as "fib" | "cod" | "stripe")}
                 className="space-y-3"
               >
                 {paymentMethods.map((method) => (
@@ -473,7 +485,9 @@ export default function CheckoutPage() {
                     <RadioGroupItem value={method.id} className="mt-1" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        {method.type === "fib" ? (
+                        {method.type === "stripe" ? (
+                          <CreditCard className="w-4 h-4 text-muted-foreground" />
+                        ) : method.type === "fib" ? (
                           <CreditCard className="w-4 h-4 text-muted-foreground" />
                         ) : (
                           <Banknote className="w-4 h-4 text-muted-foreground" />

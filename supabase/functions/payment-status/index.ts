@@ -4,9 +4,10 @@ import { requireAuth } from "../_shared/auth.ts";
 import { paymentStatusSchema } from "../_shared/schemas.ts";
 import { getAdminClient } from "../_shared/db.ts";
 import { getFibPaymentStatus } from "../_shared/payments/fib-client.ts";
-import { getOrderPaymentState, getPaymentForOrder, reconcileFromFibStatus } from "../_shared/payments/reconcile.ts";
+import { getOrderPaymentState, getPaymentForOrder, reconcileFromFibStatus, reconcileFromStripeStatus } from "../_shared/payments/reconcile.ts";
 import { isTerminalPaymentState } from "../_shared/payments/state-machine.ts";
 import { getCorrelationId, log } from "../_shared/log.ts";
+import Stripe from "https://esm.sh/stripe@18.5.0";
 
 Deno.serve(async (req) => {
   try {
@@ -80,6 +81,40 @@ Deno.serve(async (req) => {
         terminal: reconciled.terminal,
         paymentState: orderState.payment_state,
       });
+    }
+
+    // Stripe polling
+    if (
+      payment.provider === "stripe" &&
+      payment.provider_payment_id &&
+      !isTerminalPaymentState(orderState.payment_state)
+    ) {
+      const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+      if (stripeKey) {
+        const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+        const session = await stripe.checkout.sessions.retrieve(payment.provider_payment_id);
+
+        const reconciled = await reconcileFromStripeStatus({
+          providerPaymentId: payment.provider_payment_id,
+          source: "poll",
+          sessionStatus: session.status as "complete" | "open" | "expired",
+          paymentStatus: session.payment_status ?? undefined,
+          rawPayload: { sessionId: session.id, status: session.status, paymentStatus: session.payment_status },
+        });
+
+        orderState = await getOrderPaymentState(payload.orderId);
+
+        log("info", "payment.poll.stripe.reconciled", {
+          correlationId,
+          userId: auth.userId,
+          orderId: payload.orderId,
+          paymentId: payment.id,
+          stripeSessionId: payment.provider_payment_id,
+          changed: reconciled.changed,
+          terminal: reconciled.terminal,
+          paymentState: orderState.payment_state,
+        });
+      }
     }
 
     const latestPayment = await getPaymentForOrder(payload.orderId);

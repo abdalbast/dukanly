@@ -6,6 +6,7 @@ import { log } from "../_shared/log.ts";
 import { createFibPayment } from "../_shared/payments/fib-client.ts";
 import { applyPaymentTransition } from "../_shared/payments/reconcile.ts";
 import type { PaymentMethod, PaymentState } from "../_shared/payments/types.ts";
+import Stripe from "https://esm.sh/stripe@18.5.0";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -126,7 +127,9 @@ async function evaluateCodRisk(input: {
 }
 
 function mapInitialState(method: PaymentMethod): PaymentState {
-  return method === "fib" ? "payment_pending" : "cod_pending";
+  if (method === "fib") return "payment_pending";
+  if (method === "stripe") return "payment_pending";
+  return "cod_pending";
 }
 
 Deno.serve((req) =>
@@ -279,6 +282,82 @@ Deno.serve((req) =>
       };
     }
 
+    // ── Stripe payment flow ──
+    if (paymentMethod === "stripe") {
+      const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+      if (!stripeKey) {
+        throw new HttpError(500, "config_error", "Stripe secret key is not configured.");
+      }
+
+      const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+
+      const origin = req.headers.get("origin") || "https://dukanly.lovable.app";
+      const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: payload.lineItems.map((item) => ({
+          price_data: {
+            currency: payload.currencyCode.toLowerCase(),
+            product_data: { name: item.title },
+            unit_amount: Math.round(item.unitPrice),
+          },
+          quantity: item.quantity,
+        })),
+        metadata: {
+          order_id: orderData.id,
+          payment_id: paymentData.id,
+        },
+        success_url: `${origin}/order-confirmation?order_id=${orderData.id}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/checkout?cancelled=true`,
+      });
+
+      const { error: stripeUpdateError } = await admin
+        .from("payments")
+        .update({
+          provider_payment_id: session.id,
+          provider_status: "open",
+          raw_provider_payload: {
+            sessionId: session.id,
+            sessionUrl: session.url,
+          },
+        })
+        .eq("id", paymentData.id);
+
+      if (stripeUpdateError) {
+        throw new HttpError(500, "database_error", "Failed to persist Stripe session.", stripeUpdateError.message);
+      }
+
+      await applyPaymentTransition({
+        paymentId: paymentData.id,
+        currentOrderState: initialState,
+        nextState: "payment_pending",
+        source: "checkout",
+        providerStatus: "open",
+        rawPayload: { sessionId: session.id },
+      });
+
+      log("info", "checkout.stripe_created", {
+        correlationId,
+        userId: auth.userId,
+        orderId: orderData.id,
+        paymentId: paymentData.id,
+        stripeSessionId: session.id,
+        paymentState: "payment_pending",
+      });
+
+      return {
+        action: "checkout.submit",
+        accepted: true,
+        userId: auth.userId,
+        requestId: `${auth.userId}:${idempotencyKey}`,
+        ...baseResponse,
+        stripe: {
+          sessionId: session.id,
+          sessionUrl: session.url,
+        },
+      };
+    }
+
+    // ── FIB payment flow ──
     const callbackBase = Deno.env.get("FIB_CALLBACK_PUBLIC_URL");
     if (!callbackBase || !callbackBase.startsWith("https://")) {
       throw new HttpError(500, "config_error", "FIB callback URL is missing or not HTTPS.");

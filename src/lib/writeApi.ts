@@ -198,7 +198,7 @@ export interface CheckoutRequest {
   cartId: string;
   shippingAddressId: string;
   billingAddressId?: string;
-  paymentMethod: "fib" | "cod";
+  paymentMethod: "fib" | "cod" | "stripe";
   deliveryOption: "standard" | "express" | "next-day";
   currencyCode: string;
   clientTotal: number;
@@ -218,7 +218,7 @@ export interface CheckoutRequest {
 export interface CheckoutResponse {
   orderId: string;
   orderNumber: string;
-  paymentMethod: "fib" | "cod";
+  paymentMethod: "fib" | "cod" | "stripe";
   paymentState:
     | "payment_pending"
     | "payment_authorised"
@@ -238,6 +238,10 @@ export interface CheckoutResponse {
     businessAppLink?: string | null;
     corporateAppLink?: string | null;
     validUntil: string;
+  };
+  stripe?: {
+    sessionId: string;
+    sessionUrl: string;
   };
   codRisk?: {
     zoneEligible: boolean;
@@ -261,7 +265,7 @@ export interface PaymentStatusRequest {
 export interface PaymentStatusResponse {
   orderId: string;
   paymentId: string;
-  paymentMethod: "fib" | "cod";
+  paymentMethod: "fib" | "cod" | "stripe";
   paymentState:
     | "payment_pending"
     | "payment_authorised"

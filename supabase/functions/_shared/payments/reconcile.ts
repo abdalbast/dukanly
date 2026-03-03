@@ -1,7 +1,8 @@
 import { getAdminClient } from "../db.ts";
 import { HttpError } from "../http.ts";
 import type { PaymentEventSource, PaymentState } from "./types.ts";
-import { assertNonRegressiveTransition, mapFibStatusToState } from "./state-machine.ts";
+import { assertNonRegressiveTransition, mapFibStatusToState, mapStripeStatusToState } from "./state-machine.ts";
+import type { StripeSessionStatus } from "./state-machine.ts";
 
 interface DbPaymentRow {
   id: string;
@@ -35,15 +36,21 @@ async function sha256Hex(value: string): Promise<string> {
     .join("");
 }
 
-export async function getPaymentByProviderPaymentId(providerPaymentId: string): Promise<DbPaymentRow> {
+export async function getPaymentByProviderPaymentId(providerPaymentId: string, provider?: string): Promise<DbPaymentRow> {
   const admin = getAdminClient();
 
-  const { data, error } = await admin
+  let query = admin
     .from("payments")
     .select("id, order_id, provider, provider_payment_id, provider_status, valid_until, paid_at, decline_reason")
-    .eq("provider", "fib")
-    .eq("provider_payment_id", providerPaymentId)
-    .maybeSingle();
+    .eq("provider_payment_id", providerPaymentId);
+
+  if (provider) {
+    query = query.eq("provider", provider);
+  } else {
+    query = query.eq("provider", "fib");
+  }
+
+  const { data, error } = await query.maybeSingle();
 
   if (error) {
     throw new HttpError(500, "database_error", "Failed to fetch payment mapping.", error.message);
@@ -177,6 +184,33 @@ export async function reconcileFromFibStatus(input: {
     declineReason: mapped.reason ?? input.declineReason,
     validUntil: input.validUntil,
     paidAt: input.paidAt,
+    rawPayload: input.rawPayload,
+  });
+}
+
+export async function reconcileFromStripeStatus(input: {
+  providerPaymentId: string;
+  source: PaymentEventSource;
+  sessionStatus: StripeSessionStatus;
+  paymentStatus?: string;
+  rawPayload?: Record<string, unknown>;
+}): Promise<ApplyTransitionResult> {
+  const payment = await getPaymentByProviderPaymentId(input.providerPaymentId, "stripe");
+  const order = await getOrderPaymentState(payment.order_id);
+
+  const mapped = mapStripeStatusToState({
+    sessionStatus: input.sessionStatus,
+    paymentStatus: input.paymentStatus,
+  });
+
+  return applyPaymentTransition({
+    paymentId: payment.id,
+    currentOrderState: order.payment_state,
+    nextState: mapped.nextState,
+    source: input.source,
+    providerStatus: input.sessionStatus,
+    declineReason: mapped.reason,
+    paidAt: input.sessionStatus === "complete" ? new Date().toISOString() : undefined,
     rawPayload: input.rawPayload,
   });
 }

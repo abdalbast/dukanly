@@ -80,6 +80,27 @@ export function mapFibStatusToState(input: {
   };
 }
 
+export type StripeSessionStatus = "complete" | "open" | "expired";
+
+export function mapStripeStatusToState(input: {
+  sessionStatus: StripeSessionStatus;
+  paymentStatus?: string;
+}): PaymentTransitionResult {
+  if (input.sessionStatus === "complete" && input.paymentStatus === "paid") {
+    return { nextState: "paid" };
+  }
+
+  if (input.sessionStatus === "expired") {
+    return { nextState: "payment_expired", reason: "STRIPE_SESSION_EXPIRED" };
+  }
+
+  if (input.sessionStatus === "open") {
+    return { nextState: "payment_pending" };
+  }
+
+  return { nextState: "payment_failed", reason: "STRIPE_UNKNOWN_STATUS" };
+}
+
 export function assertNonRegressiveTransition(current: PaymentState, next: PaymentState): PaymentState {
   if (isTerminalPaymentState(current)) {
     return current;
