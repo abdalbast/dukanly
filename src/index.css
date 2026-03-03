@@ -20,7 +20,7 @@
     --popover-foreground: 220 20% 10%;
 
     /* Navy Primary - Trust & Commerce */
-    --primary: 220 60% 20%;
+    --primary: 215 27.907% 16.8627%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Light surfaces */
@@ -32,7 +32,7 @@
     --muted-foreground: 220 10% 40%;
 
     /* Accent - Amber/Orange for CTAs and deals */
-    --accent: 161 93.5484% 30.3922%;
+    --accent: 81 88.4615% 79.6078%;
     --accent-foreground: 220 60% 15%;
 
     /* Destructive */
