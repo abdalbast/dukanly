@@ -7,7 +7,7 @@ export const checkoutSchema = z.object({
   cartId: id,
   shippingAddressId: id,
   billingAddressId: id.optional(),
-  paymentMethod: z.enum(["fib", "cod"]),
+  paymentMethod: z.enum(["fib", "cod", "stripe"]),
   deliveryOption: z.enum(["standard", "express", "next-day"]),
   currencyCode,
   clientTotal: z.number().nonnegative(),

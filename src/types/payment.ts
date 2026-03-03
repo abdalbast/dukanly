@@ -1,4 +1,4 @@
-export type PaymentMethod = "fib" | "cod";
+export type PaymentMethod = "fib" | "cod" | "stripe";
 
 export type PaymentState =
   | "payment_pending"

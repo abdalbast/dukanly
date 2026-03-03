@@ -1,30 +1,52 @@
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { CheckCircle, Package, Truck, Calendar } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
+import { fetchPaymentStatus } from "@/lib/paymentApi";
 
 export default function OrderConfirmationPage() {
   const { t, language } = useLanguage();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { data: products = [] } = useProducts();
+  const { clearCart } = useCart();
+  const didReconcile = useRef(false);
+
   const state = (location.state as {
     order?: {
       orderId?: string;
       orderNumber?: string;
-      paymentMethod?: "fib" | "cod";
+      paymentMethod?: "fib" | "cod" | "stripe";
       paymentState?: string;
     };
   } | null) ?? null;
+
+  // Handle Stripe return via query params
+  const stripeOrderId = searchParams.get("order_id");
+  const stripeSessionId = searchParams.get("session_id");
+
   const orderNumber = state?.order?.orderNumber ?? `ORD-${Date.now().toString().slice(-8)}`;
   const estimatedDelivery = new Date();
   estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
   const suggestedProducts = products.slice(4, 8);
   const locale = language === "ckb" ? "ckb" : "en-US";
-  const paymentMethod = state?.order?.paymentMethod ?? "cod";
-  const paymentState = state?.order?.paymentState ?? "cod_pending";
+  const paymentMethod = state?.order?.paymentMethod ?? (stripeSessionId ? "stripe" : "cod");
+  const paymentState = state?.order?.paymentState ?? (stripeSessionId ? "paid" : "cod_pending");
+
+  // On Stripe return, clear cart and trigger reconciliation
+  useEffect(() => {
+    if (stripeOrderId && !didReconcile.current) {
+      didReconcile.current = true;
+      clearCart();
+      // Trigger a poll to reconcile the payment state
+      fetchPaymentStatus({ orderId: stripeOrderId }).catch(() => {});
+    }
+  }, [stripeOrderId, clearCart]);
 
   return (
     <Layout>
