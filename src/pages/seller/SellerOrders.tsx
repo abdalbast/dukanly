@@ -49,6 +49,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { SellerOrder } from "@/types/seller";
 import { useToast } from "@/hooks/use-toast";
+import { formatIQD, convertToIQD } from "@/lib/currency";
 
 export default function SellerOrders() {
   const { orders, updateOrderStatus, updateFulfillmentStatus } = useSeller();
@@ -275,7 +276,7 @@ export default function SellerOrders() {
                     </div>
                   </TableCell>
                   <TableCell className="font-semibold">
-                    ${order.total.toFixed(2)}
+                    {formatIQD(convertToIQD(order.total))}
                   </TableCell>
                   <TableCell>{getStatusBadge(order.status)}</TableCell>
                   <TableCell>{getFulfillmentBadge(order.fulfillmentStatus)}</TableCell>
@@ -422,10 +423,10 @@ export default function SellerOrders() {
                       <div className="flex-1">
                         <p className="font-medium">{item.productTitle}</p>
                         <p className="text-sm text-muted-foreground">
-                          Qty: {item.quantity} × ${item.price.toFixed(2)}
+                          Qty: {item.quantity} × {formatIQD(convertToIQD(item.price))}
                         </p>
                       </div>
-                      <span className="font-semibold">${item.total.toFixed(2)}</span>
+                      <span className="font-semibold">{formatIQD(convertToIQD(item.total))}</span>
                     </div>
                   ))}
                 </div>
@@ -467,19 +468,19 @@ export default function SellerOrders() {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Subtotal</span>
-                  <span>${selectedOrder.subtotal.toFixed(2)}</span>
+                  <span>{formatIQD(convertToIQD(selectedOrder.subtotal))}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Shipping</span>
-                  <span>${selectedOrder.shippingCost.toFixed(2)}</span>
+                  <span>{formatIQD(convertToIQD(selectedOrder.shippingCost))}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Tax</span>
-                  <span>${selectedOrder.tax.toFixed(2)}</span>
+                  <span>{formatIQD(convertToIQD(selectedOrder.tax))}</span>
                 </div>
                 <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                   <span>Total</span>
-                  <span>${selectedOrder.total.toFixed(2)}</span>
+                  <span>{formatIQD(convertToIQD(selectedOrder.total))}</span>
                 </div>
               </div>
             </div>

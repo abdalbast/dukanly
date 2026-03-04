@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { formatIQD, convertToIQD } from "@/lib/currency";
 import {
   LineChart,
   Line,
@@ -22,7 +23,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
 export default function SellerOverview() {
   const { analytics, orders, products } = useSeller();
 
@@ -34,7 +34,7 @@ export default function SellerOverview() {
   const statCards = [
     {
       title: "Total Revenue",
-      value: `$${analytics.totalRevenue.toLocaleString()}`,
+      value: formatIQD(convertToIQD(analytics.totalRevenue)),
       change: analytics.revenueChange,
       icon: DollarSign,
       color: "text-success",
@@ -134,11 +134,11 @@ export default function SellerOverview() {
                     className="text-xs"
                   />
                   <YAxis
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => formatIQD(convertToIQD(value))}
                     className="text-xs"
                   />
                   <Tooltip
-                    formatter={(value: number) => [`$${value.toFixed(2)}`, "Revenue"]}
+                    formatter={(value: number) => [formatIQD(convertToIQD(value)), "Revenue"]}
                     labelFormatter={(label) =>
                       new Date(label).toLocaleDateString("en-US", {
                         weekday: "short",
@@ -178,7 +178,7 @@ export default function SellerOverview() {
                   </p>
                 </div>
                 <span className="text-sm font-semibold">
-                  ${product.revenue.toLocaleString()}
+                  {formatIQD(convertToIQD(product.revenue))}
                 </span>
               </div>
             ))}
@@ -215,7 +215,7 @@ export default function SellerOverview() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold">${order.total.toFixed(2)}</p>
+                      <p className="text-sm font-semibold">{formatIQD(convertToIQD(order.total))}</p>
                       <Badge
                         variant={order.status === "pending" ? "secondary" : "default"}
                         className="text-xs"
