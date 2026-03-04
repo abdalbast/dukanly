@@ -33,7 +33,7 @@
 
     /* Accent - Amber/Orange for CTAs and deals */
     --accent: 81 88.4615% 79.6078%;
-    --accent-foreground: 220 60% 15%;
+    --accent-foreground: 0 0% 0%;
 
     /* Destructive */
     --destructive: 0 72% 51%;
