@@ -43,6 +43,7 @@ const AddProduct = lazy(() => import("./pages/seller/AddProduct"));
 const SellerOrders = lazy(() => import("./pages/seller/SellerOrders"));
 const SellerAnalytics = lazy(() => import("./pages/seller/SellerAnalytics"));
 const SellerSettings = lazy(() => import("./pages/seller/SellerSettings"));
+const SellOnDukanlyPage = lazy(() => import("./pages/SellOnDukanlyPage"));
 
 const queryClient = new QueryClient();
 
@@ -171,7 +172,7 @@ const App = () => (
                     <Route path="/careers" element={<AboutPage />} />
                     <Route path="/press" element={<AboutPage />} />
                     <Route path="/investors" element={<AboutPage />} />
-                    <Route path="/sell" element={<AboutPage />} />
+                    <Route path="/sell" element={<SellOnDukanlyPage />} />
                     <Route path="/affiliate" element={<AboutPage />} />
                     <Route path="/advertise" element={<AboutPage />} />
                     <Route path="/publish" element={<AboutPage />} />

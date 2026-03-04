@@ -7,16 +7,18 @@ import { useCart } from "@/contexts/CartContext";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { convertToIQD, formatIQD, FREE_SHIPPING_THRESHOLD_IQD, FREE_SHIPPING_THRESHOLD_USD } from "@/lib/currency";
 
 export default function CartPage() {
   const { t } = useLanguage();
   const { activeItems, savedItems, removeFromCart, updateQuantity, toggleSaveForLater, toggleGift, subtotal, itemCount } = useCart();
   const { data: products = [] } = useProducts();
 
-  const shippingThreshold = 35;
-  const shippingProgress = Math.min((subtotal / shippingThreshold) * 100, 100);
-  const freeShipping = subtotal >= shippingThreshold;
+  const subtotalIQD = convertToIQD(subtotal);
+  const shippingProgress = Math.min((subtotalIQD / FREE_SHIPPING_THRESHOLD_IQD) * 100, 100);
+  const freeShipping = subtotalIQD >= FREE_SHIPPING_THRESHOLD_IQD;
   const suggestedProducts = products.slice(0, 4);
+  const remainingIQD = FREE_SHIPPING_THRESHOLD_IQD - subtotalIQD;
 
   if (activeItems.length === 0 && savedItems.length === 0) {
     return (
@@ -54,7 +56,7 @@ export default function CartPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <Truck className="w-5 h-5 text-prime" />
                   <span className="text-sm font-medium">
-                    {t("cart.addMore", { amount: (shippingThreshold - subtotal).toFixed(2) })}{" "}
+                    {t("cart.addMore", { amount: formatIQD(remainingIQD) })}{" "}
                     <span className="text-prime font-semibold">{t("cart.freeDelivery")}</span>
                   </span>
                 </div>
@@ -110,9 +112,9 @@ export default function CartPage() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="font-bold">${(item.product.offer.price * item.quantity).toFixed(2)}</p>
+                      <p className="font-bold">{formatIQD(convertToIQD(item.product.offer.price * item.quantity))}</p>
                       {item.product.offer.originalPrice && (
-                        <p className="text-xs text-muted-foreground line-through">${(item.product.offer.originalPrice * item.quantity).toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground line-through">{formatIQD(convertToIQD(item.product.offer.originalPrice * item.quantity))}</p>
                       )}
                     </div>
                   </div>
@@ -120,7 +122,7 @@ export default function CartPage() {
               ))}
               <div className="p-4 text-right rtl:text-left">
                 <span className="text-lg">
-                  {t("cart.subtotal")} ({itemCount} {itemCount === 1 ? t("common.item") : t("common.items")}): <span className="font-bold">${subtotal.toFixed(2)}</span>
+                  {t("cart.subtotal")} ({itemCount} {itemCount === 1 ? t("common.item") : t("common.items")}): <span className="font-bold">{formatIQD(subtotalIQD)}</span>
                 </span>
               </div>
             </div>
@@ -138,7 +140,7 @@ export default function CartPage() {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.product.id}`} className="text-sm font-medium hover:text-primary line-clamp-2">{item.product.title}</Link>
-                        <p className="font-bold mt-1">${item.product.offer.price.toFixed(2)}</p>
+                        <p className="font-bold mt-1">{formatIQD(convertToIQD(item.product.offer.price))}</p>
                         <div className="flex gap-3 mt-2">
                           <button onClick={() => toggleSaveForLater(item.id)} className="text-xs text-info hover:underline">{t("cart.moveToCart")}</button>
                           <button onClick={() => removeFromCart(item.id)} className="text-xs text-info hover:underline">{t("common.delete")}</button>
@@ -159,7 +161,7 @@ export default function CartPage() {
                 </div>
               )}
               <div className="text-lg">
-                {t("cart.subtotal")} ({itemCount} {itemCount === 1 ? t("common.item") : t("common.items")}): <span className="font-bold">${subtotal.toFixed(2)}</span>
+                {t("cart.subtotal")} ({itemCount} {itemCount === 1 ? t("common.item") : t("common.items")}): <span className="font-bold">{formatIQD(subtotalIQD)}</span>
               </div>
               <label className="flex items-start gap-2 cursor-pointer">
                 <Checkbox className="mt-0.5" />

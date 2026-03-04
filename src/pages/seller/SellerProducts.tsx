@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/dialog";
 import { SellerProduct } from "@/types/seller";
 import { useToast } from "@/hooks/use-toast";
+import { formatIQD, convertToIQD } from "@/lib/currency";
 
 export default function SellerProducts() {
   const { products, deleteProduct, updateProduct } = useSeller();
@@ -224,10 +225,10 @@ export default function SellerProducts() {
                   <TableCell className="font-mono text-sm">{product.sku}</TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-semibold">${product.price.toFixed(2)}</p>
+                      <p className="font-semibold">{formatIQD(convertToIQD(product.price))}</p>
                       {product.compareAtPrice && (
                         <p className="text-xs text-muted-foreground line-through">
-                          ${product.compareAtPrice.toFixed(2)}
+                          {formatIQD(convertToIQD(product.compareAtPrice))}
                         </p>
                       )}
                     </div>

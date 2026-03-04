@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { formatIQD, convertToIQD } from "@/lib/currency";
 
 const COLORS = ["#f59e0b", "#3b82f6", "#10b981", "#8b5cf6", "#ef4444"];
 
@@ -41,7 +42,7 @@ export default function SellerAnalytics() {
   const statCards = [
     {
       title: "Total Revenue",
-      value: `$${analytics.totalRevenue.toLocaleString()}`,
+      value: formatIQD(convertToIQD(analytics.totalRevenue)),
       change: analytics.revenueChange,
       icon: DollarSign,
       color: "text-success bg-success/10",
@@ -55,7 +56,7 @@ export default function SellerAnalytics() {
     },
     {
       title: "Avg Order Value",
-      value: `$${analytics.averageOrderValue.toFixed(2)}`,
+      value: formatIQD(convertToIQD(analytics.averageOrderValue)),
       change: 5.2,
       icon: TrendingUp,
       color: "text-primary bg-primary/10",
@@ -146,7 +147,7 @@ export default function SellerAnalytics() {
                   />
                   <YAxis
                     yAxisId="revenue"
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => formatIQD(convertToIQD(value))}
                     className="text-xs"
                   />
                   <YAxis
@@ -156,7 +157,7 @@ export default function SellerAnalytics() {
                   />
                   <Tooltip
                     formatter={(value: number, name: string) => [
-                      name === "revenue" ? `$${value.toFixed(2)}` : value,
+                      name === "revenue" ? formatIQD(convertToIQD(value)) : value,
                       name === "revenue" ? "Revenue" : "Orders",
                     ]}
                     labelFormatter={(label) =>
@@ -202,7 +203,7 @@ export default function SellerAnalytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={analytics.topProducts} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis type="number" tickFormatter={(value) => `$${value}`} />
+                  <XAxis type="number" tickFormatter={(value) => formatIQD(convertToIQD(value))} />
                   <YAxis
                     dataKey="title"
                     type="category"
@@ -213,7 +214,7 @@ export default function SellerAnalytics() {
                     }
                   />
                   <Tooltip
-                    formatter={(value: number) => [`$${value.toLocaleString()}`, "Revenue"]}
+                    formatter={(value: number) => [formatIQD(convertToIQD(value)), "Revenue"]}
                   />
                   <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
                 </BarChart>
@@ -278,7 +279,7 @@ export default function SellerAnalytics() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold">${product.revenue.toLocaleString()}</p>
+                  <p className="text-lg font-bold">{formatIQD(convertToIQD(product.revenue))}</p>
                   <p className="text-xs text-muted-foreground">Revenue</p>
                 </div>
               </div>
