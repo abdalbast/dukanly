@@ -69,7 +69,7 @@
 
     /* Gradients */
     --gradient-header: linear-gradient(180deg, hsl(220 60% 18%) 0%, hsl(220 60% 22%) 100%);
-    --gradient-cta: linear-gradient(180deg, hsl(38 95% 55%) 0%, hsl(38 95% 45%) 100%);
+    --gradient-cta: linear-gradient(180deg, hsl(81 89% 82%) 0%, hsl(81 89% 74%) 100%);
     --gradient-deal: linear-gradient(135deg, hsl(0 85% 50%) 0%, hsl(330 80% 50%) 100%);
 
     /* Shadows */
@@ -213,12 +213,12 @@
   .btn-cta {
     background: var(--gradient-cta);
     @apply text-accent-foreground font-semibold rounded-full px-6 py-2 transition-all duration-200;
-    box-shadow: 0 2px 4px hsl(38 95% 30% / 0.3);
+    box-shadow: 0 2px 4px hsl(81 89% 40% / 0.3);
   }
 
   .btn-cta:hover {
     @apply brightness-105;
-    box-shadow: 0 4px 8px hsl(38 95% 30% / 0.4);
+    box-shadow: 0 4px 8px hsl(81 89% 40% / 0.4);
   }
 
   /* Search Bar */
