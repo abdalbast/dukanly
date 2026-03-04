@@ -212,7 +212,8 @@
   /* CTA Button */
   .btn-cta {
     background: var(--gradient-cta);
-    @apply text-black font-semibold rounded-full px-6 py-2 transition-all duration-200;
+    color: hsl(0 0% 0%) !important;
+    @apply font-semibold rounded-full px-6 py-2 transition-all duration-200;
     box-shadow: 0 2px 4px hsl(81 89% 40% / 0.3);
   }
 
