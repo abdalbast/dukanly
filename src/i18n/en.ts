@@ -92,7 +92,7 @@ export const en = {
   "home.heroTitle": "Shop millions of products from trusted sellers",
   "home.heroSubtitle": "Free shipping on orders over 45,000 IQD. Easy returns. Secure checkout.",
   "home.shopDeals": "Shop Deals",
-  "home.exploreElectronics": "Explore Electronics",
+  "home.sellOnDukanly": "Sell on Dukanly",
   "home.freeShipping": "Free Shipping",
   "home.onOrders35": "On orders 45,000+ IQD",
   "home.buyerProtection": "Buyer Protection",

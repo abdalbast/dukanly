@@ -32,10 +32,10 @@ export default function HomePage() {
               <div className="flex gap-3">
                 <Link to="/deals" className="btn-cta px-8 py-3 inline-block">{t("home.shopDeals")}</Link>
                 <Link 
-                  to="/category/electronics" 
+                  to="/sell" 
                   className="px-6 py-3 border border-primary-foreground/50 rounded-full text-sm font-semibold hover:bg-primary-foreground/10 transition-colors"
                 >
-                  {t("home.exploreElectronics")}
+                  {t("home.sellOnDukanly")}
                 </Link>
               </div>
             </div>
