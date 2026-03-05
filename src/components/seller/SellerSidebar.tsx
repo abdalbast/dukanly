@@ -1,5 +1,9 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Settings, Store, ChevronLeft, TrendingUp, AlertCircle } from "lucide-react";
+import {
+  LayoutDashboard, Package, ShoppingCart, Settings, Store, ChevronLeft,
+  TrendingUp, AlertCircle, Warehouse, Truck, RotateCcw, Wallet,
+  BarChart3, FileText, HeadphonesIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeller } from "@/contexts/SellerContext";
 import { Button } from "@/components/ui/button";
@@ -12,9 +16,15 @@ export function SellerSidebar() {
 
   const navItems = [
     { title: t("seller.overview"), path: "/seller", icon: LayoutDashboard },
-    { title: t("seller.products"), path: "/seller/products", icon: Package },
     { title: t("seller.orders"), path: "/seller/orders", icon: ShoppingCart },
-    { title: t("seller.analytics"), path: "/seller/analytics", icon: TrendingUp },
+    { title: t("seller.products"), path: "/seller/products", icon: Package },
+    { title: "Inventory", path: "/seller/inventory", icon: Warehouse },
+    { title: "Shipping", path: "/seller/shipping", icon: Truck },
+    { title: "Returns", path: "/seller/returns", icon: RotateCcw },
+    { title: "Payments", path: "/seller/payments", icon: Wallet },
+    { title: "Performance", path: "/seller/performance", icon: BarChart3 },
+    { title: "Reports", path: "/seller/reports", icon: FileText },
+    { title: "Support", path: "/seller/support", icon: HeadphonesIcon },
     { title: t("seller.settings"), path: "/seller/settings", icon: Settings },
   ];
 
@@ -35,7 +45,7 @@ export function SellerSidebar() {
           </div>
         </div>
       </div>
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = item.path === "/seller" ? location.pathname === "/seller" : location.pathname.startsWith(item.path);
           return (
