@@ -43,6 +43,13 @@ const AddProduct = lazy(() => import("./pages/seller/AddProduct"));
 const SellerOrders = lazy(() => import("./pages/seller/SellerOrders"));
 const SellerAnalytics = lazy(() => import("./pages/seller/SellerAnalytics"));
 const SellerSettings = lazy(() => import("./pages/seller/SellerSettings"));
+const SellerInventory = lazy(() => import("./pages/seller/SellerInventory"));
+const SellerShipping = lazy(() => import("./pages/seller/SellerShipping"));
+const SellerReturns = lazy(() => import("./pages/seller/SellerReturns"));
+const SellerPayments = lazy(() => import("./pages/seller/SellerPayments"));
+const SellerPerformance = lazy(() => import("./pages/seller/SellerPerformance"));
+const SellerReports = lazy(() => import("./pages/seller/SellerReports"));
+const SellerSupport = lazy(() => import("./pages/seller/SellerSupport"));
 const SellOnDukanlyPage = lazy(() => import("./pages/SellOnDukanlyPage"));
 
 const queryClient = new QueryClient();
@@ -186,6 +193,13 @@ const App = () => (
                       <Route path="products/new" element={<AddProduct />} />
                       <Route path="products/:id/edit" element={<AddProduct />} />
                       <Route path="orders" element={<SellerOrders />} />
+                      <Route path="inventory" element={<SellerInventory />} />
+                      <Route path="shipping" element={<SellerShipping />} />
+                      <Route path="returns" element={<SellerReturns />} />
+                      <Route path="payments" element={<SellerPayments />} />
+                      <Route path="performance" element={<SellerPerformance />} />
+                      <Route path="reports" element={<SellerReports />} />
+                      <Route path="support" element={<SellerSupport />} />
                       <Route path="analytics" element={<SellerAnalytics />} />
                       <Route path="settings" element={<SellerSettings />} />
                     </Route>
