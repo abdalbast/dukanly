@@ -94,7 +94,7 @@ export const ckb: Record<TranslationKey, string> = {
   "home.heroTitle": "میلیۆنان بەرهەم لە فرۆشیارانی متمانەپێکراو بکڕە",
   "home.heroSubtitle": "ناردنی بێبەرامبەر بۆ داواکارییەکانی سەروو ٤٥,٠٠٠ دینار. گەڕاندنەوەی ئاسان. پارەدانی پارێزراو.",
   "home.shopDeals": "ئۆفەرەکان بکڕە",
-  "home.exploreElectronics": "ئەلیکترۆنیات بگەڕێنە",
+  "home.sellOnDukanly": "لە دوکانلی بفرۆشە",
   "home.freeShipping": "ناردنی بێبەرامبەر",
   "home.onOrders35": "بۆ داواکارییەکانی سەروو ٤٥,٠٠٠ د.ع",
   "home.buyerProtection": "پاراستنی کڕیار",
