@@ -1,92 +1,178 @@
 
 
-# Plan: Kurdistan-First Localisation, GPS Address, and Seller Landing Page
+# Seller Hub: Full Phase 1 + Phase 2 Implementation Plan
 
-## Overview
+## Current State
 
-Three major workstreams: (1) switch all currency display to IQD site-wide, (2) add GPS-based address detection to the address form, and (3) create a seller landing page adapted to Kurdistan before the seller auth/onboarding flow.
+The seller dashboard has 5 pages (Overview, Products, Orders, Analytics, Settings) with a basic sidebar. Products and orders are backed by real database tables. Analytics uses mock data. Settings saves to local state only. No financial ledger, returns, shipping management, performance tracking, reports, or support cases exist.
+
+## Implementation Strategy
+
+This is a large scope. We will implement it in 6 sequential batches, each self-contained and deployable.
 
 ---
 
-## 1. IQD-First Currency Display
+## Batch 1: Database Foundation
 
-Currently, prices are stored in USD in the database and converted to IQD only at checkout (`exchangeRateUsdToIqd = 1300`). The `PriceDisplay` component defaults to USD with a `$` symbol. Many seller pages hardcode `$` formatting.
+Create the new tables needed for all subsequent work.
 
-**Changes:**
+**New tables:**
 
-- **`PriceDisplay.tsx`**: Change default currency to `"IQD"`, update the symbol map to show `"IQD"` as the suffix (e.g., `1,300 IQD` instead of `$1.00`). Use `.toLocaleString()` for thousand separators. Remove fractional display for IQD (no decimals).
-- **`ProductCard.tsx`**: Pass price converted to IQD (`price * 1300`) and `currency="IQD"` to `PriceDisplay`.
-- **`CartPage.tsx`**: Display subtotals and item prices in IQD with proper formatting.
-- **`CheckoutPage.tsx`**: Already partially uses IQD in the order summary -- extend to delivery option prices (convert `$4.99` etc. to IQD equivalents like `6,500 IQD`).
-- **Seller pages** (`SellerOverview.tsx`, `SellerOrders.tsx`, `SellerProducts.tsx`, `SellerAnalytics.tsx`): Replace all `$${value.toFixed(2)}` patterns with IQD-formatted values.
-- **`src/i18n/en.ts` and `ckb.ts`**: Update hardcoded strings referencing `$35` thresholds to IQD equivalents (e.g., `"On orders over 45,000 IQD"`).
-- **`src/lib/currency.ts`** (new): Create a shared `formatIQD(amount: number)` utility that all components use, keeping the exchange rate constant in one place.
+- `ledger_transactions` -- financial event log (order_sale, commission_fee, shipping_charge, refund, adjustment, payout_transfer, etc.). Columns: id, seller_id, order_id, type, amount, currency_code, description, balance_after, created_at. RLS: sellers see own rows.
+- `return_requests` -- buyer-initiated returns. Columns: id, order_id, order_item_id, seller_id, buyer_user_id, reason, evidence_urls, status (pending/approved/rejected/disputed/completed), refund_amount, admin_notes, created_at, updated_at. RLS: sellers see own, buyers see own.
+- `refunds` -- tracks refund issuance. Columns: id, return_request_id, order_id, seller_id, amount, currency_code, status, processed_at, created_at. RLS: sellers see own.
+- `policy_issues` -- account health issues. Columns: id, seller_id, severity (warning/critical), category, title, description, fix_instructions, status (open/acknowledged/resolved/appealed), created_at, resolved_at. RLS: sellers see own.
+- `appeals` -- seller appeals on policy issues. Columns: id, policy_issue_id, seller_id, message, attachments, status (submitted/under_review/accepted/rejected), admin_response, created_at, updated_at. RLS: sellers see own.
+- `support_cases` -- seller support tickets. Columns: id, seller_id, subject, description, category, status (open/in_progress/resolved/closed), attachments, created_at, updated_at. RLS: sellers see own.
+- `seller_notifications` -- in-app notifications. Columns: id, seller_id, type, title, message, link, is_read, created_at. RLS: sellers see own.
+- `seller_onboarding_steps` -- tracks onboarding completion. Columns: id, seller_id, step_key, completed, completed_at, created_at. RLS: sellers see own.
+- `fee_rules` -- marketplace fee configuration. Columns: id, category, fee_type (commission/listing/processing), percentage, flat_amount, currency_code, active, created_at. RLS: public read.
 
-## 2. GPS Address Detection
+Also add columns to `sellers`: `business_type`, `tax_id`, `phone`, `support_email`, `bank_name`, `bank_account_last4`, `payout_schedule`, `onboarding_complete`, `health_score`.
 
-Add a "Use My Location" button to the address form dialog in `CheckoutPage.tsx` and potentially `AccountPage.tsx`.
+---
 
-**Changes:**
+## Batch 2: Sidebar + Page Shells + Onboarding
 
-- **`CheckoutPage.tsx`** (Add Address dialog): Add a `MapPin` + "Use My Location" button that calls the browser Geolocation API (`navigator.geolocation.getCurrentPosition`).
-- On success, reverse-geocode the coordinates using a free service (Nominatim/OpenStreetMap reverse geocoding API, no API key needed) to populate city, state/governorate, and street fields.
-- Pre-fill `country` as "Iraq" and show the detected coordinates for reference.
-- Handle permission denied and error states gracefully with toast messages.
-- Allow the user to edit the auto-filled fields before saving.
-- **i18n**: Add translation keys for "Use My Location", "Detecting location...", "Location permission denied", etc. in both English and Kurdish.
+**Expand sidebar** from 5 to 11 items: Home, Orders, Products, Inventory, Shipping, Returns, Payments, Performance, Reports, Support, Settings.
 
-## 3. Seller Landing Page (Pre-Auth)
+**Create page shell files** (each with title, description, and placeholder content):
+- `src/pages/seller/SellerInventory.tsx`
+- `src/pages/seller/SellerShipping.tsx`
+- `src/pages/seller/SellerReturns.tsx`
+- `src/pages/seller/SellerPayments.tsx`
+- `src/pages/seller/SellerPerformance.tsx`
+- `src/pages/seller/SellerReports.tsx`
+- `src/pages/seller/SellerSupport.tsx`
 
-Create a marketing/landing page at `/sell` (currently routes to `AboutPage`) inspired by Amazon's "Sell on Amazon" page, but adapted for Kurdistan.
+**Add routes** in `App.tsx` for all new pages under `/seller`.
 
-**New file: `src/pages/SellOnDukanlyPage.tsx`**
+**Onboarding flow**: Replace the current "Become a Seller" button in `SellerLayout.tsx` with a multi-step onboarding wizard:
+1. Business details (name, type, tax ID)
+2. Bank/payout details
+3. Store profile (logo, description)
+4. Shipping & returns defaults
+5. Accept seller agreement
+6. Go-live checklist with completion indicators
 
-Content sections adapted to Kurdistan infrastructure:
+Track progress via `seller_onboarding_steps` table. Block access to full dashboard until onboarding is complete.
 
-1. **Hero Section**: "Grow your business on Dukanly" -- hero with CTA "Start Selling" that routes to `/seller` (which handles auth/onboarding).
-2. **Why Sell on Dukanly**: Three value props:
-   - Reach millions of buyers across Kurdistan Region
-   - Multiple payment options (FIB, COD, card) -- matching local expectations
-   - Fast local delivery network in Erbil, Sulaymaniyah, Duhok
-3. **How It Works**: 3-step process (Register -> List Products -> Start Earning)
-4. **Pricing / Fee Structure**: Simple fee table (e.g., per-item selling fee, no monthly subscription for basic tier)
-5. **Seller Success Stories**: Placeholder testimonial cards from Kurdish businesses
-6. **FAQ Section**: Common questions about selling, payments, shipping in Kurdistan
-7. **Final CTA**: "Ready to start selling?" with sign-up button
+---
 
-**Route update in `App.tsx`**: Change `/sell` from `AboutPage` to the new `SellOnDukanlyPage`.
+## Batch 3: Financial Ledger + Payments Page
 
-**i18n**: Add all new translation keys for the seller landing page in both `en.ts` and `ckb.ts`.
+**Payments page** (`SellerPayments.tsx`) with two views:
+
+- **Statement view**: Payout summary showing available balance, pending, reserved, on hold. Next payout date. Settlement period summaries.
+- **Transaction view**: Filterable ledger table showing every money movement (order sale, commission fee, refund, adjustment, payout transfer). Filter by order ID, date range, type. CSV export button.
+
+**Ledger population**: Create an edge function `seller-ledger` that:
+- Returns paginated ledger transactions for the authenticated seller
+- Supports filters (date range, type, order_id)
+
+For MVP, seed ledger entries when orders are created/fulfilled/refunded via existing checkout and order flows. Add ledger writes to the `checkout` and `seller-orders` edge functions.
+
+---
+
+## Batch 4: Inventory + Shipping + Catalogue-First Listing
+
+**Inventory page** (`SellerInventory.tsx`):
+- Stock by SKU with quantity on hand, reserved, available
+- Low stock rules and alerts with configurable thresholds
+- Stock adjustment dialog with reason codes (received, damaged, returned, correction)
+- Reads from existing `inventory` table joined with `products`
+
+**Shipping page** (`SellerShipping.tsx`):
+- Shipment list from `shipments` table with status filters
+- Tracking entry and validation per carrier format
+- Shipping templates (rates by region: Erbil, Sulaymaniyah, Duhok, Baghdad)
+- Handling time configuration
+- Delivery promise calculator (based on region + handling time)
+
+**Catalogue-first listing flow**: Update `AddProduct.tsx`:
+- Step 1: Search existing catalogue by name/barcode/brand before creating new
+- If match found, seller creates an offer (price, stock, condition)
+- If no match, proceed to full product creation
+- Add listing completeness score before publish
+- Flag risk categories for review
+
+---
+
+## Batch 5: Returns + Performance/Health
+
+**Returns page** (`SellerReturns.tsx`):
+- Return request queue with status filters
+- Return detail dialog showing reason, evidence, buyer info
+- Actions: approve return, offer partial refund, dispute
+- On approval: trigger refund record + ledger entry + inventory restock
+- Time-boxed decision windows shown with countdown
+- Full audit trail in return timeline
+
+**Performance page** (`SellerPerformance.tsx`):
+- Account health score (0-100) with status indicator (healthy/at risk/critical)
+- Operational metrics cards: late shipment rate, cancellation rate, return rate
+- Customer metrics: average rating, complaint count, response time
+- Policy issues list with severity badges
+- Fix path per issue with instructions
+- Appeal submission with file attachments
+- Enforcement ladder display (warnings -> limits -> suspension)
+
+---
+
+## Batch 6: Reports + Support + Home Dashboard Enhancement
+
+**Reports page** (`SellerReports.tsx`):
+- Sales report (date range, product breakdown)
+- Inventory report (current stock, turnover)
+- Returns report (rate by product, reasons)
+- Financial export (CSV of ledger transactions)
+- All reports filterable by date range with download buttons
+
+**Support page** (`SellerSupport.tsx`):
+- Create support case with category selector and attachment upload
+- Case list with status tracking
+- Case detail with message thread
+- Help centre links and guided troubleshooting
+- Marketplace announcements section
+
+**Home dashboard enhancement** (`SellerOverview.tsx`):
+- Add personalized task queue ("5 orders need shipping", "3 returns awaiting decision")
+- Quick action buttons (Create listing, Fulfil order, Download report)
+- Payment snapshot card (available balance, next payout)
+- Compliance alert card (from policy_issues)
+- Sales summary with today/week/month toggle
 
 ---
 
 ## Technical Details
 
-### Currency utility (`src/lib/currency.ts`)
-```text
-const EXCHANGE_RATE_USD_TO_IQD = 1300;
+### Database migration summary
+- 9 new tables with RLS policies
+- Column additions to `sellers` table
+- Enable realtime on `seller_notifications`
 
-formatIQD(usdAmount) -> "45,500 IQD"
-convertToIQD(usdAmount) -> number
-```
+### New edge functions
+- `seller-ledger` -- read ledger transactions with filters
+- `seller-returns` -- handle return request actions
+- `seller-support` -- CRUD support cases
 
-### GPS reverse geocoding
-Uses `https://nominatim.openstreetmap.org/reverse?lat=...&lon=...&format=json` -- free, no API key, respects usage policy with proper User-Agent header.
+### New frontend files (~12 new files)
+- 7 new page components
+- 1 onboarding wizard component
+- Types file updates for new entities
+- SellerContext expansion for new data sources
+- Updated sidebar and routing
 
-### Files to create
-- `src/lib/currency.ts`
-- `src/pages/SellOnDukanlyPage.tsx`
+### Existing file modifications
+- `SellerSidebar.tsx` -- 11 nav items
+- `SellerLayout.tsx` -- onboarding gate
+- `SellerOverview.tsx` -- task queue + quick actions
+- `App.tsx` -- new routes
+- `src/types/seller.ts` -- new interfaces
+- `src/contexts/SellerContext.tsx` -- new data fetching
+- `AddProduct.tsx` -- catalogue-first flow
+- `writeApi.ts` + `schemas.ts` -- new endpoints
 
-### Files to modify
-- `src/components/PriceDisplay.tsx` -- IQD-first formatting
-- `src/pages/CartPage.tsx` -- IQD prices
-- `src/pages/CheckoutPage.tsx` -- IQD prices + GPS button
-- `src/pages/seller/SellerOverview.tsx` -- IQD formatting
-- `src/pages/seller/SellerOrders.tsx` -- IQD formatting
-- `src/pages/seller/SellerProducts.tsx` -- IQD formatting
-- `src/pages/seller/SellerAnalytics.tsx` -- IQD formatting
-- `src/App.tsx` -- new route for `/sell`
-- `src/i18n/en.ts` -- new keys + update USD references
-- `src/i18n/ckb.ts` -- new keys + update USD references
-- `src/pages/HomePage.tsx` -- update hero subtitle and value props to IQD
+### i18n
+All new strings added to `en.ts` and `ckb.ts` for both English and Kurdish.
 
