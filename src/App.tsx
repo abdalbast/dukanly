@@ -42,7 +42,7 @@ const SellerOverview = lazy(() => import("./pages/seller/SellerOverview"));
 const SellerProducts = lazy(() => import("./pages/seller/SellerProducts"));
 const AddProduct = lazy(() => import("./pages/seller/AddProduct"));
 const SellerOrders = lazy(() => import("./pages/seller/SellerOrders"));
-const SellerAnalytics = lazy(() => import("./pages/seller/SellerAnalytics"));
+
 const SellerSettings = lazy(() => import("./pages/seller/SellerSettings"));
 const SellerInventory = lazy(() => import("./pages/seller/SellerInventory"));
 const SellerShipping = lazy(() => import("./pages/seller/SellerShipping"));
@@ -223,7 +223,7 @@ const App = () => (
                       <Route path="performance" element={<SellerPerformance />} />
                       <Route path="reports" element={<SellerReports />} />
                       <Route path="support" element={<SellerSupport />} />
-                      <Route path="analytics" element={<SellerAnalytics />} />
+                      
                       <Route path="settings" element={<SellerSettings />} />
                     </Route>
 

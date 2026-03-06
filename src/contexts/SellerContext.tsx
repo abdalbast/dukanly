@@ -296,7 +296,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
         title: product.title,
         description: product.description,
         status: product.status,
-        currencyCode: "USD",
+        currencyCode: "IQD",
         basePrice: product.price,
       });
 
@@ -331,7 +331,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
         title: merged.title,
         description: merged.description,
         status: merged.status,
-        currencyCode: "USD",
+        currencyCode: "IQD",
         basePrice: merged.price,
       });
 
@@ -345,12 +345,20 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
         )
       );
     },
-    [products],
+    [sellerId],
   );
 
   const deleteProduct = useCallback(async (id: string) => {
-    void id;
-    throw new Error(SELLER_PRODUCT_ACTIONS_UNAVAILABLE_MESSAGE);
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message ?? "Failed to delete product.");
+    }
+
+    setProducts((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
   const updateOrderStatus = useCallback(async (id: string, status: SellerOrder["status"]) => {
@@ -411,16 +419,23 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
   const becomeSeller = useCallback(async () => {
     if (!user) return;
     
-    const { error } = await supabase.from('sellers').insert({
+    const { data: newSeller, error } = await supabase.from('sellers').insert({
       user_id: user.id,
       store_name: 'My Store',
-    });
+    }).select('id, store_name').single();
     
     if (error) {
       console.error('Error becoming seller:', error);
       return;
     }
     
+    setSellerId(newSeller.id);
+    setProfile((prev) => ({
+      ...prev,
+      id: newSeller.id,
+      userId: user.id,
+      storeName: newSeller.store_name,
+    }));
     setIsSeller(true);
   }, [user]);
 

@@ -978,4 +978,13 @@ export const ckb: Record<TranslationKey, string> = {
   "sell.faq4A": "هیچ کەمترین بڕی کۆگایەک پێویست نییە. دەتوانیت بە هەر چەند بەرهەمێک دەتەوێت دەستپێبکەیت و بەپێی گەشەکردنی بزنسەکەت زیادی بکەیت.",
   "sell.ctaTitle": "ئامادەیت دەستبکەیت بە فرۆشتن؟",
   "sell.ctaSubtitle": "بەشدار بە لەگەڵ سەدان بزنسی کوردی کە پێشتر لەسەر دوکانلی گەشەیان کردووە. ئەمڕۆ فرۆشگاکەت دروستبکە و دەست بکە بە گەیشتن بە کڕیاران لە هەموو کوردستان.",
+
+  // Seller Layout
+  "sellerLayout.startSelling": "دەستبکە بە فرۆشتن",
+  "sellerLayout.startSellingDesc": "بەشداربە لەگەڵ هەزاران فرۆشیار لە دوکانلی. فرۆشگاکەت دامەزرێنە و دەست بکە بە گەیشتن بە ملیۆنان کڕیار.",
+  "sellerLayout.becomeSeller": "ببە بە فرۆشیار",
+  "sellerLayout.backToShopping": "گەڕانەوە بۆ کڕین",
+  "sellerLayout.sellerCentral": "ناوەندی فرۆشیار",
+  "sellerLayout.needHelp": "یارمەتیت دەوێت؟",
+  "sellerLayout.sellerSupport": "پشتگیری فرۆشیار",
 };

@@ -976,6 +976,15 @@ export const en = {
   "sell.faq4A": "No minimum inventory is required. You can start with as few products as you like and scale up as your business grows.",
   "sell.ctaTitle": "Ready to start selling?",
   "sell.ctaSubtitle": "Join hundreds of Kurdish businesses already growing on Dukanly. Create your store today and start reaching customers across Kurdistan.",
+
+  // Seller Layout
+  "sellerLayout.startSelling": "Start Selling",
+  "sellerLayout.startSellingDesc": "Join thousands of sellers on Dukanly. Set up your store and start reaching millions of customers.",
+  "sellerLayout.becomeSeller": "Become a Seller",
+  "sellerLayout.backToShopping": "Back to Shopping",
+  "sellerLayout.sellerCentral": "Seller Central",
+  "sellerLayout.needHelp": "Need help?",
+  "sellerLayout.sellerSupport": "Seller Support",
 } as const;
 
 export type TranslationKey = keyof typeof en;

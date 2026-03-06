@@ -23,8 +23,8 @@ vi.mock("@/lib/paymentApi", () => ({
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({
-    t: (key: keyof typeof en, params?: Record<string, string | number>) => {
-      let text = en[key] ?? key;
+    t: (key: string, params?: Record<string, string | number>) => {
+      let text = (en as Record<string, string>)[key] ?? key;
       if (params) {
         Object.entries(params).forEach(([name, value]) => {
           text = text.replace(`{${name}}`, String(value));
