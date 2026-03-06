@@ -28,6 +28,11 @@ interface WriteEnvelope<T> {
   error: ApiFailure | null;
 }
 
+interface PlaceholderWriteResponse {
+  accepted?: boolean;
+  next?: string;
+}
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -57,6 +62,33 @@ function shouldRetry(err: unknown): boolean {
   if (!(err instanceof Error)) return false;
   const msg = err.message.toLowerCase();
   return msg.includes("timed out") || msg.includes("network") || msg.includes("fetch");
+}
+
+function getPlaceholderFailure(endpoint: EndpointName, payload: unknown): ApiFailure | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const maybePlaceholder = payload as PlaceholderWriteResponse;
+  if (!maybePlaceholder.accepted || typeof maybePlaceholder.next !== "string") {
+    return null;
+  }
+
+  if (endpoint === "seller-products") {
+    return {
+      code: "feature_not_ready",
+      message: "Seller product publishing is not available yet.",
+      details: maybePlaceholder.next,
+    };
+  }
+
+  if (endpoint === "seller-orders") {
+    return {
+      code: "feature_not_ready",
+      message: "Seller order updates are not available yet.",
+      details: maybePlaceholder.next,
+    };
+  }
+
+  return null;
 }
 
 async function invokeWrite<TPayload extends object, TResponse>(
@@ -162,6 +194,14 @@ async function invokeWrite<TPayload extends object, TResponse>(
             message: data?.error?.message ?? "Request failed.",
             details: data?.error?.details,
           },
+        };
+      }
+
+      const placeholderFailure = getPlaceholderFailure(endpoint, data.data);
+      if (placeholderFailure) {
+        return {
+          ok: false,
+          failure: placeholderFailure,
         };
       }
 

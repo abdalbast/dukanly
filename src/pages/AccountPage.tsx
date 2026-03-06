@@ -1,11 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { User, Package, MapPin, CreditCard, Shield, Bell, Heart, Gift, Store, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { AddressBookManager } from "@/components/address/AddressBookManager";
 
 export default function AccountPage() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const location = useLocation();
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Account";
+  const email = user?.email || "Signed-in account";
+  const memberSince = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : t("account.memberSince");
 
   const accountSections = [
     { title: t("account.yourOrders"), description: t("account.yourOrdersDesc"), icon: Package, href: "/orders" },
@@ -18,6 +27,25 @@ export default function AccountPage() {
     { title: t("account.sellerAccount"), description: t("account.sellerAccountDesc"), icon: Store, href: "/seller" },
   ];
 
+  if (location.pathname === "/account/addresses") {
+    return (
+      <Layout>
+        <div className="container py-8">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm text-muted-foreground">{t("account.title")}</p>
+              <h1 className="text-2xl font-bold">{t("account.yourAddresses")}</h1>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link to="/account">{t("common.back")}</Link>
+            </Button>
+          </div>
+          <AddressBookManager mode="page" />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="container py-8">
@@ -26,9 +54,11 @@ export default function AccountPage() {
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center"><User className="w-8 h-8 text-primary" /></div>
             <div className="flex-1">
-              <h2 className="font-semibold text-lg">John Doe</h2>
-              <p className="text-sm text-muted-foreground">john.doe@example.com</p>
-              <p className="text-xs text-muted-foreground mt-1">{t("account.memberSince")}</p>
+              <h2 className="font-semibold text-lg">{displayName}</h2>
+              <p className="text-sm text-muted-foreground">{email}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {t("account.memberSince")} {memberSince}
+              </p>
             </div>
             <Button variant="outline" size="sm">{t("account.editProfile")}</Button>
           </div>

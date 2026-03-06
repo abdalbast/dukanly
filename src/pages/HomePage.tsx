@@ -31,10 +31,7 @@ export default function HomePage() {
               <p className="text-lg text-primary-foreground/80 mb-6">{t("home.heroSubtitle")}</p>
               <div className="flex gap-3">
                 <Link to="/deals" className="btn-cta px-8 py-3 inline-block">{t("home.shopDeals")}</Link>
-                <Link 
-                  to="/sell" 
-                  className="px-6 py-3 border border-primary-foreground/50 rounded-full text-sm font-semibold hover:bg-primary-foreground/10 transition-colors"
-                >
+                <Link to="/sell" className="hero-secondary-link">
                   {t("home.sellOnDukanly")}
                 </Link>
               </div>

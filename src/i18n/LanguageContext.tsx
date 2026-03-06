@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { en, TranslationKey } from "./en";
 import { ckb } from "./ckb";
+import { detectPreferredLanguage } from "@/lib/locale";
 
 export type Language = "en" | "ckb";
 
@@ -18,7 +19,12 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
-    return (localStorage.getItem("lang") as Language) || "en";
+    const storedLanguage = localStorage.getItem("lang");
+    if (storedLanguage === "en" || storedLanguage === "ckb") {
+      return storedLanguage;
+    }
+
+    return detectPreferredLanguage();
   });
 
   const dir = language === "ckb" ? "rtl" : "ltr";

@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-import { Button } from "@/components/ui/button";
 import { 
   Store, 
   CreditCard, 
   Truck, 
   Users, 
-  BarChart3, 
-  ShieldCheck, 
   ChevronRight, 
   Banknote,
   Package,
@@ -15,9 +12,13 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SellOnDukanlyPage() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const startSellingHref = user ? "/seller" : `/auth/signin?redirect=${encodeURIComponent("/seller")}`;
+  const marketingCardClass = "bg-card rounded-lg border border-border p-4 transition-shadow hover:shadow-card";
 
   const valueProps = [
     {
@@ -44,9 +45,9 @@ export default function SellOnDukanlyPage() {
   ];
 
   const feeItems = [
-    { label: t("sell.feeMonthly"), value: t("sell.feeMonthlyValue") },
-    { label: t("sell.feePerItem"), value: t("sell.feePerItemValue") },
-    { label: t("sell.feeCommission"), value: t("sell.feeCommissionValue") },
+    { icon: Store, label: t("sell.feeMonthly"), value: t("sell.feeMonthlyValue") },
+    { icon: Package, label: t("sell.feePerItem"), value: t("sell.feePerItemValue") },
+    { icon: Banknote, label: t("sell.feeCommission"), value: t("sell.feeCommissionValue") },
   ];
 
   const testimonials = [
@@ -62,80 +63,106 @@ export default function SellOnDukanlyPage() {
     { q: t("sell.faq4Q"), a: t("sell.faq4A") },
   ];
 
+  const stats = [
+    { value: "0 IQD", label: t("sell.statProducts") },
+    { value: "25+ million", label: t("sell.statBuyers") },
+    { value: "13", label: t("sell.statCities") },
+    { value: "24/7", label: t("sell.statSupport") },
+  ];
+
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-primary to-primary/80 text-primary-foreground py-16 md:py-24">
-        <div className="container">
-          <div className="max-w-2xl">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">{t("sell.heroTitle")}</h1>
-            <p className="text-lg md:text-xl text-primary-foreground/80 mb-8">{t("sell.heroSubtitle")}</p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 text-base font-semibold px-8">
-                <Link to="/seller">{t("sell.startSelling")}<ArrowRight className="w-5 h-5 ml-2" /></Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                <Link to="#how-it-works">{t("sell.learnMore")}</Link>
-              </Button>
+      <section className="relative">
+        <div
+          className="h-[300px] md:h-[400px] relative overflow-hidden bg-[hsl(var(--primary))]"
+          style={{
+            backgroundImage: `
+              radial-gradient(ellipse 80% 70% at 70% 40%, hsl(215 45% 28% / 0.9), transparent 50%),
+              radial-gradient(ellipse 60% 50% at 20% 80%, hsl(215 35% 22% / 0.7), transparent 45%),
+              linear-gradient(135deg, hsl(215 30% 18%) 0%, hsl(215 25% 14%) 50%, hsl(220 30% 12%) 100%)
+            `,
+          }}
+        >
+          {/* Subtle grid pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, white 1px, transparent 1px),
+                linear-gradient(to bottom, white 1px, transparent 1px)
+              `,
+              backgroundSize: "32px 32px",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/50 to-transparent rtl:bg-gradient-to-l rtl:via-primary/50" />
+          <div className="container relative h-full flex items-center">
+            <div className="max-w-lg text-primary-foreground">
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("sell.heroTitle")}</h1>
+              <p className="text-lg text-primary-foreground/80 mb-6">{t("sell.heroSubtitle")}</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link to={startSellingHref} className="btn-cta px-8 py-3 inline-flex items-center justify-center gap-2">
+                  {t("sell.startSelling")}
+                  <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                </Link>
+                <a href="#how-it-works" className="hero-secondary-link">
+                  {t("sell.learnMore")}
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-card border-b border-border py-6">
+      <section className="bg-card border-b border-border py-4">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-primary">10,000+</p>
-              <p className="text-sm text-muted-foreground">{t("sell.statProducts")}</p>
-            </div>
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-primary">50,000+</p>
-              <p className="text-sm text-muted-foreground">{t("sell.statBuyers")}</p>
-            </div>
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-primary">3</p>
-              <p className="text-sm text-muted-foreground">{t("sell.statCities")}</p>
-            </div>
-            <div>
-              <p className="text-2xl md:text-3xl font-bold text-primary">24/7</p>
-              <p className="text-sm text-muted-foreground">{t("sell.statSupport")}</p>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-2xl font-bold text-primary">{stat.value}</p>
+                <p className="text-sm font-semibold">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Why Sell on Dukanly */}
-      <section className="container py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">{t("sell.whySellTitle")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {valueProps.map((prop, i) => (
-            <div key={i} className="text-center p-6 bg-card border border-border rounded-xl hover:shadow-card transition-shadow">
-              <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
-                <prop.icon className="w-7 h-7 text-primary" />
+      <section className="container py-8">
+        <div className="max-w-2xl mb-4">
+          <h2 className="section-header mb-2">{t("sell.whySellTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("sell.heroSubtitle")}</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {valueProps.map((prop) => (
+            <div key={prop.title} className={marketingCardClass}>
+              <div className="w-12 h-12 mb-3 rounded-lg bg-secondary flex items-center justify-center">
+                <prop.icon className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">{prop.title}</h3>
-              <p className="text-muted-foreground text-sm">{prop.description}</p>
+              <h3 className="font-semibold mb-2">{prop.title}</h3>
+              <p className="text-sm text-muted-foreground">{prop.description}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="bg-secondary/50 py-16">
+      <section id="how-it-works" className="bg-secondary/50 py-8 scroll-mt-28">
         <div className="container">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">{t("sell.howItWorksTitle")}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="max-w-2xl mb-4">
+            <h2 className="section-header mb-2">{t("sell.howItWorksTitle")}</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {steps.map((step, i) => (
-              <div key={i} className="relative text-center">
-                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary text-primary-foreground text-xl font-bold flex items-center justify-center">
+              <div key={step.number} className={`relative ${marketingCardClass}`}>
+                <div className="w-10 h-10 mb-3 rounded-full bg-primary text-primary-foreground text-base font-bold flex items-center justify-center">
                   {step.number}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
-                <p className="text-muted-foreground text-sm">{step.description}</p>
+                <h3 className="font-semibold mb-2">{step.title}</h3>
+                <p className="text-sm text-muted-foreground">{step.description}</p>
                 {i < steps.length - 1 && (
-                  <ChevronRight className="hidden md:block absolute top-6 -right-4 w-8 h-8 text-muted-foreground/30 rtl:rotate-180" />
+                  <ChevronRight className="hidden md:block absolute top-8 -right-3 w-6 h-6 text-muted-foreground/30 rtl:rotate-180" />
                 )}
               </div>
             ))}
@@ -144,33 +171,42 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* Pricing */}
-      <section className="container py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">{t("sell.pricingTitle")}</h2>
-        <p className="text-muted-foreground text-center mb-10 max-w-xl mx-auto">{t("sell.pricingSubtitle")}</p>
-        <div className="max-w-md mx-auto bg-card border border-border rounded-xl overflow-hidden">
+      <section className="container py-8">
+        <div className="max-w-2xl mb-4">
+          <h2 className="section-header mb-2">{t("sell.pricingTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("sell.pricingSubtitle")}</p>
+        </div>
+        <div className="max-w-md bg-card border border-border rounded-lg overflow-hidden">
           {feeItems.map((item, i) => (
-            <div key={i} className={`flex justify-between items-center p-4 ${i < feeItems.length - 1 ? "border-b border-border" : ""}`}>
-              <span className="text-sm font-medium">{item.label}</span>
-              <span className="font-semibold text-primary">{item.value}</span>
+            <div key={item.label} className={`flex items-center justify-between gap-4 p-4 ${i < feeItems.length - 1 ? "border-b border-border" : ""}`}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-sm font-medium">{item.label}</span>
+              </div>
+              <span className="text-sm font-semibold text-primary text-right">{item.value}</span>
             </div>
           ))}
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="bg-secondary/50 py-16">
+      <section className="bg-secondary/50 py-8">
         <div className="container">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">{t("sell.successStoriesTitle")}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-6">
+          <div className="max-w-2xl mb-4">
+            <h2 className="section-header mb-2">{t("sell.successStoriesTitle")}</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {testimonials.map((story) => (
+              <div key={story.name} className={marketingCardClass}>
                 <div className="flex gap-1 mb-3">
                   {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-accent text-accent" />)}
                 </div>
-                <p className="text-sm text-muted-foreground italic mb-4">"{t.quote}"</p>
+                <p className="text-sm text-muted-foreground italic mb-4">"{story.quote}"</p>
                 <div>
-                  <p className="font-semibold text-sm">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.business}</p>
+                  <p className="font-semibold text-sm">{story.name}</p>
+                  <p className="text-xs text-muted-foreground">{story.business}</p>
                 </div>
               </div>
             ))}
@@ -179,11 +215,13 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* FAQ */}
-      <section className="container py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">{t("sell.faqTitle")}</h2>
-        <div className="max-w-2xl mx-auto space-y-4">
-          {faqs.map((faq, i) => (
-            <details key={i} className="bg-card border border-border rounded-lg group">
+      <section className="container py-8">
+        <div className="max-w-2xl mb-4">
+          <h2 className="section-header mb-2">{t("sell.faqTitle")}</h2>
+        </div>
+        <div className="max-w-2xl space-y-4">
+          {faqs.map((faq) => (
+            <details key={faq.q} className="bg-card border border-border rounded-lg group">
               <summary className="p-4 font-medium cursor-pointer hover:text-primary transition-colors list-none flex items-center justify-between">
                 {faq.q}
                 <ChevronRight className="w-5 h-5 text-muted-foreground transition-transform group-open:rotate-90 rtl:rotate-180 rtl:group-open:rotate-90" />
@@ -195,13 +233,16 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-primary text-primary-foreground py-16">
-        <div className="container text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">{t("sell.ctaTitle")}</h2>
-          <p className="text-primary-foreground/80 mb-8 max-w-lg mx-auto">{t("sell.ctaSubtitle")}</p>
-          <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 text-base font-semibold px-10">
-            <Link to="/seller">{t("sell.startSelling")}<ArrowRight className="w-5 h-5 ml-2" /></Link>
-          </Button>
+      <section className="container py-8 pb-12">
+        <div className="bg-primary text-primary-foreground rounded-lg px-6 py-8">
+          <div className="max-w-lg">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t("sell.ctaTitle")}</h2>
+            <p className="text-lg text-primary-foreground/80 mb-6">{t("sell.ctaSubtitle")}</p>
+            <Link to={startSellingHref} className="btn-cta px-10 py-3 inline-flex items-center justify-center gap-2">
+              {t("sell.startSelling")}
+              <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+            </Link>
+          </div>
         </div>
       </section>
     </Layout>

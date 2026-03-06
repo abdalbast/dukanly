@@ -84,6 +84,11 @@ function mapDbToSellerProduct(row: DbProduct): SellerProduct {
   };
 }
 
+const SELLER_PRODUCT_ACTIONS_UNAVAILABLE_MESSAGE =
+  "Seller product publishing is not available yet.";
+const SELLER_ORDER_ACTIONS_UNAVAILABLE_MESSAGE =
+  "Seller order updates are not available yet.";
+
 export function SellerProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [isSeller, setIsSeller] = useState(false);
@@ -296,7 +301,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!write.ok) {
-        throw new Error(write.failure?.message ?? "Failed to save product.");
+        throw new Error(write.failure?.message ?? SELLER_PRODUCT_ACTIONS_UNAVAILABLE_MESSAGE);
       }
 
       // Refetch products
@@ -331,7 +336,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!write.ok) {
-        throw new Error(write.failure?.message ?? "Failed to update product.");
+        throw new Error(write.failure?.message ?? SELLER_PRODUCT_ACTIONS_UNAVAILABLE_MESSAGE);
       }
 
       setProducts((prev) =>
@@ -344,7 +349,8 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
   );
 
   const deleteProduct = useCallback(async (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    void id;
+    throw new Error(SELLER_PRODUCT_ACTIONS_UNAVAILABLE_MESSAGE);
   }, []);
 
   const updateOrderStatus = useCallback(async (id: string, status: SellerOrder["status"]) => {
@@ -355,7 +361,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (!write.ok) {
-      throw new Error(write.failure?.message ?? "Failed to update order status.");
+      throw new Error(write.failure?.message ?? SELLER_ORDER_ACTIONS_UNAVAILABLE_MESSAGE);
     }
 
     setOrders((prev) =>
@@ -378,7 +384,7 @@ export function SellerProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!write.ok) {
-        throw new Error(write.failure?.message ?? "Failed to update fulfillment status.");
+        throw new Error(write.failure?.message ?? SELLER_ORDER_ACTIONS_UNAVAILABLE_MESSAGE);
       }
 
       setOrders((prev) =>
