@@ -9,9 +9,10 @@ export interface AuthContext {
 }
 
 function resolveRole(user: User): AppRole {
+  // SECURITY: Only read from app_metadata which is server-controlled.
+  // user_metadata is user-editable and must NOT be trusted for role resolution.
   const appMeta = user.app_metadata as Record<string, unknown> | undefined;
-  const userMeta = user.user_metadata as Record<string, unknown> | undefined;
-  const roleFromClaim = appMeta?.role ?? userMeta?.role;
+  const roleFromClaim = appMeta?.role;
 
   if (roleFromClaim === "seller" || roleFromClaim === "admin") {
     return roleFromClaim;

@@ -321,12 +321,14 @@ export default function CheckoutPage() {
                   <label htmlFor="customer-phone" className="text-sm font-medium">
                     {t("checkout.contactPhone")}
                   </label>
-                  <input
+                    <input
                     id="customer-phone"
                     dir="ltr"
                     value={customerPhone}
                     onChange={(event) => setCustomerPhone(event.target.value)}
                     placeholder={t("checkout.contactPhonePlaceholder")}
+                    maxLength={15}
+                    pattern="^\+?[0-9]{7,15}$"
                     className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">{t("checkout.contactPhoneHint")}</p>

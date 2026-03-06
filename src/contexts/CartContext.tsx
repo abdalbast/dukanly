@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { CartItem, ProductWithOffer } from "@/types/product";
 
 interface CartContextType {
@@ -42,12 +42,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
   }, []);
 
+  // Persist items to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
+
   const addToCart = useCallback((product: ProductWithOffer, quantity = 1) => {
     setItems((prev) => {
       const existingItem = prev.find(
         (item) => item.product.id === product.id && !item.savedForLater
       );
-      const nextItems = existingItem
+      return existingItem
         ? prev.map((item) =>
           item.id === existingItem.id
             ? { ...item, quantity: item.quantity + quantity }
@@ -63,60 +69,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             isGift: false,
           },
         ];
-
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-      }
-
-      return nextItems;
     });
   }, []);
 
   const removeFromCart = useCallback((itemId: string) => {
-    setItems((prev) => {
-      const nextItems = prev.filter((item) => item.id !== itemId);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-      }
-      return nextItems;
-    });
+    setItems((prev) => prev.filter((item) => item.id !== itemId));
   }, []);
 
   const updateQuantity = useCallback((itemId: string, quantity: number) => {
     if (quantity < 1) return;
     setItems((prev) =>
-      {
-        const nextItems = prev.map((item) => (item.id === itemId ? { ...item, quantity } : item));
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-        }
-        return nextItems;
-      }
+      prev.map((item) => (item.id === itemId ? { ...item, quantity } : item))
     );
   }, []);
 
   const toggleSaveForLater = useCallback((itemId: string) => {
-    setItems((prev) => {
-      const nextItems = prev.map((item) =>
+    setItems((prev) =>
+      prev.map((item) =>
         item.id === itemId ? { ...item, savedForLater: !item.savedForLater } : item
-      );
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-      }
-      return nextItems;
-    });
+      )
+    );
   }, []);
 
   const toggleGift = useCallback((itemId: string) => {
-    setItems((prev) => {
-      const nextItems = prev.map((item) =>
+    setItems((prev) =>
+      prev.map((item) =>
         item.id === itemId ? { ...item, isGift: !item.isGift } : item
-      );
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-      }
-      return nextItems;
-    });
+      )
+    );
   }, []);
 
   const clearCart = useCallback(() => {
