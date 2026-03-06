@@ -62,9 +62,29 @@ export default function SellerPerformance() {
 
   const handleSubmitAppeal = async () => {
     if (!selectedIssue || !appealMessage) return;
+
+    const { data: authData } = await supabase.auth.getUser();
+    const userId = authData.user?.id;
+
+    if (!userId) {
+      toast({ title: "Error", description: "You must be signed in to submit an appeal.", variant: "destructive" });
+      return;
+    }
+
+    const { data: seller, error: sellerError } = await supabase
+      .from("sellers")
+      .select("id")
+      .eq("user_id", userId)
+      .single();
+
+    if (sellerError || !seller) {
+      toast({ title: "Error", description: "Seller profile not found.", variant: "destructive" });
+      return;
+    }
+
     const { error } = await supabase.from("appeals").insert({
       policy_issue_id: selectedIssue.id,
-      seller_id: (await supabase.from("sellers").select("id").eq("user_id", (await supabase.auth.getUser()).data.user?.id).single()).data?.id!,
+      seller_id: seller.id,
       message: appealMessage,
     });
     if (!error) {

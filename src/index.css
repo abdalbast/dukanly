@@ -222,6 +222,10 @@
     box-shadow: 0 4px 8px hsl(81 89% 40% / 0.4);
   }
 
+  .hero-secondary-link {
+    @apply inline-flex items-center justify-center rounded-full border border-primary-foreground/50 px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors duration-200 hover:bg-primary-foreground/10;
+  }
+
   /* Search Bar */
   .search-bar {
     @apply flex items-center bg-white rounded-md overflow-hidden;
