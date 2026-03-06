@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
-import heroBanner from "@/assets/hero-banner.jpg";
 
 export default function SellOnDukanlyPage() {
   const { t } = useLanguage();
@@ -76,10 +75,27 @@ export default function SellOnDukanlyPage() {
       {/* Hero */}
       <section className="relative">
         <div
-          className="h-[300px] md:h-[400px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroBanner})` }}
+          className="h-[300px] md:h-[400px] relative overflow-hidden bg-[hsl(var(--primary))]"
+          style={{
+            backgroundImage: `
+              radial-gradient(ellipse 80% 70% at 70% 40%, hsl(215 45% 28% / 0.9), transparent 50%),
+              radial-gradient(ellipse 60% 50% at 20% 80%, hsl(215 35% 22% / 0.7), transparent 45%),
+              linear-gradient(135deg, hsl(215 30% 18%) 0%, hsl(215 25% 14%) 50%, hsl(220 30% 12%) 100%)
+            `,
+          }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent rtl:bg-gradient-to-l" />
+          {/* Subtle grid pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, white 1px, transparent 1px),
+                linear-gradient(to bottom, white 1px, transparent 1px)
+              `,
+              backgroundSize: "32px 32px",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/50 to-transparent rtl:bg-gradient-to-l rtl:via-primary/50" />
           <div className="container relative h-full flex items-center">
             <div className="max-w-lg text-primary-foreground">
               <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("sell.heroTitle")}</h1>
