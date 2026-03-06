@@ -64,9 +64,9 @@ export default function SellOnDukanlyPage() {
   ];
 
   const stats = [
-    { value: "10,000+", label: t("sell.statProducts") },
-    { value: "50,000+", label: t("sell.statBuyers") },
-    { value: "3", label: t("sell.statCities") },
+    { value: "0 IQD", label: t("sell.statProducts") },
+    { value: "25+ million", label: t("sell.statBuyers") },
+    { value: "13", label: t("sell.statCities") },
     { value: "24/7", label: t("sell.statSupport") },
   ];
 

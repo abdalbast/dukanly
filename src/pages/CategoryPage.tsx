@@ -14,7 +14,14 @@ export default function CategoryPage() {
   const { data: categoryProducts = [] } = useProductsByCategory(slug);
   const { data: allProducts = [] } = useProducts();
 
-  const displayProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
+  const baseProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
+  const normalizedSubcategory = subcategory?.trim().toLowerCase();
+  const displayProducts = normalizedSubcategory
+    ? baseProducts.filter((product) => {
+        const productSubcategory = product.subcategory?.trim().toLowerCase();
+        return productSubcategory === normalizedSubcategory;
+      })
+    : baseProducts;
 
   return (
     <Layout>

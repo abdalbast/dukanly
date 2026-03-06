@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -30,7 +31,7 @@ const categories = [
 export default function AddProduct() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { addProduct, updateProduct, products } = useSeller();
+  const { products } = useSeller();
   const { toast } = useToast();
 
   const isEditMode = Boolean(id);
@@ -56,6 +57,8 @@ export default function AddProduct() {
   const [images, setImages] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const productWriteUnavailableMessage =
+    "Product publishing is disabled until seller persistence is fully connected.";
 
   // Load existing product data for edit mode
   useEffect(() => {
@@ -98,67 +101,12 @@ export default function AddProduct() {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (asDraft: boolean) => {
-    if (!formData.title || !formData.price || !formData.sku) {
-      toast({
-        title: "Missing required fields",
-        description: "Please fill in title, price, and SKU",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    const productData = {
-      title: formData.title,
-      description: formData.description,
-      images: images.length > 0 ? images : ["https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400"],
-      category: formData.category || "Uncategorized",
-      subcategory: formData.subcategory || undefined,
-      brand: formData.brand || "Unbranded",
-      sku: formData.sku,
-      price: parseFloat(formData.price) || 0,
-      compareAtPrice: formData.compareAtPrice ? parseFloat(formData.compareAtPrice) : undefined,
-      costPerItem: formData.costPerItem ? parseFloat(formData.costPerItem) : undefined,
-      stock: parseInt(formData.stock) || 0,
-      lowStockThreshold: parseInt(formData.lowStockThreshold) || 10,
-      weight: formData.weight ? parseFloat(formData.weight) : undefined,
-      tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      status: asDraft ? "draft" as const : "active" as const,
-    };
-
-    try {
-      if (isEditMode && id) {
-        await updateProduct(id, productData);
-        toast({
-          title: "Product updated",
-          description: "Your product has been updated successfully.",
-        });
-      } else {
-        await addProduct(productData);
-        toast({
-          title: asDraft ? "Draft saved" : "Product published",
-          description: asDraft
-            ? "Your product has been saved as a draft"
-            : "Your product is now live",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Save failed",
-        description: error instanceof Error ? error.message : "Could not save product.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    setIsSubmitting(false);
-    navigate("/seller/products");
+  const showUnavailableToast = () => {
+    toast({
+      title: "Publishing unavailable",
+      description: productWriteUnavailableMessage,
+      variant: "destructive",
+    });
   };
 
   return (
@@ -179,7 +127,7 @@ export default function AddProduct() {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => handleSubmit(true)}
+            onClick={showUnavailableToast}
             disabled={isSubmitting}
           >
             <Save className="w-4 h-4 mr-2" />
@@ -187,7 +135,7 @@ export default function AddProduct() {
           </Button>
           <Button
             className="btn-cta"
-            onClick={() => handleSubmit(false)}
+            onClick={showUnavailableToast}
             disabled={isSubmitting}
           >
             <Eye className="w-4 h-4 mr-2" />
@@ -199,6 +147,14 @@ export default function AddProduct() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
+          <Alert>
+            <AlertTitle>Publishing unavailable</AlertTitle>
+            <AlertDescription>
+              {productWriteUnavailableMessage} This form remains visible so product data can be
+              reviewed, but save and publish actions are intentionally blocked in the frontend.
+            </AlertDescription>
+          </Alert>
+
           {/* Basic Info */}
           <Card>
             <CardHeader>

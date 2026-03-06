@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Clock, ExternalLink, QrCode, RefreshCw } from "lucide-react";
+
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { fetchPaymentStatus } from "@/lib/paymentApi";
-import type { CheckoutResponse, PaymentStatusResponse } from "@/lib/writeApi";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { fetchPaymentStatus } from "@/lib/paymentApi";
+import { getPaymentStateTranslationKey } from "@/lib/paymentLabels";
+import type { CheckoutResponse, PaymentStatusResponse } from "@/lib/writeApi";
 
 interface LocationState {
   payment?: CheckoutResponse;
@@ -24,6 +27,7 @@ export default function CheckoutPaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { clearCart } = useCart();
+  const { t } = useLanguage();
   const didNavigateRef = useRef(false);
 
   const state = (location.state as LocationState | null) ?? null;
@@ -40,8 +44,8 @@ export default function CheckoutPaymentPage() {
     if (!validUntil) return 0;
     return Math.max(0, Date.parse(validUntil) - nowTs);
   }, [validUntil, nowTs]);
-
   const countdown = formatCountdown(remainingMs);
+  const paymentStateLabel = t(getPaymentStateTranslationKey(status?.paymentState));
 
   const refresh = async () => {
     if (!orderId) return;
@@ -53,7 +57,7 @@ export default function CheckoutPaymentPage() {
     setIsRefreshing(false);
 
     if (!result.ok) {
-      setError(result.failure?.message ?? "Could not refresh payment status.");
+      setError(result.failure?.message ?? t("checkoutPayment.refreshFailed"));
       return;
     }
 
@@ -114,10 +118,10 @@ export default function CheckoutPaymentPage() {
     return (
       <Layout>
         <div className="container py-12 max-w-2xl">
-          <h1 className="text-2xl font-bold">Payment Session Not Found</h1>
-          <p className="text-muted-foreground mt-2">Missing order identifier for payment status tracking.</p>
+          <h1 className="text-2xl font-bold">{t("checkoutPayment.sessionNotFoundTitle")}</h1>
+          <p className="text-muted-foreground mt-2">{t("checkoutPayment.sessionNotFoundDesc")}</p>
           <Button asChild className="mt-4">
-            <Link to="/checkout">Return to checkout</Link>
+            <Link to="/checkout">{t("checkoutPayment.returnToCheckout")}</Link>
           </Button>
         </div>
       </Layout>
@@ -128,25 +132,29 @@ export default function CheckoutPaymentPage() {
     <Layout>
       <div className="container py-6 max-w-3xl space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Complete Your FIB Payment</h1>
-          <p className="text-muted-foreground">Order ID: {orderId}</p>
+          <h1 className="text-2xl font-bold">{t("checkoutPayment.title")}</h1>
+          <p className="text-muted-foreground">
+            {t("checkoutPayment.orderReference")}: {checkoutPayment?.orderNumber ?? orderId}
+          </p>
         </div>
 
         <section className="bg-card border border-border rounded-lg p-4 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              <span className="font-medium">Payment expires in {countdown}</span>
+              <span className="font-medium">
+                {t("checkoutPayment.expiresIn")} {countdown}
+              </span>
             </div>
             <Button variant="outline" size="sm" onClick={() => void refresh()} disabled={isRefreshing}>
-              <RefreshCw className="w-4 h-4 mr-1" />
-              {isRefreshing ? "Refreshing" : "Refresh status"}
+              <RefreshCw className="w-4 h-4 mr-1 rtl:mr-0 rtl:ml-1" />
+              {isRefreshing ? t("checkoutPayment.refreshing") : t("checkoutPayment.refreshStatus")}
             </Button>
           </div>
 
           {status && (
             <p className="text-sm text-muted-foreground">
-              Current status: <span className="font-medium text-foreground">{status.paymentState}</span>
+              {t("checkoutPayment.currentStatus")} <span className="font-medium text-foreground">{paymentStateLabel}</span>
             </p>
           )}
 
@@ -154,27 +162,28 @@ export default function CheckoutPaymentPage() {
 
           {isTerminalFailure && (
             <div className="bg-destructive/10 border border-destructive/30 rounded p-3 text-sm">
-              Payment ended with state <span className="font-semibold">{status?.paymentState}</span>. You can retry checkout or choose COD.
+              {t("checkoutPayment.failedStateNotice")}{" "}
+              <span className="font-semibold">{paymentStateLabel}</span>. {t("checkoutPayment.retryOrCod")}
             </div>
           )}
         </section>
 
         <section className="bg-card border border-border rounded-lg p-4 space-y-4">
-          <h2 className="font-semibold">Pay from the FIB app</h2>
+          <h2 className="font-semibold">{t("checkoutPayment.payFromApp")}</h2>
           <div className="flex flex-wrap gap-2">
             {fibSession?.businessAppLink && (
               <Button asChild>
                 <a href={fibSession.businessAppLink} target="_blank" rel="noreferrer">
-                  Open Business App
-                  <ExternalLink className="w-4 h-4 ml-1" />
+                  {t("checkoutPayment.openBusinessApp")}
+                  <ExternalLink className="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1" />
                 </a>
               </Button>
             )}
             {fibSession?.corporateAppLink && (
               <Button asChild variant="outline">
                 <a href={fibSession.corporateAppLink} target="_blank" rel="noreferrer">
-                  Open Corporate App
-                  <ExternalLink className="w-4 h-4 ml-1" />
+                  {t("checkoutPayment.openCorporateApp")}
+                  <ExternalLink className="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1" />
                 </a>
               </Button>
             )}
@@ -183,27 +192,27 @@ export default function CheckoutPaymentPage() {
           <div className="border rounded-lg p-4 bg-background">
             <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
               <QrCode className="w-4 h-4" />
-              Scan QR to pay
+              {t("checkoutPayment.scanQr")}
             </div>
             {fibSession?.qrCode ? (
               <img src={fibSession.qrCode} alt="FIB payment QR" className="w-56 h-56 object-contain bg-white rounded" />
             ) : (
-              <p className="text-sm text-muted-foreground">QR session is only available from the original checkout response.</p>
+              <p className="text-sm text-muted-foreground">{t("checkoutPayment.qrOnlyFromOriginalSession")}</p>
             )}
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground">Readable Code</p>
-            <p className="font-mono text-lg">{fibSession?.readableCode ?? "Unavailable"}</p>
+            <p className="text-sm text-muted-foreground">{t("checkoutPayment.readableCode")}</p>
+            <p className="font-mono text-lg">{fibSession?.readableCode ?? t("payment.state.unavailable")}</p>
           </div>
         </section>
 
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link to="/orders">Go to orders</Link>
+            <Link to="/orders">{t("checkoutPayment.goToOrders")}</Link>
           </Button>
           <Button asChild>
-            <Link to="/checkout">Back to checkout</Link>
+            <Link to="/checkout">{t("checkoutPayment.returnToCheckout")}</Link>
           </Button>
         </div>
       </div>

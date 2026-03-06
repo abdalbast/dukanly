@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Package, Truck, CheckCircle, RotateCcw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useOrders, type Order } from "@/hooks/useOrders";
+import { formatIQD } from "@/lib/currency";
 
 export default function OrdersPage() {
   const { t, language } = useLanguage();
@@ -16,6 +17,39 @@ export default function OrdersPage() {
   const locale = language === "ckb" ? "ckb" : "en-US";
 
   const { data: orders = [], isLoading } = useOrders();
+  const filteredOrders = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const now = Date.now();
+    const maxAgeMs =
+      timeFilter === "30"
+        ? 30 * 24 * 60 * 60 * 1000
+        : timeFilter === "90"
+          ? 90 * 24 * 60 * 60 * 1000
+          : timeFilter === "365"
+            ? 365 * 24 * 60 * 60 * 1000
+            : null;
+
+    return orders.filter((order) => {
+      const matchesQuery =
+        normalizedQuery.length === 0 ||
+        order.orderNumber.toLowerCase().includes(normalizedQuery) ||
+        order.items.some((item) => item.title.toLowerCase().includes(normalizedQuery));
+
+      const matchesTimeFilter =
+        maxAgeMs === null || now - new Date(order.date).getTime() <= maxAgeMs;
+
+      return matchesQuery && matchesTimeFilter;
+    });
+  }, [orders, searchQuery, timeFilter]);
+
+  const formatOrderTotal = (order: Order) =>
+    order.currencyCode === "IQD"
+      ? formatIQD(order.total)
+      : new Intl.NumberFormat(locale, {
+          style: "currency",
+          currency: order.currencyCode || "USD",
+          maximumFractionDigits: 2,
+        }).format(order.total);
 
   const getStatusBadge = (status: Order["status"]) => {
     const map = {
@@ -51,21 +85,25 @@ export default function OrdersPage() {
           <div className="text-center py-12">
             <p className="text-muted-foreground">Loading orders...</p>
           </div>
-        ) : orders.length === 0 ? (
+        ) : filteredOrders.length === 0 ? (
           <div className="bg-card border border-border rounded-lg p-12 text-center">
             <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">{t("orders.noOrdersYet")}</h2>
-            <p className="text-muted-foreground mb-6">{t("orders.noOrdersMessage")}</p>
+            <h2 className="text-xl font-semibold mb-2">
+              {orders.length === 0 ? t("orders.noOrdersYet") : "No matching orders"}
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              {orders.length === 0 ? t("orders.noOrdersMessage") : "Try a different search or time filter."}
+            </p>
             <Button asChild className="btn-cta"><Link to="/">{t("common.startShopping")}</Link></Button>
           </div>
         ) : (
           <div className="space-y-4">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div key={order.id} className="bg-card border border-border rounded-lg overflow-hidden">
                 <div className="bg-muted/50 p-4 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex flex-wrap gap-6 text-sm">
                     <div><p className="text-muted-foreground">{t("orders.orderPlaced")}</p><p className="font-medium">{new Date(order.date).toLocaleDateString(locale, { month: "long", day: "numeric", year: "numeric" })}</p></div>
-                    <div><p className="text-muted-foreground">{t("orders.total")}</p><p className="font-medium">${order.total.toFixed(2)}</p></div>
+                    <div><p className="text-muted-foreground">{t("orders.total")}</p><p className="font-medium">{formatOrderTotal(order)}</p></div>
                     <div><p className="text-muted-foreground">{t("orders.orderNumber")}</p><p className="font-medium">{order.orderNumber}</p></div>
                   </div>
                   <div className="flex items-center gap-3">

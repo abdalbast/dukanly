@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, ChevronDown, Menu, ShoppingCart, Globe, LogOut } from "lucide-react";
+import { Search, MapPin, ChevronDown, Menu, ShoppingCart, Globe, LogOut, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,19 +10,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CartPreviewPanel, OrdersPreviewPanel } from "@/components/header/HeaderPreviewPanels";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { categories } from "@/data/mockData";
+import { useAddressBook } from "@/contexts/AddressBookContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { categories } from "@/data/mockData";
+import {
+  getLocalizedCityLabel,
+  KURDISTAN_MARKET_LABEL,
+} from "@/lib/kurdistan";
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [isOrdersPreviewOpen, setIsOrdersPreviewOpen] = useState(false);
+  const [isCartPreviewOpen, setIsCartPreviewOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const navigate = useNavigate();
   const { itemCount } = useCart();
   const { user, signOut } = useAuth();
   const { t, language, setLanguage } = useLanguage();
+  const { selectedAddress, openAddressManager } = useAddressBook();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,12 +46,14 @@ export function Header() {
   };
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "";
+  const deliveryCity = getLocalizedCityLabel(selectedAddress?.city ?? "Erbil", selectedAddress?.governorate ?? "Erbil Governorate", language);
+  const deliveryLabel = `${deliveryCity}, ${KURDISTAN_MARKET_LABEL[language]}`;
 
   return (
     <header className="sticky top-0 z-50">
       {/* Main Header */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container flex items-center gap-4 h-14 px-4">
+        <div className="container flex h-14 items-center gap-3 px-4 md:gap-4">
           {/* Logo */}
           <Link to="/" className="shrink-0 flex items-center gap-1">
             <div className="text-xl font-bold tracking-tight">
@@ -51,11 +62,15 @@ export function Header() {
           </Link>
 
           {/* Deliver To */}
-          <button className="hidden md:flex items-center gap-1 text-sm hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded px-2 py-1 -ml-2">
+          <button
+            type="button"
+            onClick={openAddressManager}
+            className="hidden md:flex items-center gap-1 text-sm hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded px-2 py-1 -ml-2"
+          >
             <MapPin className="w-4 h-4 text-primary-foreground/70" />
             <div className="text-left rtl:text-right">
               <div className="text-[10px] text-primary-foreground/70">{t("header.deliverTo")}</div>
-              <div className="font-semibold text-xs">{t("header.location")}</div>
+              <div className="font-semibold text-xs">{deliveryLabel}</div>
             </div>
           </button>
 
@@ -105,10 +120,10 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-muted" : ""}>
-                  🇺🇸 English
+                  English
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setLanguage("ckb")} className={language === "ckb" ? "bg-muted" : ""}>
-                  🇮🇶 کوردی (سۆرانی)
+                  کوردی (سۆرانی)
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -174,17 +189,20 @@ export function Header() {
             </DropdownMenu>
 
             {/* Orders */}
-            <Link
-              to="/orders"
+            <button
+              type="button"
+              onClick={() => setIsOrdersPreviewOpen(true)}
               className="hidden md:flex flex-col items-start px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded"
             >
               <span className="text-[10px] text-primary-foreground/70">{t("header.returns")}</span>
               <span className="text-xs font-semibold">{t("header.andOrders")}</span>
-            </Link>
+            </button>
 
             {/* Cart */}
-            <Link
-              to="/cart"
+            <button
+              type="button"
+              onClick={() => setIsCartPreviewOpen(true)}
+              aria-label={t("header.cart")}
               className="relative flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded"
             >
               <div className="relative">
@@ -194,8 +212,36 @@ export function Header() {
                 )}
               </div>
               <span className="hidden sm:block text-xs font-semibold">{t("header.cart")}</span>
-            </Link>
+            </button>
           </div>
+        </div>
+      </div>
+
+      <div className="border-t border-primary-foreground/10 bg-primary/95 text-primary-foreground md:hidden">
+        <div className="container grid grid-cols-2 gap-2 px-4 py-2">
+          <button
+            type="button"
+            onClick={openAddressManager}
+            className="flex min-w-0 items-center gap-2 rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-2 text-left hover:bg-primary-foreground/10"
+          >
+            <MapPin className="h-4 w-4 shrink-0 text-primary-foreground/75" />
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60">{t("header.deliverTo")}</div>
+              <div className="truncate text-xs font-semibold">{deliveryLabel}</div>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsOrdersPreviewOpen(true)}
+            className="flex min-w-0 items-center gap-2 rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-2 text-left hover:bg-primary-foreground/10"
+          >
+            <Package className="h-4 w-4 shrink-0 text-primary-foreground/75" />
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60">{t("header.returns")}</div>
+              <div className="truncate text-xs font-semibold">{t("header.andOrders")}</div>
+            </div>
+          </button>
         </div>
       </div>
 
@@ -277,6 +323,9 @@ export function Header() {
           </div>
         </div>
       )}
+
+      <OrdersPreviewPanel open={isOrdersPreviewOpen} onOpenChange={setIsOrdersPreviewOpen} />
+      <CartPreviewPanel open={isCartPreviewOpen} onOpenChange={setIsCartPreviewOpen} />
     </header>
   );
 }

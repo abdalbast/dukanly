@@ -16,6 +16,7 @@ import { useSeller } from "@/contexts/SellerContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,6 +62,8 @@ export default function SellerOrders() {
   const [fulfillDialogOpen, setFulfillDialogOpen] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const orderActionsUnavailableMessage =
+    "Order status and fulfillment changes are disabled until seller order persistence is fully connected.";
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
@@ -152,6 +155,11 @@ export default function SellerOrders() {
           Manage and fulfill customer orders
         </p>
       </div>
+
+      <Alert>
+        <AlertTitle>Order updates are disabled</AlertTitle>
+        <AlertDescription>{orderActionsUnavailableMessage}</AlertDescription>
+      </Alert>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

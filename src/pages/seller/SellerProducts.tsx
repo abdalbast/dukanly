@@ -15,6 +15,7 @@ import { useSeller } from "@/contexts/SellerContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +58,8 @@ export default function SellerProducts() {
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<SellerProduct | null>(null);
+  const productActionsUnavailableMessage =
+    "Create, publish, archive, duplicate, and delete actions are disabled until seller product persistence is fully connected.";
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
@@ -148,6 +151,11 @@ export default function SellerProducts() {
           </Link>
         </Button>
       </div>
+
+      <Alert>
+        <AlertTitle>Catalog writes are disabled</AlertTitle>
+        <AlertDescription>{productActionsUnavailableMessage}</AlertDescription>
+      </Alert>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -260,7 +268,15 @@ export default function SellerProducts() {
                             View in Store
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            toast({
+                              title: "Product duplication unavailable",
+                              description: productActionsUnavailableMessage,
+                              variant: "destructive",
+                            })
+                          }
+                        >
                           <Copy className="w-4 h-4 mr-2" />
                           Duplicate
                         </DropdownMenuItem>
@@ -308,18 +324,17 @@ export default function SellerProducts() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
+            <DialogTitle>Delete unavailable</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{productToDelete?.title}"? This action
-              cannot be undone.
+              Product deletion is intentionally disabled until seller product persistence is fully connected.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              Cancel
+              Close
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
-              Delete
+              Try anyway
             </Button>
           </DialogFooter>
         </DialogContent>

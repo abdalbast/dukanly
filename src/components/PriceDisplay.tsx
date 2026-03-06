@@ -1,4 +1,4 @@
-import { convertToIQD } from "@/lib/currency";
+import { convertToIQD, formatIQDParts } from "@/lib/currency";
 
 interface PriceDisplayProps {
   /** Price in USD (will be converted to IQD for display) */
@@ -15,6 +15,8 @@ export function PriceDisplay({
 }: PriceDisplayProps) {
   const iqdPrice = convertToIQD(price);
   const iqdOriginal = originalPrice ? convertToIQD(originalPrice) : undefined;
+  const priceParts = formatIQDParts(iqdPrice);
+  const originalPriceParts = iqdOriginal ? formatIQDParts(iqdOriginal) : null;
 
   const sizeClasses = {
     sm: { whole: "text-sm font-semibold", suffix: "text-[10px]" },
@@ -39,12 +41,12 @@ export function PriceDisplay({
       )}
       <div className="flex items-baseline gap-1">
         <span className={sizeClasses[size].whole}>
-          {iqdPrice.toLocaleString()}
+          {priceParts.amount}
         </span>
-        <span className={sizeClasses[size].suffix}>IQD</span>
-        {iqdOriginal && (
+        <span className={sizeClasses[size].suffix}>{priceParts.currency}</span>
+        {originalPriceParts && (
           <span className="ml-2 text-muted-foreground text-sm line-through">
-            {iqdOriginal.toLocaleString()} IQD
+            {originalPriceParts.amount} {originalPriceParts.currency}
           </span>
         )}
       </div>

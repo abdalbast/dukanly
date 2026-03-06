@@ -54,20 +54,20 @@ export default function SignUpPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="name">{t("auth.yourName")}</Label>
-                <Input id="name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={t("auth.firstAndLastName")} required />
+                <Input id="name" type="text" autoComplete="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={t("auth.firstAndLastName")} required />
               </div>
               <div>
                 <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input id="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={t("auth.emailPlaceholder")} required />
+                <Input id="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={t("auth.emailPlaceholder")} required />
               </div>
               <div>
                 <Label htmlFor="password">{t("auth.password")}</Label>
-                <Input id="password" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder={t("auth.atLeast8Chars")} required minLength={8} />
+                <Input id="password" type="password" autoComplete="new-password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder={t("auth.atLeast8Chars")} required minLength={8} />
                 <p className="text-xs text-muted-foreground mt-1">{t("auth.passwordHint")}</p>
               </div>
               <div>
                 <Label htmlFor="confirmPassword">{t("auth.confirmPassword")}</Label>
-                <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} placeholder={t("auth.reenterPassword")} required />
+                <Input id="confirmPassword" type="password" autoComplete="new-password" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} placeholder={t("auth.reenterPassword")} required />
               </div>
               <label className="flex items-start gap-2 cursor-pointer">
                 <Checkbox checked={formData.agreeToTerms} onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: !!checked })} className="mt-0.5" />

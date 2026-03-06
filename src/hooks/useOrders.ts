@@ -16,6 +16,7 @@ export interface Order {
   date: string;
   status: "processing" | "shipped" | "delivered" | "cancelled";
   total: number;
+  currencyCode: string;
   items: OrderItem[];
 }
 
@@ -34,6 +35,7 @@ export function useOrders() {
           order_number,
           status,
           total_amount,
+          currency_code,
           created_at,
           order_items (
             id,
@@ -57,6 +59,7 @@ export function useOrders() {
         order_number: string;
         status: string;
         total_amount: number;
+        currency_code: string;
         created_at: string;
         order_items: Array<{
           id: string;
@@ -80,6 +83,7 @@ export function useOrders() {
           date: o.created_at,
           status: statusMap[o.status] ?? "processing",
           total: Number(o.total_amount) || 0,
+          currencyCode: o.currency_code,
           items: (o.order_items ?? []).map((item) => ({
             id: item.products?.id ?? item.product_id,
             title: item.products?.title ?? "Product",

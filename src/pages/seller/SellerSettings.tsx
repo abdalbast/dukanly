@@ -211,7 +211,7 @@ export default function SellerSettings() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="state">State</Label>
+                      <Label htmlFor="state">Governorate</Label>
                       <Input
                         id="state"
                         value={profileForm.state}
@@ -221,7 +221,7 @@ export default function SellerSettings() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="zip">ZIP Code</Label>
+                      <Label htmlFor="zip">Postal Code</Label>
                       <Input
                         id="zip"
                         value={profileForm.zip}

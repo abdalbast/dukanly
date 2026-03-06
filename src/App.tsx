@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { SellerProvider } from "@/contexts/SellerContext";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AddressBookProvider } from "@/contexts/AddressBookContext";
 import { RequireAuth } from "./components/auth/RequireAuth";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -65,15 +66,16 @@ function RouteFallback() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <AuthProvider>
-        <CartProvider>
-          <SellerProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Suspense fallback={<RouteFallback />}>
-                  <Routes>
+      <AddressBookProvider>
+        <AuthProvider>
+          <CartProvider>
+            <SellerProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Suspense fallback={<RouteFallback />}>
+                    <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/product/:id" element={<ProductDetailPage />} />
                     <Route path="/search" element={<SearchResultsPage />} />
@@ -183,9 +185,30 @@ const App = () => (
                     <Route path="/affiliate" element={<AboutPage />} />
                     <Route path="/advertise" element={<AboutPage />} />
                     <Route path="/publish" element={<AboutPage />} />
-                    <Route path="/card" element={<AccountPage />} />
-                    <Route path="/points" element={<AccountPage />} />
-                    <Route path="/reload" element={<AccountPage />} />
+                    <Route
+                      path="/card"
+                      element={
+                        <RequireAuth>
+                          <AccountPage />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path="/points"
+                      element={
+                        <RequireAuth>
+                          <AccountPage />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path="/reload"
+                      element={
+                        <RequireAuth>
+                          <AccountPage />
+                        </RequireAuth>
+                      }
+                    />
 
                     <Route path="/seller" element={<SellerLayout />}>
                       <Route index element={<SellerOverview />} />
@@ -211,13 +234,14 @@ const App = () => (
                     <Route path="/seller/:sellerId" element={<SearchResultsPage />} />
 
                     <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </BrowserRouter>
-            </TooltipProvider>
-          </SellerProvider>
-        </CartProvider>
-      </AuthProvider>
+                    </Routes>
+                  </Suspense>
+                </BrowserRouter>
+              </TooltipProvider>
+            </SellerProvider>
+          </CartProvider>
+        </AuthProvider>
+      </AddressBookProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

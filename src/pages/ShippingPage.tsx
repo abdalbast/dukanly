@@ -1,6 +1,7 @@
 import { Layout } from "@/components/Layout";
 import { Truck, Clock, Package, MapPin } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { formatIQD } from "@/lib/currency";
 
 export default function ShippingPage() {
   const { t } = useLanguage();
@@ -16,20 +17,20 @@ export default function ShippingPage() {
               <div className="bg-card border border-border rounded-lg p-6">
                 <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center mb-4"><Package className="w-6 h-6 text-muted-foreground" /></div>
                 <h3 className="font-semibold mb-2">{t("shipping.standardShipping")}</h3>
-                <p className="text-2xl font-bold text-primary mb-2">$4.99</p>
+                <p className="text-2xl font-bold text-primary mb-2">{formatIQD(6500)}</p>
                 <p className="text-sm text-muted-foreground">{t("shipping.businessDays57")}</p>
                 <p className="text-xs text-success mt-2">{t("shipping.freeOnOrders35")}</p>
               </div>
               <div className="bg-card border border-border rounded-lg p-6">
                 <div className="w-12 h-12 bg-info/10 rounded-lg flex items-center justify-center mb-4"><Truck className="w-6 h-6 text-info" /></div>
                 <h3 className="font-semibold mb-2">{t("shipping.expressShipping")}</h3>
-                <p className="text-2xl font-bold text-primary mb-2">$9.99</p>
+                <p className="text-2xl font-bold text-primary mb-2">{formatIQD(13000)}</p>
                 <p className="text-sm text-muted-foreground">{t("shipping.businessDays23")}</p>
               </div>
               <div className="bg-card border border-border rounded-lg p-6 border-prime">
                 <div className="w-12 h-12 bg-prime/10 rounded-lg flex items-center justify-center mb-4"><Clock className="w-6 h-6 text-prime" /></div>
                 <h3 className="font-semibold mb-2">{t("shipping.nextDayDelivery")}</h3>
-                <p className="text-2xl font-bold text-primary mb-2">$14.99</p>
+                <p className="text-2xl font-bold text-primary mb-2">{formatIQD(19500)}</p>
                 <p className="text-sm text-muted-foreground">{t("shipping.nextBusinessDay")}</p>
                 <p className="text-xs text-muted-foreground mt-2">{t("shipping.orderBy2pm")}</p>
               </div>

@@ -1,172 +1,162 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  MapPin, 
-  Plus, 
-  Truck, 
-  CreditCard, 
-  Banknote,
-  ShieldCheck, 
-  Clock,
-  Package,
-  Check,
-  Navigation
-} from "lucide-react";
+import { Banknote, Check, Clock, CreditCard, MapPin, Package, Plus, ShieldCheck, Truck } from "lucide-react";
+
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import { useAddressBook } from "@/contexts/AddressBookContext";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
-import { submitCheckout } from "@/lib/writeApi";
-import { convertToIQD, formatIQD, FREE_SHIPPING_THRESHOLD_IQD, EXCHANGE_RATE_USD_TO_IQD } from "@/lib/currency";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { convertToIQD, formatIQD, FREE_SHIPPING_THRESHOLD_IQD } from "@/lib/currency";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-interface Address {
-  id: string;
-  name: string;
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  isDefault: boolean;
-}
+  getLocalizedCityLabel,
+  getLocalizedGovernorateLabel,
+  KURDISTAN_COUNTRY,
+  normalizeIraqPhone,
+} from "@/lib/kurdistan";
+import type { AppLanguage } from "@/lib/locale";
+import { submitCheckout } from "@/lib/writeApi";
+import type { SavedAddress } from "@/types/address";
 
 interface DeliveryOption {
-  id: string;
-  name: string;
-  description: string;
+  id: "standard" | "express" | "next-day";
+  icon: "package" | "truck" | "clock";
   priceIQD: number;
-  priceUSD: number;
-  estimatedDays: string;
+  nameKey:
+    | "checkout.standardDelivery"
+    | "checkout.expressDelivery"
+    | "checkout.nextDayDelivery";
+  descriptionKey:
+    | "checkout.deliveredByPostal"
+    | "checkout.fastDelivery"
+    | "checkout.orderBy2pm";
+  etaKey:
+    | "checkout.businessDays57"
+    | "checkout.businessDays23"
+    | "checkout.nextBusinessDay";
 }
 
 interface PaymentMethodOption {
   id: "fib" | "cod" | "stripe";
-  type: "fib" | "cod" | "stripe";
-  label: string;
-  description: string;
+  icon: "fib" | "cod" | "stripe";
+  recommended?: boolean;
+  labelKey:
+    | "checkout.payWithFib"
+    | "checkout.cashOnDelivery"
+    | "checkout.payWithCard";
+  descriptionKey:
+    | "checkout.fibDescription"
+    | "checkout.codDescription"
+    | "checkout.cardDescription";
 }
-
-const mockAddresses: Address[] = [
-  {
-    id: "addr-1",
-    name: "Kurdistan Launch Customer",
-    street: "100 Gulan Street",
-    city: "Erbil",
-    state: "Erbil Governorate",
-    zip: "44001",
-    country: "Iraq",
-    isDefault: true,
-  },
-  {
-    id: "addr-2",
-    name: "Kurdistan Launch Customer",
-    street: "21 Salim Street",
-    city: "Sulaymaniyah",
-    state: "Sulaymaniyah Governorate",
-    zip: "46001",
-    country: "Iraq",
-    isDefault: false,
-  },
-];
 
 const deliveryOptions: DeliveryOption[] = [
   {
     id: "standard",
-    name: "Standard Delivery",
-    description: "Delivered by postal service",
-    priceUSD: 4.99,
+    icon: "package",
     priceIQD: 6500,
-    estimatedDays: "5-7 business days",
+    nameKey: "checkout.standardDelivery",
+    descriptionKey: "checkout.deliveredByPostal",
+    etaKey: "checkout.businessDays57",
   },
   {
     id: "express",
-    name: "Express Delivery",
-    description: "Fast delivery to your door",
-    priceUSD: 9.99,
+    icon: "truck",
     priceIQD: 13000,
-    estimatedDays: "2-3 business days",
+    nameKey: "checkout.expressDelivery",
+    descriptionKey: "checkout.fastDelivery",
+    etaKey: "checkout.businessDays23",
   },
   {
     id: "next-day",
-    name: "Next Day Delivery",
-    description: "Order by 2pm for next day",
-    priceUSD: 14.99,
+    icon: "clock",
     priceIQD: 19500,
-    estimatedDays: "Next business day",
+    nameKey: "checkout.nextDayDelivery",
+    descriptionKey: "checkout.orderBy2pm",
+    etaKey: "checkout.nextBusinessDay",
   },
 ];
 
-const mockPaymentMethods: PaymentMethodOption[] = [
-  {
-    id: "stripe",
-    type: "stripe",
-    label: "Pay with Card",
-    description: "Secure card payment powered by Stripe.",
-  },
+const paymentMethods: PaymentMethodOption[] = [
   {
     id: "fib",
-    type: "fib",
-    label: "Pay with FIB",
-    description: "Complete payment using FIB app links or QR code.",
+    icon: "fib",
+    recommended: true,
+    labelKey: "checkout.payWithFib",
+    descriptionKey: "checkout.fibDescription",
   },
   {
     id: "cod",
-    type: "cod",
-    label: "Cash on Delivery",
-    description: "Pay in cash when your order is delivered.",
+    icon: "cod",
+    labelKey: "checkout.cashOnDelivery",
+    descriptionKey: "checkout.codDescription",
+  },
+  {
+    id: "stripe",
+    icon: "stripe",
+    labelKey: "checkout.payWithCard",
+    descriptionKey: "checkout.cardDescription",
   },
 ];
+
+function getDeliveryIcon(icon: DeliveryOption["icon"]) {
+  if (icon === "clock") return <Clock className="w-4 h-4 text-prime" />;
+  if (icon === "truck") return <Truck className="w-4 h-4 text-info" />;
+  return <Package className="w-4 h-4 text-muted-foreground" />;
+}
+
+function getPaymentIcon(icon: PaymentMethodOption["icon"]) {
+  if (icon === "cod") return <Banknote className="w-4 h-4 text-muted-foreground" />;
+  return <CreditCard className="w-4 h-4 text-muted-foreground" />;
+}
+
+function formatAddress(address: SavedAddress, language: AppLanguage) {
+  return [
+    address.street,
+    address.district,
+    `${getLocalizedCityLabel(address.city, address.governorate, language)}, ${getLocalizedGovernorateLabel(address.governorate, language)}`,
+    address.landmark,
+    address.postalCode,
+    KURDISTAN_COUNTRY.label[language],
+  ].filter(Boolean);
+}
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { activeItems, subtotal, clearCart } = useCart();
   const { toast } = useToast();
-  
-  const [addresses] = useState<Address[]>(mockAddresses);
-  const [selectedAddressId, setSelectedAddressId] = useState(
-    mockAddresses.find((a) => a.isDefault)?.id || mockAddresses[0]?.id
-  );
-  const [selectedDelivery, setSelectedDelivery] = useState(deliveryOptions[0].id);
-  const [paymentMethods] = useState<PaymentMethodOption[]>(mockPaymentMethods);
-  const [selectedPaymentId, setSelectedPaymentId] = useState<"fib" | "cod" | "stripe">("stripe");
-  const [customerPhone, setCustomerPhone] = useState("+964");
+  const { t, language } = useLanguage();
+  const {
+    addresses,
+    selectedAddress,
+    selectedAddressId,
+    selectAddress,
+    openAddressManager,
+  } = useAddressBook();
+
+  const [selectedDelivery, setSelectedDelivery] = useState<DeliveryOption["id"]>("standard");
+  const [selectedPaymentId, setSelectedPaymentId] = useState<PaymentMethodOption["id"]>("fib");
+  const [customerPhone, setCustomerPhone] = useState(selectedAddress?.phone ?? "+964");
   const [deliveryInstructions, setDeliveryInstructions] = useState("");
   const [isGiftOrder, setIsGiftOrder] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
-  const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
-  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
-  // New address form state
-  const [newAddress, setNewAddress] = useState({
-    name: "",
-    street: "",
-    city: "",
-    state: "",
-    zip: "",
-    country: "Iraq",
-  });
-
-  const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
-  const selectedDeliveryOption = deliveryOptions.find((d) => d.id === selectedDelivery);
-  const shippingCostIQD = selectedDeliveryOption?.priceIQD || 0;
-  const shippingCostUSD = selectedDeliveryOption?.priceUSD || 0;
+  const selectedDeliveryOption = deliveryOptions.find((option) => option.id === selectedDelivery);
   const subtotalIQD = convertToIQD(subtotal);
-  const taxRate = 0.02;
-  const taxAmountIQD = Math.round(subtotalIQD * taxRate);
-  const orderTotalIqd = subtotalIQD + shippingCostIQD + taxAmountIQD;
-  const orderTotalUSD = subtotal + shippingCostUSD + (subtotal * taxRate);
+  const isFreeStandardShipping =
+    selectedDelivery === "standard" && subtotalIQD >= FREE_SHIPPING_THRESHOLD_IQD;
+  const shippingCostIQD = selectedDeliveryOption
+    ? selectedDeliveryOption.id === "standard" && isFreeStandardShipping
+      ? 0
+      : selectedDeliveryOption.priceIQD
+    : 0;
+  const feesAmountIQD = 0;
+  const orderTotalIqd = subtotalIQD + shippingCostIQD + feesAmountIQD;
   const lineItems = activeItems.map((item) => ({
     productRef: item.product.id,
     title: item.product.title,
@@ -175,69 +165,52 @@ export default function CheckoutPage() {
     currencyCode: "IQD",
   }));
 
-  const handleDetectLocation = async () => {
-    if (!navigator.geolocation) {
-      toast({ title: "GPS not supported", description: "Your browser does not support geolocation.", variant: "destructive" });
-      return;
-    }
-    setIsDetectingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=en`,
-            { headers: { "User-Agent": "Dukanly/1.0" } }
-          );
-          const data = await res.json();
-          const addr = data.address || {};
-          setNewAddress({
-            name: newAddress.name,
-            street: addr.road || addr.neighbourhood || "",
-            city: addr.city || addr.town || addr.village || addr.county || "",
-            state: addr.state || addr.province || "",
-            zip: addr.postcode || "",
-            country: "Iraq",
-          });
-          toast({ title: "Location detected", description: `${addr.city || addr.town || ""}, ${addr.state || ""}` });
-        } catch {
-          toast({ title: "Geocoding failed", description: "Could not determine your address from coordinates.", variant: "destructive" });
-        }
-        setIsDetectingLocation(false);
-      },
-      (error) => {
-        setIsDetectingLocation(false);
-        if (error.code === error.PERMISSION_DENIED) {
-          toast({ title: "Permission denied", description: "Please allow location access to use this feature.", variant: "destructive" });
-        } else {
-          toast({ title: "Location error", description: error.message, variant: "destructive" });
-        }
-      },
-      { enableHighAccuracy: true, timeout: 15000 }
-    );
-  };
+  useEffect(() => {
+    if (!selectedAddress) return;
+    setCustomerPhone(selectedAddress.phone);
+  }, [selectedAddress]);
 
   const handlePlaceOrder = async () => {
+    const normalizedPhone = normalizeIraqPhone(customerPhone);
+
+    if (!selectedAddress || !selectedAddressId) {
+      toast({
+        title: t("checkout.missingAddressDetails"),
+        description: t("checkout.selectDeliveryAddress"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!normalizedPhone) {
+      toast({
+        title: t("checkout.invalidPhone"),
+        description: t("checkout.validKurdistanPhoneRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsPlacingOrder(true);
     const result = await submitCheckout({
       cartId: "active-cart",
       shippingAddressId: selectedAddressId,
       billingAddressId: selectedAddressId,
       paymentMethod: selectedPaymentId,
-      deliveryOption: selectedDelivery as "standard" | "express" | "next-day",
+      deliveryOption: selectedDelivery,
       currencyCode: "IQD",
       clientTotal: orderTotalIqd,
       regionCode: "KRD",
-      countryCode: "IQ",
-      customerPhone,
-      description: "Dukanly checkout payment",
+      countryCode: KURDISTAN_COUNTRY.code,
+      customerPhone: normalizedPhone,
+      description: "Dukanly Kurdistan checkout",
       lineItems,
     });
 
     if (!result.ok) {
       toast({
-        title: "Checkout failed",
-        description: result.failure?.message ?? "Could not submit checkout request.",
+        title: t("checkout.checkoutFailed"),
+        description: result.failure?.message ?? t("checkout.checkoutFailedDesc"),
         variant: "destructive",
       });
       setIsPlacingOrder(false);
@@ -267,10 +240,10 @@ export default function CheckoutPage() {
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
             <div className="text-6xl mb-6">🛒</div>
-            <h1 className="text-2xl font-bold mb-3">Your cart is empty</h1>
-            <p className="text-muted-foreground mb-6">Add items to your cart before checking out.</p>
+            <h1 className="text-2xl font-bold mb-3">{t("checkout.emptyCart")}</h1>
+            <p className="text-muted-foreground mb-6">{t("checkout.addItemsFirst")}</p>
             <Button asChild className="btn-cta">
-              <Link to="/">Continue Shopping</Link>
+              <Link to="/">{t("common.continueShopping")}</Link>
             </Button>
           </div>
         </div>
@@ -281,256 +254,319 @@ export default function CheckoutPage() {
   return (
     <Layout>
       <div className="container py-6">
-        <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+        <div className="max-w-5xl mx-auto mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-5">
+          <h1 className="text-2xl font-bold">{t("checkout.title")}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t("checkout.kurdistanLaunchNote")}</p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 space-y-6">
-            {/* 1. Shipping Address */}
-            <section className="bg-card border border-border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center">1</span>
-                  Shipping Address
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
+            <section className="rounded-lg border border-border bg-card p-4">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="flex items-center gap-2 font-semibold">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">1</span>
+                  {t("checkout.shippingAddress")}
                 </h2>
-                <Dialog open={isAddAddressOpen} onOpenChange={setIsAddAddressOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add Address
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Address</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 pt-4">
-                      {/* GPS Button */}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full"
-                        onClick={handleDetectLocation}
-                        disabled={isDetectingLocation}
-                      >
-                        <Navigation className="w-4 h-4 mr-2" />
-                        {isDetectingLocation ? "Detecting location..." : "Use My Location"}
-                      </Button>
-
-                      <div>
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input id="name" value={newAddress.name} onChange={(e) => setNewAddress({ ...newAddress, name: e.target.value })} placeholder="Ahmad Mohammed" />
-                      </div>
-                      <div>
-                        <Label htmlFor="street">Street Address</Label>
-                        <Input id="street" value={newAddress.street} onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })} placeholder="100 Gulan Street" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="city">City</Label>
-                          <Input id="city" value={newAddress.city} onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} placeholder="Erbil" />
-                        </div>
-                        <div>
-                          <Label htmlFor="state">Governorate</Label>
-                          <Input id="state" value={newAddress.state} onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })} placeholder="Erbil Governorate" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="zip">Postal Code</Label>
-                          <Input id="zip" value={newAddress.zip} onChange={(e) => setNewAddress({ ...newAddress, zip: e.target.value })} placeholder="44001" />
-                        </div>
-                        <div>
-                          <Label htmlFor="country">Country</Label>
-                          <Input id="country" value={newAddress.country} onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })} disabled />
-                        </div>
-                      </div>
-                      <Button className="w-full" onClick={() => setIsAddAddressOpen(false)}>Save Address</Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <Button variant="outline" size="sm" onClick={openAddressManager}>
+                  <Plus className="mr-1 h-4 w-4 rtl:mr-0 rtl:ml-1" />
+                  {t("addressBook.manageAddresses")}
+                </Button>
               </div>
 
-              <RadioGroup value={selectedAddressId} onValueChange={setSelectedAddressId} className="space-y-3">
-                {addresses.map((address) => (
-                  <label key={address.id} className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedAddressId === address.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                    <RadioGroupItem value={address.id} className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">{address.name}</span>
-                        {address.isDefault && <span className="text-xs bg-secondary px-2 py-0.5 rounded">Default</span>}
+              {addresses.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-border p-6 text-center">
+                  <MapPin className="mx-auto mb-3 h-10 w-10 text-muted-foreground" />
+                  <p className="font-medium">{t("addressBook.noAddresses")}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t("addressBook.noAddressesDesc")}</p>
+                  <Button className="mt-4" onClick={openAddressManager}>
+                    {t("addressBook.addAddress")}
+                  </Button>
+                </div>
+              ) : (
+                <RadioGroup value={selectedAddressId ?? ""} onValueChange={selectAddress} className="space-y-3">
+                  {addresses.map((address) => (
+                    <label
+                      key={address.id}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                        selectedAddressId === address.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <RadioGroupItem value={address.id} className="mt-1" />
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{address.name}</span>
+                          {address.isDefault && (
+                            <span className="rounded bg-secondary px-2 py-0.5 text-xs">{t("common.default")}</span>
+                          )}
+                        </div>
+                        <p className="mt-1 text-sm text-muted-foreground" dir="ltr">
+                          {address.phone}
+                        </p>
+                        <div className="mt-2 space-y-0.5 text-sm text-muted-foreground">
+                          {formatAddress(address, language).map((line) => (
+                            <p key={`${address.id}-${line}`}>{line}</p>
+                          ))}
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {address.street}<br />{address.city}, {address.state} {address.zip}<br />{address.country}
-                      </p>
-                    </div>
-                  </label>
-                ))}
-              </RadioGroup>
+                    </label>
+                  ))}
+                </RadioGroup>
+              )}
 
-              <div className="mt-4 pt-4 border-t border-border">
-                <Label htmlFor="instructions" className="text-sm font-medium">Delivery Instructions (optional)</Label>
-                <Input id="instructions" value={deliveryInstructions} onChange={(e) => setDeliveryInstructions(e.target.value)} placeholder="e.g., Leave at door, ring doorbell" className="mt-2" />
+              <div className="mt-4 grid grid-cols-1 gap-4 border-t border-border pt-4 md:grid-cols-2">
+                <div>
+                  <label htmlFor="customer-phone" className="text-sm font-medium">
+                    {t("checkout.contactPhone")}
+                  </label>
+                  <input
+                    id="customer-phone"
+                    dir="ltr"
+                    value={customerPhone}
+                    onChange={(event) => setCustomerPhone(event.target.value)}
+                    placeholder={t("checkout.contactPhonePlaceholder")}
+                    className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">{t("checkout.contactPhoneHint")}</p>
+                </div>
+                <div>
+                  <label htmlFor="instructions" className="text-sm font-medium">
+                    {t("checkout.deliveryInstructions")}
+                  </label>
+                  <input
+                    id="instructions"
+                    value={deliveryInstructions}
+                    onChange={(event) => setDeliveryInstructions(event.target.value)}
+                    placeholder={t("checkout.deliveryInstructionsPlaceholder")}
+                    className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </div>
               </div>
             </section>
 
-            {/* 2. Delivery Options */}
-            <section className="bg-card border border-border rounded-lg p-4">
-              <h2 className="font-semibold flex items-center gap-2 mb-4">
-                <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center">2</span>
-                Delivery Options
-              </h2>
+            <section className="rounded-lg border border-border bg-card p-4">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="flex items-center gap-2 font-semibold">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">2</span>
+                  {t("checkout.deliveryOptions")}
+                </h2>
+                <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                  {t("checkout.deliveryCoverage")}
+                </span>
+              </div>
 
-              <RadioGroup value={selectedDelivery} onValueChange={setSelectedDelivery} className="space-y-3">
-                {deliveryOptions.map((option) => (
-                  <label key={option.id} className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedDelivery === option.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
-                    <RadioGroupItem value={option.id} className="mt-1" />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {option.id === "next-day" ? <Clock className="w-4 h-4 text-prime" /> : option.id === "express" ? <Truck className="w-4 h-4 text-info" /> : <Package className="w-4 h-4 text-muted-foreground" />}
-                          <span className="font-medium">{option.name}</span>
+              <RadioGroup
+                value={selectedDelivery}
+                onValueChange={(value) => setSelectedDelivery(value as DeliveryOption["id"])}
+                className="space-y-3"
+              >
+                {deliveryOptions.map((option) => {
+                  const isFreeStandard = option.id === "standard" && isFreeStandardShipping;
+                  return (
+                    <label
+                      key={option.id}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                        selectedDelivery === option.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <RadioGroupItem value={option.id} className="mt-1" />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            {getDeliveryIcon(option.icon)}
+                            <span className="font-medium">{t(option.nameKey)}</span>
+                          </div>
+                          <span className="font-semibold">
+                            {isFreeStandard ? (
+                              <span className="text-success">{t("checkout.free")}</span>
+                            ) : (
+                              formatIQD(option.priceIQD)
+                            )}
+                          </span>
                         </div>
-                        <span className="font-semibold">
-                          {option.priceIQD === 0 ? <span className="text-success">FREE</span> : formatIQD(option.priceIQD)}
-                        </span>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {t(option.descriptionKey)} • {t(option.etaKey)}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">{option.description} • {option.estimatedDays}</p>
-                    </div>
-                  </label>
-                ))}
+                    </label>
+                  );
+                })}
               </RadioGroup>
 
               {subtotalIQD >= FREE_SHIPPING_THRESHOLD_IQD && (
-                <div className="mt-3 p-3 bg-success/10 border border-success/30 rounded-lg text-sm text-success flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  Your order qualifies for FREE standard shipping!
+                <div className="mt-3 flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 p-3 text-sm text-success">
+                  <Check className="h-4 w-4" />
+                  {t("checkout.qualifiesFreeShipping")}
                 </div>
               )}
             </section>
 
-            {/* 3. Payment Method */}
-            <section className="bg-card border border-border rounded-lg p-4">
-              <h2 className="font-semibold flex items-center gap-2 mb-4">
-                <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center">3</span>
-                Payment Method
+            <section className="rounded-lg border border-border bg-card p-4">
+              <h2 className="mb-4 flex items-center gap-2 font-semibold">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">3</span>
+                {t("checkout.paymentMethod")}
               </h2>
 
-              <RadioGroup value={selectedPaymentId} onValueChange={(value) => setSelectedPaymentId(value as "fib" | "cod" | "stripe")} className="space-y-3">
+              <RadioGroup
+                value={selectedPaymentId}
+                onValueChange={(value) => setSelectedPaymentId(value as PaymentMethodOption["id"])}
+                className="space-y-3"
+              >
                 {paymentMethods.map((method) => (
-                  <label key={method.id} className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedPaymentId === method.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
+                  <label
+                    key={method.id}
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                      selectedPaymentId === method.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
                     <RadioGroupItem value={method.id} className="mt-1" />
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        {method.type === "cod" ? <Banknote className="w-4 h-4 text-muted-foreground" /> : <CreditCard className="w-4 h-4 text-muted-foreground" />}
-                        <span className="font-medium">{method.label}</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {getPaymentIcon(method.icon)}
+                        <span className="font-medium">{t(method.labelKey)}</span>
+                        {method.recommended && (
+                          <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs text-success">
+                            {t("checkout.recommended")}
+                          </span>
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">{method.description}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{t(method.descriptionKey)}</p>
                     </div>
                   </label>
                 ))}
               </RadioGroup>
 
               {selectedPaymentId === "cod" && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <Label htmlFor="customer-phone" className="text-sm font-medium">Phone Number for COD verification</Label>
-                  <Input id="customer-phone" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="+9647XXXXXXXX" className="mt-2" />
-                  <p className="text-xs text-muted-foreground mt-1">A valid delivery phone number is required for COD orders.</p>
+                <div className="mt-4 border-t border-border pt-4">
+                  <p className="text-sm text-muted-foreground">{t("checkout.codVerificationRequired")}</p>
                 </div>
               )}
-
-              <div className="mt-4 pt-4 border-t border-border">
-                <Label htmlFor="promo" className="text-sm font-medium">Gift Card or Promo Code</Label>
-                <div className="flex gap-2 mt-2">
-                  <Input id="promo" placeholder="Enter code" className="flex-1" />
-                  <Button variant="outline">Apply</Button>
-                </div>
-              </div>
             </section>
 
-            {/* 4. Gift Options */}
-            <section className="bg-card border border-border rounded-lg p-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <Checkbox checked={isGiftOrder} onCheckedChange={(checked) => setIsGiftOrder(checked as boolean)} className="mt-1" />
+            <section className="rounded-lg border border-border bg-card p-4">
+              <label className="flex cursor-pointer items-start gap-3">
+                <Checkbox checked={isGiftOrder} onCheckedChange={(checked) => setIsGiftOrder(Boolean(checked))} className="mt-1" />
                 <div>
-                  <span className="font-medium">This order is a gift</span>
-                  <p className="text-sm text-muted-foreground">Price will not be shown on the packing slip</p>
+                  <span className="font-medium">{t("checkout.giftOrder")}</span>
+                  <p className="text-sm text-muted-foreground">{t("checkout.priceNotShown")}</p>
                 </div>
               </label>
 
               {isGiftOrder && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <Label htmlFor="gift-message" className="text-sm font-medium">Gift Message (optional)</Label>
-                  <textarea id="gift-message" value={giftMessage} onChange={(e) => setGiftMessage(e.target.value)} placeholder="Add a personal message..." className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-none focus:outline-none focus:ring-2 focus:ring-ring" maxLength={200} />
-                  <p className="text-xs text-muted-foreground mt-1">{giftMessage.length}/200 characters</p>
+                <div className="mt-4 border-t border-border pt-4">
+                  <label htmlFor="gift-message" className="text-sm font-medium">
+                    {t("checkout.giftMessage")}
+                  </label>
+                  <Textarea
+                    id="gift-message"
+                    value={giftMessage}
+                    onChange={(event) => setGiftMessage(event.target.value)}
+                    placeholder={t("checkout.addPersonalMessage")}
+                    className="mt-2 min-h-[96px]"
+                    maxLength={200}
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {giftMessage.length}/200 {t("checkout.characters")}
+                  </p>
                 </div>
               )}
             </section>
           </div>
 
-          {/* Order Summary Sidebar */}
           <div className="lg:col-span-4">
-            <div className="bg-card border border-border rounded-lg p-4 space-y-4 sticky top-24">
-              <h2 className="font-semibold">Order Summary</h2>
+            <div className="sticky top-24 space-y-4 rounded-lg border border-border bg-card p-4">
+              <h2 className="font-semibold">{t("checkout.orderSummary")}</h2>
 
-              <div className="space-y-3 max-h-48 overflow-y-auto">
+              <div className="max-h-48 space-y-3 overflow-y-auto">
                 {activeItems.map((item) => (
                   <div key={item.id} className="flex gap-3">
-                    <img src={item.product.images[0]} alt={item.product.title} className="w-12 h-12 object-contain bg-secondary rounded" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm line-clamp-1">{item.product.title}</p>
-                      <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                    <img
+                      src={item.product.images[0]}
+                      alt={item.product.title}
+                      className="h-12 w-12 rounded bg-secondary object-contain"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-1 text-sm">{item.product.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("product.qty")} {item.quantity}
+                      </p>
                     </div>
-                    <p className="text-sm font-medium">{formatIQD(convertToIQD(item.product.offer.price * item.quantity))}</p>
+                    <p className="text-sm font-medium">
+                      {formatIQD(convertToIQD(item.product.offer.price * item.quantity))}
+                    </p>
                   </div>
                 ))}
               </div>
 
-              <div className="border-t border-border pt-4 space-y-2 text-sm">
+              <div className="space-y-2 border-t border-border pt-4 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">{t("checkout.subtotal")}</span>
                   <span>{formatIQD(subtotalIQD)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span>{shippingCostIQD === 0 ? <span className="text-success">FREE</span> : formatIQD(shippingCostIQD)}</span>
+                  <span className="text-muted-foreground">{t("checkout.shipping")}</span>
+                  <span>
+                    {shippingCostIQD === 0 ? (
+                      <span className="text-success">{t("checkout.free")}</span>
+                    ) : (
+                      formatIQD(shippingCostIQD)
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tax (estimated)</span>
-                  <span>{formatIQD(taxAmountIQD)}</span>
+                  <span className="text-muted-foreground">{t("checkout.taxEstimated")}</span>
+                  <span>{formatIQD(feesAmountIQD)}</span>
                 </div>
               </div>
 
               <div className="border-t border-border pt-4">
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Order Total</span>
+                  <span>{t("checkout.orderTotal")}</span>
                   <span>{formatIQD(orderTotalIqd)}</span>
                 </div>
               </div>
 
               {selectedAddress && (
-                <div className="text-xs text-muted-foreground border-t border-border pt-4">
-                  <p className="font-medium text-foreground mb-1">Delivering to:</p>
-                  <p>{selectedAddress.name}</p>
-                  <p>{selectedAddress.street}</p>
-                  <p>{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zip}</p>
+                <div className="space-y-1 border-t border-border pt-4 text-xs text-muted-foreground">
+                  <p className="mb-1 font-medium text-foreground">{t("checkout.deliveringTo")}</p>
+                  <p className="text-foreground">{selectedAddress.name}</p>
+                  <p dir="ltr">{customerPhone}</p>
+                  {formatAddress(selectedAddress, language).map((line) => (
+                    <p key={`summary-${selectedAddress.id}-${line}`}>{line}</p>
+                  ))}
                 </div>
               )}
 
               <Button className="w-full btn-cta" size="lg" onClick={handlePlaceOrder} disabled={isPlacingOrder}>
-                {isPlacingOrder ? "Processing..." : "Place Order"}
+                {isPlacingOrder ? t("checkout.processing") : t("checkout.placeOrder")}
               </Button>
 
-              <p className="text-xs text-muted-foreground text-center">
-                By placing your order, you agree to our{" "}
-                <Link to="/terms" className="text-info hover:underline">Terms of Service</Link>{" "}
-                and{" "}
-                <Link to="/privacy" className="text-info hover:underline">Privacy Policy</Link>
+              <p className="text-center text-xs text-muted-foreground">
+                {t("checkout.agreeTerms")}{" "}
+                <Link to="/terms" className="text-info hover:underline">
+                  {t("checkout.termsOfService")}
+                </Link>{" "}
+                {t("common.and")}{" "}
+                <Link to="/privacy" className="text-info hover:underline">
+                  {t("checkout.privacyPolicy")}
+                </Link>
               </p>
 
-              <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-border">
-                <div className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" />Secure SSL encryption</div>
-                <div className="flex items-center gap-1"><Truck className="w-3 h-3" />30-day returns on most items</div>
+              <div className="space-y-1 border-t border-border pt-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3" />
+                  {t("checkout.secureSSL")}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Truck className="h-3 w-3" />
+                  {t("checkout.dayReturns")}
+                </div>
               </div>
             </div>
           </div>
