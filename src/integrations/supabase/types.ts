@@ -1319,6 +1319,25 @@ export type Database = {
       }
     }
     Functions: {
+      apply_payment_transition: {
+        Args: {
+          p_decline_reason?: string
+          p_next_payment_state: string
+          p_paid_at?: string
+          p_payload_hash?: string
+          p_payment_id: string
+          p_provider_status?: string
+          p_raw_payload?: Json
+          p_source: string
+          p_valid_until?: string
+        }
+        Returns: {
+          changed: boolean
+          order_id: string
+          payment_state: string
+          terminal: boolean
+        }[]
+      }
       check_rate_limit: {
         Args: {
           p_client_ip: string
@@ -1329,6 +1348,10 @@ export type Database = {
         Returns: boolean
       }
       is_seller: { Args: never; Returns: boolean }
+      user_has_order_items_as_seller: {
+        Args: { p_order_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

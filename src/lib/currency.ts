@@ -2,9 +2,13 @@ import { getCurrentLanguage, getNumberLocale, type AppLanguage } from "@/lib/loc
 
 export const EXCHANGE_RATE_USD_TO_IQD = 1300;
 
-/** Convert a USD amount to IQD (whole dinars). */
-export function convertToIQD(usdAmount: number): number {
-  return Math.round(usdAmount * EXCHANGE_RATE_USD_TO_IQD);
+/**
+ * Convert an amount to IQD.
+ * Since products are now stored natively in IQD, this is an identity function.
+ * Kept for backward compatibility with existing call sites.
+ */
+export function convertToIQD(amount: number): number {
+  return Math.round(amount);
 }
 
 export function formatIQDParts(iqdAmount: number, language: AppLanguage = getCurrentLanguage()) {

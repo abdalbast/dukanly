@@ -1,9 +1,9 @@
-import { convertToIQD, formatIQDParts } from "@/lib/currency";
+import { formatIQDParts } from "@/lib/currency";
 
 interface PriceDisplayProps {
-  /** Price in USD (will be converted to IQD for display) */
+  /** Price in IQD (native currency) */
   price: number;
-  /** Original price in USD (optional, for showing discount) */
+  /** Original price in IQD (optional, for showing discount) */
   originalPrice?: number;
   size?: "sm" | "md" | "lg" | "xl";
 }
@@ -13,8 +13,8 @@ export function PriceDisplay({
   originalPrice,
   size = "md",
 }: PriceDisplayProps) {
-  const iqdPrice = convertToIQD(price);
-  const iqdOriginal = originalPrice ? convertToIQD(originalPrice) : undefined;
+  const iqdPrice = Math.round(price);
+  const iqdOriginal = originalPrice ? Math.round(originalPrice) : undefined;
   const priceParts = formatIQDParts(iqdPrice);
   const originalPriceParts = iqdOriginal ? formatIQDParts(iqdOriginal) : null;
 
