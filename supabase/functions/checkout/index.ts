@@ -48,23 +48,43 @@ async function validateDualCurrencyPricing(itemRefs: string[], currencyCode: str
   }
 
   const admin = getAdminClient();
-  const { data, error } = await admin
+
+  // Check product_prices table first
+  const { data: priceData, error: priceError } = await admin
     .from("product_prices")
     .select("product_id")
     .in("product_id", uuidRefs)
     .eq("currency_code", currencyCode);
 
-  if (error) {
-    throw new HttpError(500, "database_error", "Failed to validate dual-currency prices.", error.message);
+  if (priceError) {
+    throw new HttpError(500, "database_error", "Failed to validate dual-currency prices.", priceError.message);
   }
 
-  const available = new Set((data ?? []).map((row) => String(row.product_id)));
-  const missing = uuidRefs.filter((ref) => !available.has(ref));
+  const availableFromPrices = new Set((priceData ?? []).map((row) => String(row.product_id)));
+  const stillMissing = uuidRefs.filter((ref) => !availableFromPrices.has(ref));
 
-  if (missing.length > 0) {
+  if (stillMissing.length === 0) {
+    return;
+  }
+
+  // Fall back: check if the product's own currency_code matches (base_price is the canonical price)
+  const { data: productData, error: productError } = await admin
+    .from("products")
+    .select("id")
+    .in("id", stillMissing)
+    .eq("currency_code", currencyCode);
+
+  if (productError) {
+    throw new HttpError(500, "database_error", "Failed to validate product base prices.", productError.message);
+  }
+
+  const availableFromProducts = new Set((productData ?? []).map((row) => String(row.id)));
+  const finalMissing = stillMissing.filter((ref) => !availableFromProducts.has(ref));
+
+  if (finalMissing.length > 0) {
     throw new HttpError(422, "missing_currency_price", "Missing currency price for one or more products.", {
       currencyCode,
-      missingProductRefs: missing,
+      missingProductRefs: finalMissing,
     });
   }
 }
