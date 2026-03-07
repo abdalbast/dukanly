@@ -1329,6 +1329,10 @@ export type Database = {
         Returns: boolean
       }
       is_seller: { Args: never; Returns: boolean }
+      user_has_order_items_as_seller: {
+        Args: { p_order_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
