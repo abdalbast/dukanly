@@ -44,7 +44,7 @@ export function Footer() {
       </button>
 
       {/* Main Footer Links */}
-      <div className="border-t border-primary-foreground/10">
+      <nav aria-label="Footer navigation" className="border-t border-primary-foreground/10">
         <div className="container py-14">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
             {Object.entries(footerLinks).map(([title, links]) => (
