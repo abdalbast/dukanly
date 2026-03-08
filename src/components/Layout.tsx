@@ -1,6 +1,7 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { AddressBookDialog } from "@/components/address/AddressBookDialog";
+import { CookieConsentBanner } from "./CookieConsentBanner";
 
 interface LayoutProps {
   children: React.ReactNode;
