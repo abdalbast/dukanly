@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                     placeholder={t("checkout.contactPhonePlaceholder")}
                     maxLength={15}
                     pattern="^\+?[0-9]{7,15}$"
-                    className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-2 flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">{t("checkout.contactPhoneHint")}</p>
                 </div>
