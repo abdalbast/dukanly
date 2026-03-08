@@ -172,7 +172,7 @@
 
   /* Product Card */
   .product-card {
-    @apply bg-card rounded-xl border border-border p-3 transition-all duration-300;
+    @apply bg-card rounded-xl border border-border p-2 sm:p-3 transition-all duration-300;
     box-shadow: var(--shadow-card);
   }
 
@@ -200,7 +200,13 @@
 
   /* Navigation */
   .nav-item {
-    @apply text-sm font-medium text-primary-foreground/90 hover:text-primary-foreground transition-colors px-2 py-1;
+    @apply text-sm font-medium text-primary-foreground/90 hover:text-primary-foreground transition-colors px-3 py-2;
+  }
+
+  /* Scroll fade hint for horizontal nav */
+  .nav-scroll-fade {
+    -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+    mask-image: linear-gradient(to right, black 90%, transparent 100%);
   }
 
   .mega-menu {

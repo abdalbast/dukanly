@@ -113,7 +113,7 @@ export function Header() {
           </form>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -240,7 +240,7 @@ export function Header() {
       </div>
 
       <div className="border-t border-primary-foreground/10 bg-primary/95 text-primary-foreground md:hidden">
-        <div className="container grid grid-cols-2 gap-2 px-4 py-2">
+        <div className={`container grid gap-2 px-4 py-2 ${user ? "grid-cols-2" : "grid-cols-3"}`}>
           <button
             type="button"
             onClick={openAddressManager}
@@ -264,12 +264,20 @@ export function Header() {
               <div className="truncate text-xs font-semibold">{t("header.andOrders")}</div>
             </div>
           </button>
+          {!user && (
+            <Link
+              to="/auth/signin"
+              className="flex min-w-0 items-center justify-center gap-2 rounded-xl border border-primary-foreground/15 bg-accent/20 px-3 py-2 text-center hover:bg-accent/30"
+            >
+              <span className="truncate text-xs font-semibold">{t("header.signIn")}</span>
+            </Link>
+          )}
         </div>
       </div>
 
       {/* Sub Navigation */}
       <nav aria-label="Category navigation" className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
-        <div className="container flex items-center gap-1 h-10 px-4 overflow-x-auto scrollbar-hide">
+        <div className="container flex items-center gap-1 h-11 px-4 overflow-x-auto scrollbar-hide nav-scroll-fade">
           <button
             onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
             className="flex items-center gap-1 nav-item font-semibold"
