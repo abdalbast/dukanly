@@ -150,7 +150,7 @@ export default function HomePage() {
         {/* Amazon-style tall edge arrows */}
         <button
           onClick={() => { emblaApi?.scrollPrev(); startAutoplay(); }}
-          className="absolute left-0 top-0 bottom-0 w-12 md:w-14 flex items-center justify-center bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-0 group-hover/hero:opacity-100 cursor-pointer"
+          className="absolute left-0 top-0 bottom-0 w-10 md:w-14 flex items-center justify-center bg-foreground/5 md:bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-100 md:opacity-0 group-hover/hero:opacity-100 cursor-pointer"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-8 h-8 text-primary-foreground drop-shadow-lg" />
