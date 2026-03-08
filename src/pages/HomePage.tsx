@@ -183,7 +183,7 @@ export default function HomePage() {
       {/* Value Propositions — spacious, icon-forward */}
       <section className="border-b border-border bg-card">
         <div className="container py-8 md:py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
             {[
               { icon: Truck, color: "text-prime bg-prime/10", title: t("home.freeShipping"), desc: t("home.onOrders35") },
               { icon: Shield, color: "text-success bg-success/10", title: t("home.buyerProtection"), desc: t("home.secure100") },

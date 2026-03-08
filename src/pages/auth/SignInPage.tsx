@@ -55,7 +55,7 @@ export default function SignInPage() {
     <Layout showFooter={false}>
       <div className="min-h-[calc(100vh-120px)] flex items-center justify-center py-16">
         <div className="w-full max-w-sm">
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+          <div className="bg-card border border-border rounded-2xl px-5 py-7 sm:p-8 shadow-lg">
             <h1 className="page-title text-center mb-8 !text-2xl">{t("auth.signIn")}</h1>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
