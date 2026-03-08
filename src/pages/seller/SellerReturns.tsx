@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { RotateCcw, Search, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { formatIQD } from "@/lib/currency";
-import { useSeller } from "@/contexts/SellerContext";
 
 interface ReturnRequest {
   id: string;
