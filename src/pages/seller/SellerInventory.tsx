@@ -1,70 +1,83 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeller } from "@/contexts/SellerContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Package, AlertTriangle, Search, Plus, Minus } from "lucide-react";
-import { formatIQD, convertToIQD } from "@/lib/currency";
 
-interface InventoryItem {
+interface InventoryRow {
   id: string;
   product_id: string;
   quantity_on_hand: number;
   reserved_quantity: number;
   reorder_point: number;
-  product_title: string;
-  product_sku: string;
-  product_price: number;
-  product_status: string;
+  products: { title: string; sku: string; base_price: number; status: string } | null;
 }
 
 export default function SellerInventory() {
-  const { products } = useSeller();
+  const { sellerId } = useSeller();
   const { toast } = useToast();
+  const [items, setItems] = useState<InventoryRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
   const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<InventoryRow | null>(null);
   const [adjustQty, setAdjustQty] = useState(0);
   const [adjustReason, setAdjustReason] = useState("received");
 
-  // Build inventory from products data (products already have stock)
-  const inventoryItems: InventoryItem[] = products.map((p) => ({
-    id: p.id,
-    product_id: p.id,
-    quantity_on_hand: p.stock,
-    reserved_quantity: 0,
-    reorder_point: p.lowStockThreshold,
-    product_title: p.title,
-    product_sku: p.sku,
-    product_price: p.price,
-    product_status: p.status,
-  }));
+  useEffect(() => {
+    if (!sellerId) return;
+    const fetchInventory = async () => {
+      const { data, error } = await supabase
+        .from("inventory")
+        .select("id, product_id, quantity_on_hand, reserved_quantity, reorder_point, products(title, sku, base_price, status)")
+        .order("updated_at", { ascending: false });
 
-  const filtered = inventoryItems.filter((item) => {
-    const matchesSearch =
-      item.product_title.toLowerCase().includes(search.toLowerCase()) ||
-      item.product_sku.toLowerCase().includes(search.toLowerCase());
+      if (!error && data) {
+        // Filter to only this seller's products
+        const filtered = (data as unknown as InventoryRow[]).filter((row) => row.products !== null);
+        setItems(filtered);
+      }
+      setLoading(false);
+    };
+    fetchInventory();
+  }, [sellerId]);
+
+  const filtered = items.filter((item) => {
+    const title = item.products?.title?.toLowerCase() || "";
+    const sku = item.products?.sku?.toLowerCase() || "";
+    const matchesSearch = title.includes(search.toLowerCase()) || sku.includes(search.toLowerCase());
     if (stockFilter === "low") return matchesSearch && item.quantity_on_hand <= item.reorder_point && item.quantity_on_hand > 0;
     if (stockFilter === "out") return matchesSearch && item.quantity_on_hand === 0;
     if (stockFilter === "in") return matchesSearch && item.quantity_on_hand > item.reorder_point;
     return matchesSearch;
   });
 
-  const totalItems = inventoryItems.length;
-  const lowStockCount = inventoryItems.filter((i) => i.quantity_on_hand <= i.reorder_point && i.quantity_on_hand > 0).length;
-  const outOfStockCount = inventoryItems.filter((i) => i.quantity_on_hand === 0).length;
+  const totalItems = items.length;
+  const lowStockCount = items.filter((i) => i.quantity_on_hand <= i.reorder_point && i.quantity_on_hand > 0).length;
+  const outOfStockCount = items.filter((i) => i.quantity_on_hand === 0).length;
 
   const handleAdjust = async () => {
     if (!selectedItem || adjustQty === 0) return;
-    // For now, update locally via updateProduct
-    toast({ title: "Stock adjusted", description: `${adjustQty > 0 ? "Added" : "Removed"} ${Math.abs(adjustQty)} units. Reason: ${adjustReason}` });
+    const newQty = selectedItem.quantity_on_hand + adjustQty;
+    const { error } = await supabase
+      .from("inventory")
+      .update({ quantity_on_hand: Math.max(0, newQty) })
+      .eq("id", selectedItem.id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Stock adjusted", description: `${adjustQty > 0 ? "Added" : "Removed"} ${Math.abs(adjustQty)} units. Reason: ${adjustReason}` });
+      setItems((prev) => prev.map((i) => i.id === selectedItem.id ? { ...i, quantity_on_hand: Math.max(0, newQty) } : i));
+    }
     setAdjustDialogOpen(false);
     setAdjustQty(0);
   };
@@ -76,55 +89,13 @@ export default function SellerInventory() {
         <p className="text-muted-foreground">Manage stock levels and track inventory</p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Package className="w-8 h-8 text-primary" />
-              <div>
-                <p className="text-2xl font-bold">{totalItems}</p>
-                <p className="text-xs text-muted-foreground">Total SKUs</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Package className="w-8 h-8 text-success" />
-              <div>
-                <p className="text-2xl font-bold">{totalItems - lowStockCount - outOfStockCount}</p>
-                <p className="text-xs text-muted-foreground">In Stock</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-warning" />
-              <div>
-                <p className="text-2xl font-bold">{lowStockCount}</p>
-                <p className="text-xs text-muted-foreground">Low Stock</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-destructive" />
-              <div>
-                <p className="text-2xl font-bold">{outOfStockCount}</p>
-                <p className="text-xs text-muted-foreground">Out of Stock</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-3"><Package className="w-8 h-8 text-primary" /><div><p className="text-2xl font-bold">{totalItems}</p><p className="text-xs text-muted-foreground">Total SKUs</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-3"><Package className="w-8 h-8 text-success" /><div><p className="text-2xl font-bold">{totalItems - lowStockCount - outOfStockCount}</p><p className="text-xs text-muted-foreground">In Stock</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-3"><AlertTriangle className="w-8 h-8 text-warning" /><div><p className="text-2xl font-bold">{lowStockCount}</p><p className="text-xs text-muted-foreground">Low Stock</p></div></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="flex items-center gap-3"><AlertTriangle className="w-8 h-8 text-destructive" /><div><p className="text-2xl font-bold">{outOfStockCount}</p><p className="text-xs text-muted-foreground">Out of Stock</p></div></div></CardContent></Card>
       </div>
 
-      {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -141,7 +112,6 @@ export default function SellerInventory() {
         </Select>
       </div>
 
-      {/* Table */}
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -159,46 +129,34 @@ export default function SellerInventory() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((item) => {
-                  const available = item.quantity_on_hand - item.reserved_quantity;
-                  const isLow = item.quantity_on_hand <= item.reorder_point && item.quantity_on_hand > 0;
-                  const isOut = item.quantity_on_hand === 0;
-                  return (
-                    <tr key={item.id} className="border-b hover:bg-muted/30">
-                      <td className="p-3 font-medium max-w-[200px] truncate">{item.product_title}</td>
-                      <td className="p-3 text-muted-foreground">{item.product_sku}</td>
-                      <td className="p-3 text-right">{item.quantity_on_hand}</td>
-                      <td className="p-3 text-right">{item.reserved_quantity}</td>
-                      <td className="p-3 text-right font-medium">{available}</td>
-                      <td className="p-3 text-right">{item.reorder_point}</td>
-                      <td className="p-3 text-center">
-                        {isOut ? (
-                          <Badge variant="destructive">Out of Stock</Badge>
-                        ) : isLow ? (
-                          <Badge className="bg-warning/20 text-warning border-warning/30">Low Stock</Badge>
-                        ) : (
-                          <Badge variant="secondary">In Stock</Badge>
-                        )}
-                      </td>
-                      <td className="p-3 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedItem(item);
-                            setAdjustDialogOpen(true);
-                          }}
-                        >
-                          Adjust
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="p-8 text-center text-muted-foreground">No inventory items found</td>
-                  </tr>
+                {loading ? (
+                  <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">Loading inventory...</td></tr>
+                ) : filtered.length === 0 ? (
+                  <tr><td colSpan={8} className="p-8 text-center text-muted-foreground">No inventory items found</td></tr>
+                ) : (
+                  filtered.map((item) => {
+                    const available = item.quantity_on_hand - item.reserved_quantity;
+                    const isLow = item.quantity_on_hand <= item.reorder_point && item.quantity_on_hand > 0;
+                    const isOut = item.quantity_on_hand === 0;
+                    return (
+                      <tr key={item.id} className="border-b hover:bg-muted/30">
+                        <td className="p-3 font-medium max-w-[200px] truncate">{item.products?.title}</td>
+                        <td className="p-3 text-muted-foreground">{item.products?.sku}</td>
+                        <td className="p-3 text-right">{item.quantity_on_hand}</td>
+                        <td className="p-3 text-right">{item.reserved_quantity}</td>
+                        <td className="p-3 text-right font-medium">{available}</td>
+                        <td className="p-3 text-right">{item.reorder_point}</td>
+                        <td className="p-3 text-center">
+                          {isOut ? <Badge variant="destructive">Out of Stock</Badge>
+                            : isLow ? <Badge className="bg-warning/20 text-warning border-warning/30">Low Stock</Badge>
+                            : <Badge variant="secondary">In Stock</Badge>}
+                        </td>
+                        <td className="p-3 text-right">
+                          <Button variant="outline" size="sm" onClick={() => { setSelectedItem(item); setAdjustDialogOpen(true); }}>Adjust</Button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -206,11 +164,10 @@ export default function SellerInventory() {
         </CardContent>
       </Card>
 
-      {/* Adjust Stock Dialog */}
       <Dialog open={adjustDialogOpen} onOpenChange={setAdjustDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Adjust Stock — {selectedItem?.product_title}</DialogTitle>
+            <DialogTitle>Adjust Stock — {selectedItem?.products?.title}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
@@ -220,17 +177,11 @@ export default function SellerInventory() {
             <div>
               <Label>Adjustment Quantity</Label>
               <div className="flex items-center gap-2 mt-1">
-                <Button variant="outline" size="icon" onClick={() => setAdjustQty((q) => q - 1)}>
-                  <Minus className="w-4 h-4" />
-                </Button>
+                <Button variant="outline" size="icon" onClick={() => setAdjustQty((q) => q - 1)}><Minus className="w-4 h-4" /></Button>
                 <Input type="number" value={adjustQty} onChange={(e) => setAdjustQty(parseInt(e.target.value) || 0)} className="w-24 text-center" />
-                <Button variant="outline" size="icon" onClick={() => setAdjustQty((q) => q + 1)}>
-                  <Plus className="w-4 h-4" />
-                </Button>
+                <Button variant="outline" size="icon" onClick={() => setAdjustQty((q) => q + 1)}><Plus className="w-4 h-4" /></Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                New stock: {(selectedItem?.quantity_on_hand ?? 0) + adjustQty}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">New stock: {(selectedItem?.quantity_on_hand ?? 0) + adjustQty}</p>
             </div>
             <div>
               <Label>Reason</Label>
@@ -245,9 +196,7 @@ export default function SellerInventory() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={handleAdjust} className="w-full" disabled={adjustQty === 0}>
-              Apply Adjustment
-            </Button>
+            <Button onClick={handleAdjust} className="w-full" disabled={adjustQty === 0}>Apply Adjustment</Button>
           </div>
         </DialogContent>
       </Dialog>

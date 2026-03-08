@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSeller } from "@/contexts/SellerContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,23 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Store,
-  Bell,
-  Truck,
-  CreditCard,
-  Shield,
-  ImagePlus,
-  Save,
-} from "lucide-react";
+import { Store, Bell, Truck, CreditCard, Shield, ImagePlus, Save } from "lucide-react";
 
 export default function SellerSettings() {
   const { profile, updateProfile, settings, updateSettings } = useSeller();
@@ -40,12 +26,26 @@ export default function SellerSettings() {
     zip: profile.address.zip,
   });
 
+  // Sync form when profile loads from DB
+  useEffect(() => {
+    setProfileForm({
+      storeName: profile.storeName,
+      storeDescription: profile.storeDescription,
+      email: profile.email,
+      phone: profile.phone || "",
+      street: profile.address.street,
+      city: profile.address.city,
+      state: profile.address.state,
+      zip: profile.address.zip,
+    });
+  }, [profile]);
+
   const [notificationSettings, setNotificationSettings] = useState(settings.notifications);
   const [shippingSettings, setShippingSettings] = useState(settings.shipping);
   const [paymentSettings, setPaymentSettings] = useState(settings.payments);
 
-  const handleSaveProfile = () => {
-    updateProfile({
+  const handleSaveProfile = async () => {
+    await updateProfile({
       storeName: profileForm.storeName,
       storeDescription: profileForm.storeDescription,
       email: profileForm.email,
@@ -71,8 +71,8 @@ export default function SellerSettings() {
     toast({ title: "Shipping settings updated", description: "Your shipping preferences have been saved" });
   };
 
-  const handleSavePayments = () => {
-    updateSettings({ payments: paymentSettings });
+  const handleSavePayments = async () => {
+    await updateSettings({ payments: paymentSettings });
     toast({ title: "Payment settings updated", description: "Your payment preferences have been saved" });
   };
 
@@ -80,110 +80,57 @@ export default function SellerSettings() {
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your store settings and preferences
-        </p>
+        <p className="text-muted-foreground">Manage your store settings and preferences</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <Store className="w-4 h-4" />
-            <span className="hidden sm:inline">Profile</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="w-4 h-4" />
-            <span className="hidden sm:inline">Notifications</span>
-          </TabsTrigger>
-          <TabsTrigger value="shipping" className="flex items-center gap-2">
-            <Truck className="w-4 h-4" />
-            <span className="hidden sm:inline">Shipping</span>
-          </TabsTrigger>
-          <TabsTrigger value="payments" className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4" />
-            <span className="hidden sm:inline">Payments</span>
-          </TabsTrigger>
+          <TabsTrigger value="profile" className="flex items-center gap-2"><Store className="w-4 h-4" /><span className="hidden sm:inline">Profile</span></TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center gap-2"><Bell className="w-4 h-4" /><span className="hidden sm:inline">Notifications</span></TabsTrigger>
+          <TabsTrigger value="shipping" className="flex items-center gap-2"><Truck className="w-4 h-4" /><span className="hidden sm:inline">Shipping</span></TabsTrigger>
+          <TabsTrigger value="payments" className="flex items-center gap-2"><CreditCard className="w-4 h-4" /><span className="hidden sm:inline">Payments</span></TabsTrigger>
         </TabsList>
 
-        {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Store Profile</CardTitle>
-              <CardDescription>
-                This information will be displayed to customers
-              </CardDescription>
+              <CardDescription>This information will be displayed to customers</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Logo */}
               <div className="flex items-center gap-4">
                 {profile.logo ? (
-                  <img
-                    src={profile.logo}
-                    alt="Store logo"
-                    className="w-20 h-20 rounded-lg object-cover"
-                  />
+                  <img src={profile.logo} alt="Store logo" className="w-20 h-20 rounded-lg object-cover" />
                 ) : (
                   <div className="w-20 h-20 rounded-lg bg-muted flex items-center justify-center">
                     <ImagePlus className="w-8 h-8 text-muted-foreground" />
                   </div>
                 )}
                 <div>
-                  <Button variant="outline" size="sm">
-                    Upload Logo
-                  </Button>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Recommended: 200x200px
-                  </p>
+                  <Button variant="outline" size="sm">Upload Logo</Button>
+                  <p className="text-xs text-muted-foreground mt-1">Recommended: 200x200px</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="storeName">Store Name</Label>
-                  <Input
-                    id="storeName"
-                    value={profileForm.storeName}
-                    onChange={(e) =>
-                      setProfileForm({ ...profileForm, storeName: e.target.value })
-                    }
-                  />
+                  <Input id="storeName" value={profileForm.storeName} onChange={(e) => setProfileForm({ ...profileForm, storeName: e.target.value })} />
                 </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profileForm.email}
-                    onChange={(e) =>
-                      setProfileForm({ ...profileForm, email: e.target.value })
-                    }
-                  />
+                  <Input id="email" type="email" value={profileForm.email} onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })} />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="description">Store Description</Label>
-                <Textarea
-                  id="description"
-                  value={profileForm.storeDescription}
-                  onChange={(e) =>
-                    setProfileForm({ ...profileForm, storeDescription: e.target.value })
-                  }
-                  rows={3}
-                />
+                <Textarea id="description" value={profileForm.storeDescription} onChange={(e) => setProfileForm({ ...profileForm, storeDescription: e.target.value })} rows={3} />
               </div>
 
               <div>
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  value={profileForm.phone}
-                  onChange={(e) =>
-                    setProfileForm({ ...profileForm, phone: e.target.value })
-                  }
-                  placeholder="(555) 123-4567"
-                />
+                <Input id="phone" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} placeholder="+964 750 123 4567" />
               </div>
 
               <div className="pt-4 border-t">
@@ -191,83 +138,45 @@ export default function SellerSettings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <Label htmlFor="street">Street Address</Label>
-                    <Input
-                      id="street"
-                      value={profileForm.street}
-                      onChange={(e) =>
-                        setProfileForm({ ...profileForm, street: e.target.value })
-                      }
-                    />
+                    <Input id="street" value={profileForm.street} onChange={(e) => setProfileForm({ ...profileForm, street: e.target.value })} />
                   </div>
                   <div>
                     <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={profileForm.city}
-                      onChange={(e) =>
-                        setProfileForm({ ...profileForm, city: e.target.value })
-                      }
-                    />
+                    <Input id="city" value={profileForm.city} onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="state">Governorate</Label>
-                      <Input
-                        id="state"
-                        value={profileForm.state}
-                        onChange={(e) =>
-                          setProfileForm({ ...profileForm, state: e.target.value })
-                        }
-                      />
+                      <Input id="state" value={profileForm.state} onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })} />
                     </div>
                     <div>
                       <Label htmlFor="zip">Postal Code</Label>
-                      <Input
-                        id="zip"
-                        value={profileForm.zip}
-                        onChange={(e) =>
-                          setProfileForm({ ...profileForm, zip: e.target.value })
-                        }
-                      />
+                      <Input id="zip" value={profileForm.zip} onChange={(e) => setProfileForm({ ...profileForm, zip: e.target.value })} />
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end pt-4">
-                <Button onClick={handleSaveProfile}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </Button>
+                <Button onClick={handleSaveProfile}><Save className="w-4 h-4 mr-2" />Save Changes</Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Verification Status */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Verification Status
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2"><Shield className="w-5 h-5" />Verification Status</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">
-                    {profile.isVerified ? "Verified Seller" : "Verification Pending"}
-                  </p>
+                  <p className="font-medium">{profile.isVerified ? "Verified Seller" : "Verification Pending"}</p>
                   <p className="text-sm text-muted-foreground">
-                    {profile.isVerified
-                      ? "Your business has been verified"
-                      : "Complete your business verification to unlock more features"}
+                    {profile.isVerified ? "Your business has been verified" : "Complete your business verification to unlock more features"}
                   </p>
                 </div>
                 {profile.isVerified ? (
-                  <div className="flex items-center gap-2 text-success">
-                    <Shield className="w-5 h-5" />
-                    <span className="font-medium">Verified</span>
-                  </div>
+                  <div className="flex items-center gap-2 text-success"><Shield className="w-5 h-5" /><span className="font-medium">Verified</span></div>
                 ) : (
                   <Button>Complete Verification</Button>
                 )}
@@ -276,131 +185,59 @@ export default function SellerSettings() {
           </Card>
         </TabsContent>
 
-        {/* Notifications Tab */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
               <CardTitle>Notification Preferences</CardTitle>
-              <CardDescription>
-                Choose how you want to be notified about store activity
-              </CardDescription>
+              <CardDescription>Choose how you want to be notified about store activity</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Order Alerts</p>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified when you receive a new order
-                  </p>
+              {[
+                { key: "orderAlerts" as const, title: "Order Alerts", desc: "Get notified when you receive a new order" },
+                { key: "lowStockAlerts" as const, title: "Low Stock Alerts", desc: "Get notified when products are running low" },
+                { key: "reviewAlerts" as const, title: "Review Alerts", desc: "Get notified when customers leave reviews" },
+                { key: "marketingEmails" as const, title: "Marketing Emails", desc: "Receive tips and promotional opportunities" },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{item.title}</p>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  </div>
+                  <Switch
+                    checked={notificationSettings[item.key]}
+                    onCheckedChange={(checked) => setNotificationSettings({ ...notificationSettings, [item.key]: checked })}
+                  />
                 </div>
-                <Switch
-                  checked={notificationSettings.orderAlerts}
-                  onCheckedChange={(checked) =>
-                    setNotificationSettings({ ...notificationSettings, orderAlerts: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Low Stock Alerts</p>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified when products are running low
-                  </p>
-                </div>
-                <Switch
-                  checked={notificationSettings.lowStockAlerts}
-                  onCheckedChange={(checked) =>
-                    setNotificationSettings({ ...notificationSettings, lowStockAlerts: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Review Alerts</p>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified when customers leave reviews
-                  </p>
-                </div>
-                <Switch
-                  checked={notificationSettings.reviewAlerts}
-                  onCheckedChange={(checked) =>
-                    setNotificationSettings({ ...notificationSettings, reviewAlerts: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Marketing Emails</p>
-                  <p className="text-sm text-muted-foreground">
-                    Receive tips and promotional opportunities
-                  </p>
-                </div>
-                <Switch
-                  checked={notificationSettings.marketingEmails}
-                  onCheckedChange={(checked) =>
-                    setNotificationSettings({ ...notificationSettings, marketingEmails: checked })
-                  }
-                />
-              </div>
-
+              ))}
               <div className="flex justify-end pt-4 border-t">
-                <Button onClick={handleSaveNotifications}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Preferences
-                </Button>
+                <Button onClick={handleSaveNotifications}><Save className="w-4 h-4 mr-2" />Save Preferences</Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Shipping Tab */}
         <TabsContent value="shipping">
           <Card>
             <CardHeader>
               <CardTitle>Shipping Settings</CardTitle>
-              <CardDescription>
-                Configure your shipping and fulfillment options
-              </CardDescription>
+              <CardDescription>Configure your shipping and fulfillment options</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="freeShipping">Free Shipping Threshold ($)</Label>
+                  <Label htmlFor="freeShipping">Free Shipping Threshold (IQD)</Label>
                   <Input
-                    id="freeShipping"
-                    type="number"
+                    id="freeShipping" type="number"
                     value={shippingSettings.freeShippingThreshold || ""}
-                    onChange={(e) =>
-                      setShippingSettings({
-                        ...shippingSettings,
-                        freeShippingThreshold: e.target.value
-                          ? parseFloat(e.target.value)
-                          : undefined,
-                      })
-                    }
-                    placeholder="e.g., 50"
+                    onChange={(e) => setShippingSettings({ ...shippingSettings, freeShippingThreshold: e.target.value ? parseFloat(e.target.value) : undefined })}
+                    placeholder="e.g., 50000"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Orders above this amount get free shipping
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">Orders above this amount get free shipping</p>
                 </div>
                 <div>
                   <Label htmlFor="handlingTime">Handling Time (days)</Label>
-                  <Select
-                    value={shippingSettings.handlingTime.toString()}
-                    onValueChange={(value) =>
-                      setShippingSettings({
-                        ...shippingSettings,
-                        handlingTime: parseInt(value),
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
+                  <Select value={shippingSettings.handlingTime.toString()} onValueChange={(value) => setShippingSettings({ ...shippingSettings, handlingTime: parseInt(value) })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1">1 day</SelectItem>
                       <SelectItem value="2">2 days</SelectItem>
@@ -410,54 +247,29 @@ export default function SellerSettings() {
                   </Select>
                 </div>
               </div>
-
               <div>
                 <Label htmlFor="returnPolicy">Return Policy</Label>
-                <Textarea
-                  id="returnPolicy"
-                  value={shippingSettings.returnPolicy}
-                  onChange={(e) =>
-                    setShippingSettings({
-                      ...shippingSettings,
-                      returnPolicy: e.target.value,
-                    })
-                  }
-                  rows={3}
-                />
+                <Textarea id="returnPolicy" value={shippingSettings.returnPolicy} onChange={(e) => setShippingSettings({ ...shippingSettings, returnPolicy: e.target.value })} rows={3} />
               </div>
-
               <div className="flex justify-end pt-4 border-t">
-                <Button onClick={handleSaveShipping}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Settings
-                </Button>
+                <Button onClick={handleSaveShipping}><Save className="w-4 h-4 mr-2" />Save Settings</Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Payments Tab */}
         <TabsContent value="payments">
           <Card>
             <CardHeader>
               <CardTitle>Payment Settings</CardTitle>
-              <CardDescription>
-                Manage how you receive your payouts
-              </CardDescription>
+              <CardDescription>Manage how you receive your payouts</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Payout Method</Label>
-                  <Select
-                    value={paymentSettings.payoutMethod}
-                    onValueChange={(value: "bank" | "paypal") =>
-                      setPaymentSettings({ ...paymentSettings, payoutMethod: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
+                  <Select value={paymentSettings.payoutMethod} onValueChange={(value: "bank" | "paypal") => setPaymentSettings({ ...paymentSettings, payoutMethod: value })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="bank">Bank Transfer</SelectItem>
                       <SelectItem value="paypal">PayPal</SelectItem>
@@ -466,15 +278,8 @@ export default function SellerSettings() {
                 </div>
                 <div>
                   <Label>Payout Schedule</Label>
-                  <Select
-                    value={paymentSettings.payoutSchedule}
-                    onValueChange={(value: "daily" | "weekly" | "monthly") =>
-                      setPaymentSettings({ ...paymentSettings, payoutSchedule: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
+                  <Select value={paymentSettings.payoutSchedule} onValueChange={(value: "daily" | "weekly" | "monthly") => setPaymentSettings({ ...paymentSettings, payoutSchedule: value })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="daily">Daily</SelectItem>
                       <SelectItem value="weekly">Weekly</SelectItem>
@@ -484,25 +289,37 @@ export default function SellerSettings() {
                 </div>
               </div>
 
-              {paymentSettings.bankAccount && (
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <p className="text-sm font-medium">Connected Bank Account</p>
-                  <p className="text-sm text-muted-foreground">
-                    {paymentSettings.bankAccount.bankName} ••••{" "}
-                    {paymentSettings.bankAccount.accountLast4}
-                  </p>
+              {paymentSettings.payoutMethod === "bank" && (
+                <div className="pt-4 border-t">
+                  <h3 className="font-medium mb-4">Bank Account Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Bank Name</Label>
+                      <Input
+                        value={paymentSettings.bankAccount?.bankName || ""}
+                        onChange={(e) => setPaymentSettings({
+                          ...paymentSettings,
+                          bankAccount: { bankName: e.target.value, accountLast4: paymentSettings.bankAccount?.accountLast4 || "" },
+                        })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Account (Last 4 Digits)</Label>
+                      <Input
+                        value={paymentSettings.bankAccount?.accountLast4 || ""}
+                        maxLength={4}
+                        onChange={(e) => setPaymentSettings({
+                          ...paymentSettings,
+                          bankAccount: { bankName: paymentSettings.bankAccount?.bankName || "", accountLast4: e.target.value },
+                        })}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
 
-              <Button variant="outline">
-                {paymentSettings.bankAccount ? "Update Bank Account" : "Add Bank Account"}
-              </Button>
-
               <div className="flex justify-end pt-4 border-t">
-                <Button onClick={handleSavePayments}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Settings
-                </Button>
+                <Button onClick={handleSavePayments}><Save className="w-4 h-4 mr-2" />Save Settings</Button>
               </div>
             </CardContent>
           </Card>

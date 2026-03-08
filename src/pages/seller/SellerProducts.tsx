@@ -15,7 +15,6 @@ import { useSeller } from "@/contexts/SellerContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,7 +57,6 @@ export default function SellerProducts() {
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<SellerProduct | null>(null);
-  const productActionsUnavailableMessage =
     "Create, publish, archive, duplicate, and delete actions are disabled until seller product persistence is fully connected.";
 
   const filteredProducts = products.filter((product) => {
@@ -152,10 +150,6 @@ export default function SellerProducts() {
         </Button>
       </div>
 
-      <Alert>
-        <AlertTitle>Catalog writes are disabled</AlertTitle>
-        <AlertDescription>{productActionsUnavailableMessage}</AlertDescription>
-      </Alert>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
@@ -271,9 +265,8 @@ export default function SellerProducts() {
                         <DropdownMenuItem
                           onClick={() =>
                             toast({
-                              title: "Product duplication unavailable",
-                              description: productActionsUnavailableMessage,
-                              variant: "destructive",
+                              title: "Coming soon",
+                              description: "Product duplication will be available soon.",
                             })
                           }
                         >
@@ -324,9 +317,9 @@ export default function SellerProducts() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete unavailable</DialogTitle>
+            <DialogTitle>Delete Product</DialogTitle>
             <DialogDescription>
-              Product deletion is intentionally disabled until seller product persistence is fully connected.
+              Are you sure you want to delete "{productToDelete?.title}"? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
