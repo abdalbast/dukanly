@@ -116,6 +116,8 @@ export const en = {
   // Product Detail
   "product.bestSeller": "Best Seller",
   "product.limitedTimeDeal": "Limited Time Deal",
+  "product.handmade": "Handmade",
+  "product.artisan": "Artisan",
   "product.visitStore": "Visit the",
   "product.store": "Store",
   "product.ratings": "ratings",

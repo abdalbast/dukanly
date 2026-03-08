@@ -22,6 +22,8 @@ export interface DbProduct {
   is_prime: boolean | null;
   is_best_seller: boolean | null;
   is_limited_deal: boolean | null;
+  is_handmade: boolean | null;
+  is_artisan_brand: boolean | null;
   stock: number | null;
   delivery_days: number | null;
   fulfillment_type: string | null;

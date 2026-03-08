@@ -11,6 +11,8 @@ export interface Product {
   isPrime: boolean;
   isBestSeller?: boolean;
   isLimitedDeal?: boolean;
+  isHandmade?: boolean;
+  isArtisanBrand?: boolean;
 }
 
 export interface Offer {

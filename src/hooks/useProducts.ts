@@ -51,6 +51,8 @@ function mapDbToProduct(row: DbProduct): ProductWithOffer {
     isPrime: row.is_prime ?? false,
     isBestSeller: row.is_best_seller ?? false,
     isLimitedDeal: row.is_limited_deal ?? false,
+    isHandmade: row.is_handmade ?? false,
+    isArtisanBrand: row.is_artisan_brand ?? false,
     offer: {
       id: `offer-${row.id}`,
       productId: row.id,
