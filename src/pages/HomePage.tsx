@@ -126,7 +126,7 @@ export default function HomePage() {
                       {t(slide.tagline)}
                     </p>
                     <h2
-                      className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5 page-title"
+                      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-3 sm:mb-5 page-title"
                     >
                       {t(slide.title)}
                     </h2>
