@@ -46,7 +46,7 @@ export function Footer() {
       {/* Main Footer Links */}
       <div className="border-t border-primary-foreground/10">
         <div className="container py-14">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
                 <h3 className="font-semibold text-sm mb-4 tracking-wide">{title}</h3>

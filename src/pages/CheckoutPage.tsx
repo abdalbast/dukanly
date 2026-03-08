@@ -265,12 +265,12 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="space-y-6 lg:col-span-8">
             <section className="rounded-xl border border-border bg-card p-5">
-              <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
                 <h2 className="flex items-center gap-2 font-semibold">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">1</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground shrink-0">1</span>
                   {t("checkout.shippingAddress")}
                 </h2>
-                <Button variant="outline" size="sm" onClick={openAddressManager}>
+                <Button variant="outline" size="sm" onClick={openAddressManager} className="self-start sm:self-auto">
                   <Plus className="mr-1 h-4 w-4 rtl:mr-0 rtl:ml-1" />
                   {t("addressBook.manageAddresses")}
                 </Button>

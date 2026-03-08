@@ -111,7 +111,7 @@ export default function HomePage() {
         <div ref={emblaRef} className="overflow-hidden">
           <div className="flex">
             {HERO_SLIDES.map((slide, i) => (
-              <div key={i} className="flex-[0_0_100%] min-w-0 relative h-[420px] md:h-[540px] lg:h-[600px]">
+              <div key={i} className="flex-[0_0_100%] min-w-0 relative h-[320px] sm:h-[420px] md:h-[540px] lg:h-[600px]">
                 <img
                   src={slide.image}
                   alt=""
@@ -122,15 +122,15 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent rtl:bg-gradient-to-l" />
                 <div className="container relative h-full flex items-center">
                   <div className="max-w-xl">
-                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60 mb-4">
+                    <p className="text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-primary-foreground/60 mb-2 sm:mb-4">
                       {t(slide.tagline)}
                     </p>
                     <h2
-                      className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5 page-title"
+                      className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-3 sm:mb-5 page-title"
                     >
                       {t(slide.title)}
                     </h2>
-                    <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-md leading-relaxed">
+                    <p className="text-base sm:text-lg md:text-xl text-primary-foreground/70 mb-5 sm:mb-8 max-w-md leading-relaxed">
                       {t(slide.subtitle)}
                     </p>
                     <Link
@@ -150,14 +150,14 @@ export default function HomePage() {
         {/* Amazon-style tall edge arrows */}
         <button
           onClick={() => { emblaApi?.scrollPrev(); startAutoplay(); }}
-          className="absolute left-0 top-0 bottom-0 w-12 md:w-14 flex items-center justify-center bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-0 group-hover/hero:opacity-100 cursor-pointer"
+          className="absolute left-0 top-0 bottom-0 w-10 md:w-14 flex items-center justify-center bg-foreground/5 md:bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-100 md:opacity-0 group-hover/hero:opacity-100 cursor-pointer"
           aria-label="Previous slide"
         >
           <ChevronLeft className="w-8 h-8 text-primary-foreground drop-shadow-lg" />
         </button>
         <button
           onClick={() => { emblaApi?.scrollNext(); startAutoplay(); }}
-          className="absolute right-0 top-0 bottom-0 w-12 md:w-14 flex items-center justify-center bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-0 group-hover/hero:opacity-100 cursor-pointer"
+          className="absolute right-0 top-0 bottom-0 w-10 md:w-14 flex items-center justify-center bg-foreground/5 md:bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-100 md:opacity-0 group-hover/hero:opacity-100 cursor-pointer"
           aria-label="Next slide"
         >
           <ChevronRight className="w-8 h-8 text-primary-foreground drop-shadow-lg" />
@@ -183,7 +183,7 @@ export default function HomePage() {
       {/* Value Propositions — spacious, icon-forward */}
       <section className="border-b border-border bg-card">
         <div className="container py-8 md:py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
             {[
               { icon: Truck, color: "text-prime bg-prime/10", title: t("home.freeShipping"), desc: t("home.onOrders35") },
               { icon: Shield, color: "text-success bg-success/10", title: t("home.buyerProtection"), desc: t("home.secure100") },

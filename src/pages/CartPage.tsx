@@ -100,17 +100,17 @@ export default function CartPage() {
                         <Checkbox checked={item.isGift} onCheckedChange={() => toggleGift(item.id)} />
                         <span className="text-xs flex items-center gap-1"><Gift className="w-3 h-3" />{t("cart.thisIsGift")}</span>
                       </label>
-                      <div className="flex items-center gap-3 mt-3 flex-wrap">
+                      <div className="flex items-center gap-2 sm:gap-3 mt-3 flex-wrap">
                         <div className="flex items-center border border-border rounded-lg">
                           <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-2.5 hover:bg-muted rounded-l-lg" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
                           <span className="px-3 text-sm font-medium">{item.quantity}</span>
                           <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-2.5 hover:bg-muted rounded-r-lg"><Plus className="w-3 h-3" /></button>
                         </div>
-                        <span className="border-r border-border h-4" />
+                        <span className="hidden sm:block border-r border-border h-4" />
                         <button onClick={() => removeFromCart(item.id)} className="text-xs text-info hover:underline">{t("common.delete")}</button>
-                        <span className="border-r border-border h-4" />
+                        <span className="hidden sm:block border-r border-border h-4" />
                         <button onClick={() => toggleSaveForLater(item.id)} className="text-xs text-info hover:underline">{t("cart.saveForLater")}</button>
-                        <span className="border-r border-border h-4" />
+                        <span className="hidden sm:block border-r border-border h-4" />
                         <button className="text-xs text-info hover:underline">{t("cart.compareWithSimilar")}</button>
                       </div>
                     </div>

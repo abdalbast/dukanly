@@ -1,43 +1,160 @@
 
 
-## Mobile Responsiveness Audit & Fixes
+# Dukanly Codebase Audit Report
 
-After reviewing all pages, the premium design system is well-applied overall. Here are the specific mobile issues to fix:
+## Critical Build Errors (Blocking)
 
-### Issues Found
+### 1. Stripe npm import in Deno edge function
+**File:** `supabase/functions/checkout/index.ts:9`
+**Issue:** `import Stripe from "npm:stripe@18.5.0"` fails because no `deno.json` declares this dependency. The build error blocks all edge function deployment.
+**Fix:** Add a `supabase/functions/deno.json` with `"imports": { "npm:stripe@18.5.0": "npm:stripe@18.5.0" }` or use `"nodeModulesDir": "auto"`.
 
-**1. Hero Carousel (HomePage)** — The hero text (`text-4xl`) and carousel height (`h-[420px]`) are slightly aggressive on small phones (< 375px). The tagline tracking `[0.2em]` is wide for narrow screens. Arrow buttons (`opacity-0 group-hover`) are invisible on touch devices since there's no hover.
+### 2. Test files have overly strict i18n mock types
+**Files:** `src/test/address-book.integration.test.tsx:34`, `src/test/commerce.integration.test.tsx:44`, `src/test/order-confirmation.integration.test.tsx:30`
+**Issue:** The mock `t` function uses `keyof typeof en` as the parameter type. As translation keys grow, TypeScript infers a massive union literal type. The mock returns `string` which doesn't match.
+**Fix:** Change the mock `t` parameter type to `string` instead of `keyof typeof en`, since the mock doesn't need strict key checking.
 
-**2. Mega Menu (Header)** — Uses `grid-cols-5` with no mobile breakpoint. On mobile the mega menu would render as a cramped 5-column grid. Needs to be full-width single-column or a drawer on mobile.
+---
 
-**3. Value Propositions (HomePage)** — `grid-cols-2` at mobile is fine, but the icon + text layout with `gap-4` can feel cramped on very small screens.
+## Security Vulnerabilities
 
-**4. Category Cards (HomePage)** — `aspect-[4/5]` on `grid-cols-2` produces tall cards that push content far down on mobile. The overlay text padding `p-5 pt-12` is generous but fine.
+### 3. Role resolution from user metadata (privilege escalation risk)
+**File:** `supabase/functions/_shared/auth.ts:11-21`
+**Issue:** `resolveRole()` reads role from `user_metadata` which is user-editable via `supabase.auth.updateUser({ data: { role: "admin" } })`. A regular user can escalate to admin or seller by updating their own metadata.
+**Fix:** Only read from `app_metadata` (server-controlled), or use a dedicated `user_roles` table with a `SECURITY DEFINER` function as recommended.
 
-**5. Cart Page** — Cart item actions row (`flex-wrap gap-3`) with multiple action links and separators can overflow awkwardly on narrow screens.
+### 4. Cart and address data stored in localStorage without user scoping
+**Files:** `src/contexts/CartContext.tsx`, `src/contexts/AddressBookContext.tsx`
+**Issue:** All users on the same browser share cart and address data via a single localStorage key. If two people use the same device, addresses (including phone numbers and physical locations) leak between accounts. The address book also seeds fake addresses for unauthenticated users.
+**Fix:** Scope storage keys to the authenticated user ID. Clear data on sign-out. For addresses, migrate to the existing `addresses` database table (already has RLS policies).
 
-**6. Product Detail** — The breadcrumb with `truncate max-w-xs` works, but the buy box stacks below product info on mobile which is correct. The mobile sticky CTA at bottom is good.
+### 5. Addresses stored client-side but a server-side `addresses` table exists
+**Files:** `src/contexts/AddressBookContext.tsx` vs database `addresses` table
+**Issue:** The address book uses localStorage while a properly RLS-protected `addresses` table exists in the database. The client-side addresses are never persisted to the server, so they're lost on device change and not validated server-side.
+**Fix:** Use the database `addresses` table as the source of truth.
 
-**7. Checkout Page** — The step number badges and manage addresses button layout (`flex justify-between`) can wrap poorly on very narrow screens.
+### 6. No input sanitization on checkout phone number client-side
+**File:** `src/pages/CheckoutPage.tsx:324-332`
+**Issue:** The phone input is a plain `<input>` with no `maxLength`, no pattern restriction, and no sanitization beyond `normalizeIraqPhone`. A very long string could be submitted.
+**Fix:** Add `maxLength={15}` and `pattern` attributes, plus validate length in the edge function.
 
-**8. Footer** — `grid-cols-2` on mobile works but the `gap-10` is very large, pushing footer height.
+---
 
-### Fixes to Apply
+## Dead Code and Unused Patterns
 
-1. **`src/pages/HomePage.tsx`** — Reduce hero height to `h-[320px]` on mobile, reduce title to `text-3xl` on smallest breakpoint, make carousel arrows always visible on mobile (opacity-100), reduce tagline tracking on mobile
-2. **`src/components/Header.tsx`** — Add mobile breakpoint for mega menu: single column with scroll on `md:` below, or hide mega menu on mobile and use the sub-nav categories instead
-3. **`src/pages/HomePage.tsx`** — Reduce value prop gap to `gap-3` on mobile
-4. **`src/pages/CartPage.tsx`** — Stack cart item action buttons vertically on very small screens, hide separators on mobile
-5. **`src/components/Footer.tsx`** — Reduce mobile gap from `gap-10` to `gap-6` on mobile
-6. **`src/pages/CheckoutPage.tsx`** — Stack the section header and button vertically on mobile
-7. **`src/pages/auth/SignInPage.tsx`** — Reduce horizontal padding on very small screens
+### 7. Mock data files still imported in production
+**Files:** `src/data/sellerMockData.ts`, `src/data/mockData.ts`
+**Issue:** `sellerMockData.ts` is imported by `SellerContext.tsx` and used for profile, settings, and analytics data even though real database queries exist for products and orders. The mock analytics data shows hardcoded USD values (e.g., `$28,459.87`) that conflict with the IQD-first strategy.
+**Fix:** Replace mock data with database queries. For analytics, compute from `ledger_transactions` and `order_items` tables.
 
-### Files to Edit (6 files)
+### 8. Unused `SellerAnalytics` page still routes but duplicates `SellerReports`
+**File:** `src/App.tsx:226` and the `SellerAnalytics` page
+**Issue:** Both `/seller/analytics` and `/seller/reports` exist with overlapping functionality. The sidebar was expanded to 11 items but `analytics` wasn't removed.
+**Fix:** Remove the analytics route and page, or merge into reports.
 
-- `src/pages/HomePage.tsx` — Hero carousel mobile sizing, value prop gap, arrow visibility
-- `src/components/Header.tsx` — Mega menu mobile layout
-- `src/components/Footer.tsx` — Mobile gap reduction
-- `src/pages/CartPage.tsx` — Cart item actions mobile layout
-- `src/pages/CheckoutPage.tsx` — Section header stacking on mobile
-- `src/pages/auth/SignInPage.tsx` — Minor padding adjustment
+### 9. Multiple placeholder routes point to `AboutPage`
+**File:** `src/App.tsx:181-187`
+**Issue:** Routes `/careers`, `/press`, `/investors`, `/affiliate`, `/advertise`, `/publish` all render `AboutPage` as a catch-all. Users clicking these expect distinct content.
+**Fix:** Either create stub pages or redirect to a "Coming Soon" page.
+
+---
+
+## Bad Patterns and Code Quality
+
+### 10. `SellOnDukanlyPage` and `Layout` cause React ref warnings
+**Console logs:** `Function components cannot be given refs`
+**Issue:** `SellOnDukanlyPage` is lazy-loaded and React tries to attach a ref. The `Layout` component also triggers this warning. This happens because `React.lazy` wraps the component and the parent passes a ref.
+**Fix:** Either wrap components with `React.forwardRef` or ensure the lazy boundary doesn't try to forward refs.
+
+### 11. CartContext duplicates localStorage writes in every method
+**File:** `src/contexts/CartContext.tsx`
+**Issue:** Every cart method (`addToCart`, `removeFromCart`, `updateQuantity`, etc.) manually writes to localStorage inside the `setItems` callback. There's already a `persistItems` helper that does this, but it's only used by `clearCart`.
+**Fix:** Use a single `useEffect` that persists `items` to localStorage whenever they change, and remove all inline localStorage writes.
+
+### 12. SellerContext has `products` in `updateProduct` dependency array
+**File:** `src/contexts/SellerContext.tsx:348`
+**Issue:** `updateProduct` depends on `[products]`, which means a new function reference is created on every product state change. This can cause unnecessary re-renders of all consumers.
+**Fix:** Use a ref for accessing current products inside the callback, or use the functional `setProducts` updater pattern.
+
+### 13. Hardcoded USD currency code in seller product writes
+**File:** `src/contexts/SellerContext.tsx:299,334`
+**Issue:** `currencyCode: "USD"` is hardcoded when calling `upsertSellerProduct`, contradicting the IQD-first localization.
+**Fix:** Change to `"IQD"` or use a site-wide currency constant.
+
+### 14. `deleteProduct` throws an error instead of working
+**File:** `src/contexts/SellerContext.tsx:351-353`
+**Issue:** `deleteProduct` always throws `"Seller product publishing is not available yet."` -- it's a stub that will confuse users who try to delete products.
+**Fix:** Implement the delete via Supabase, or hide the delete button in the UI until it works.
+
+### 15. Seller `becomeSeller()` doesn't refetch seller ID
+**File:** `src/contexts/SellerContext.tsx:411-425`
+**Issue:** After inserting into `sellers`, `setIsSeller(true)` is called but `sellerId` is never updated. The dashboard will render but can't fetch products/orders because `sellerId` is still null.
+**Fix:** After insert, query back the seller row to get the ID and call `setSellerId()`.
+
+---
+
+## Logic Issues
+
+### 16. Checkout passes `"active-cart"` as cartId, not a real UUID
+**File:** `src/pages/CheckoutPage.tsx:196`
+**Issue:** `cartId: "active-cart"` is a string literal. The edge function checks `isUuid(payload.cartId)` and sets `source_cart_id` to null if it fails. This means orders are never linked to database carts.
+**Fix:** Either use the actual cart ID from the `carts` table (if the cart is server-side) or remove the field entirely.
+
+### 17. Seller orders show "Customer" as customer name for all orders
+**File:** `src/contexts/SellerContext.tsx:253`
+**Issue:** `customerName: "Customer"` is hardcoded because the orders query doesn't join to profiles. Sellers can't identify who placed orders.
+**Fix:** Join `orders` to `profiles` on `user_id` to get `display_name`.
+
+### 18. Price comparison in checkout allows overpayment
+**File:** `supabase/functions/checkout/index.ts:149-155`
+**Issue:** The validation only checks if `clientTotal < serverItemTotal`. It doesn't check if the client total is unreasonably higher (e.g., manipulation to inflate a seller payout). There's also no validation that `shippingAmount` is a valid delivery option price.
+**Fix:** Add an upper-bound check and validate shipping amount against allowed delivery options.
+
+### 19. COD risk check scans ALL payments, not filtered by phone
+**File:** `supabase/functions/checkout/index.ts:87-101`
+**Issue:** The query fetches all COD payments from the last 24 hours, then filters by phone in JavaScript. With scale, this becomes expensive. Also, the phone is stored inside `raw_provider_payload` JSONB, making the filter unreliable.
+**Fix:** Add a `customer_phone` column to `payments` or use a Postgres JSONB query.
+
+---
+
+## Missing Functionality
+
+### 20. New seller pages use only mock/static data
+**Files:** `SellerInventory.tsx`, `SellerShipping.tsx`, `SellerReturns.tsx`, `SellerPayments.tsx`, `SellerPerformance.tsx`, `SellerReports.tsx`, `SellerSupport.tsx`
+**Issue:** All 7 new seller pages render static placeholder data. The database tables (`ledger_transactions`, `return_requests`, `support_cases`, etc.) exist but no queries connect them to the UI.
+**Fix:** Wire each page to its corresponding database table via Supabase queries.
+
+### 21. No onboarding wizard implemented
+**File:** `src/components/seller/SellerLayout.tsx:26-48`
+**Issue:** The plan called for a multi-step onboarding wizard using `seller_onboarding_steps`, but the current implementation is still the simple "Become a Seller" button with no verification steps.
+**Fix:** Implement the onboarding flow as planned.
+
+### 22. SellerLayout header has hardcoded English strings
+**File:** `src/components/seller/SellerLayout.tsx:33,35,39,43,59,63-65`
+**Issue:** "Start Selling", "Become a Seller", "Seller Central", "Need help?", "Seller Support" are not using the `t()` translation function.
+**Fix:** Add i18n keys and use `useLanguage()`.
+
+---
+
+## Summary Priority Table
+
+| Priority | Issue | Type |
+|----------|-------|------|
+| P0 | #1 Stripe Deno import | Build blocker |
+| P0 | #2 Test type errors | Build blocker |
+| P0 | #3 Role escalation via user_metadata | Security |
+| P1 | #4 Shared localStorage between users | Security/Privacy |
+| P1 | #5 Addresses not using database table | Data integrity |
+| P1 | #15 becomeSeller doesn't set sellerId | Logic bug |
+| P1 | #13 Hardcoded USD in seller writes | Localization bug |
+| P2 | #7 Mock data in production | Dead code |
+| P2 | #11 Duplicated localStorage writes | Code quality |
+| P2 | #16 Fake cartId in checkout | Logic |
+| P2 | #17 Hardcoded customer name | UX |
+| P2 | #19 COD risk full-table scan | Performance |
+| P2 | #20 New seller pages use static data | Incomplete |
+| P3 | #8 Duplicate analytics/reports | Dead code |
+| P3 | #9 Placeholder routes | UX |
+| P3 | #10 React ref warnings | Console noise |
+| P3 | #22 Hardcoded English in seller layout | i18n |
 
