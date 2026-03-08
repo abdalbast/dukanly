@@ -150,10 +150,6 @@ export default function SellerProducts() {
         </Button>
       </div>
 
-      <Alert>
-        <AlertTitle>Catalog writes are disabled</AlertTitle>
-        <AlertDescription>{productActionsUnavailableMessage}</AlertDescription>
-      </Alert>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
