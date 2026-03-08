@@ -243,10 +243,7 @@ export default function HomePage() {
         <div className="container py-14 md:py-20 pb-16">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h2
-                className="section-header"
-                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-              >
+              <h2 className="section-header">
                 {t("home.trendingNow")}
               </h2>
               <p className="section-subheader mb-0">See what's popular right now</p>
