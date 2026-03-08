@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Banknote, Check, Clock, CreditCard, MapPin, Package, Plus, ShieldCheck, Truck } from "lucide-react";
+import { LazyImage } from "@/components/LazyImage";
 
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
