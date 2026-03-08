@@ -5,6 +5,7 @@ import { Layout } from "@/components/Layout";
 import { StarRating } from "@/components/StarRating";
 import { PriceDisplay } from "@/components/PriceDisplay";
 import { ProductCard } from "@/components/ProductCard";
+import { LazyImage } from "@/components/LazyImage";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useProductById, useProductsByCategory } from "@/hooks/useProducts";
