@@ -1294,6 +1294,69 @@ export type Database = {
           },
         ]
       }
+      wishlist_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          wishlist_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          wishlist_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          wishlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlist_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wishlist_items_wishlist_id_fkey"
+            columns: ["wishlist_id"]
+            isOneToOne: false
+            referencedRelation: "wishlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          is_private: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_private?: boolean
+          name?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_private?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       sellers_public: {
