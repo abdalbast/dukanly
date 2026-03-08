@@ -73,6 +73,7 @@ function RouteFallback() {
 }
 
 const App = () => (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
         <AuthProvider>
