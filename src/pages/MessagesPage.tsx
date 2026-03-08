@@ -5,6 +5,7 @@ import { ConversationList } from "@/components/chat/ConversationList";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function MessagesPage() {
   const { t } = useLanguage();

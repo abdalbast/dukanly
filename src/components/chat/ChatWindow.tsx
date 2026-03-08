@@ -129,7 +129,12 @@ export function ChatWindow({ conversationId, otherPartyName, onBack }: ChatWindo
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border bg-card">
+      <div className="px-4 py-3 border-b border-border bg-card flex items-center gap-2">
+        {onBack && (
+          <Button variant="ghost" size="icon" className="md:hidden shrink-0 -ml-2" onClick={onBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        )}
         <h3 className="font-semibold text-sm">{otherPartyName}</h3>
       </div>
 

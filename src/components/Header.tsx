@@ -209,7 +209,7 @@ export function Header() {
                 type="button"
                 onClick={() => navigate("/messages")}
                 aria-label={t("header.messages")}
-                className="hidden md:flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded relative"
+                className="flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded relative"
               >
                 <div className="relative">
                   <MessageCircle className="w-6 h-6" />
