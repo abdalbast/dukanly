@@ -1021,4 +1021,13 @@ export const ckb: Record<TranslationKey, string> = {
   "home.slide4.title": "ئەمڕۆ دەستبکە بە فرۆشتن لە دوکانلی",
   "home.slide4.subtitle": "بگە بە هەزاران کڕیار لە کوردستان و عێراق. لە چەند خولەکێکدا دامەزرێنە.",
   "home.slide4.cta": "بێبەرامبەر دەستبکە",
+
+  // Handmade Collection
+  "handmade.title": "کۆمەڵەی دەستکرد",
+  "handmade.tagline": "بە خۆشەویستی دروستکراو",
+  "handmade.description": "بەرهەمی دەستکردی ڕاستەقینە بدۆزەرەوە کە لەلایەن هونەرمەندانی بەتواناوەی کوردستانەوە دروستکراون. هەر پارچەیەک چیرۆکی میرات و پیشەسازی دەگێڕێتەوە.",
+  "handmade.artisanOnly": "تەنها براندە هونەرییەکان",
+  "handmade.empty": "هێشتا بەرهەمی دەستکرد نییە",
+  "handmade.emptyDescription": "کۆمەڵەیەکی جوانی بەرهەمە دەستکردەکان دادەنێین. زوو سەردانمانەوە بکە!",
+  "footer.handmadeCollection": "کۆمەڵەی دەستکرد",
 };

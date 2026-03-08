@@ -1019,6 +1019,15 @@ export const en = {
   "home.slide4.title": "Start selling on Dukanly today",
   "home.slide4.subtitle": "Reach thousands of customers across Kurdistan and Iraq. Set up in minutes.",
   "home.slide4.cta": "Get Started Free",
+
+  // Handmade Collection
+  "handmade.title": "Handmade Collection",
+  "handmade.tagline": "Crafted with Love",
+  "handmade.description": "Discover authentic handmade products crafted by talented artisans from Kurdistan. Each piece tells a story of heritage and craftsmanship.",
+  "handmade.artisanOnly": "Artisan brands only",
+  "handmade.empty": "No handmade products yet",
+  "handmade.emptyDescription": "We're curating a beautiful collection of handmade products. Check back soon!",
+  "footer.handmadeCollection": "Handmade Collection",
 } as const;
 
 export type TranslationKey = keyof typeof en;

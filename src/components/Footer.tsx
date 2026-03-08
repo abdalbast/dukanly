@@ -17,6 +17,7 @@ export function Footer() {
       { label: t("footer.becomeAffiliate"), href: "/affiliate" },
       { label: t("footer.advertise"), href: "/advertise" },
       { label: t("footer.selfPublish"), href: "/publish" },
+      { label: t("footer.handmadeCollection"), href: "/handmade" },
     ],
     [t("footer.paymentProducts")]: [
       { label: t("footer.marketplaceCard"), href: "/card" },
