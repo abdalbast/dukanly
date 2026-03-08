@@ -61,7 +61,7 @@ export function Header() {
       <div className="bg-primary text-primary-foreground">
         <div className="container flex h-14 items-center gap-3 px-4 md:gap-4">
           {/* Logo */}
-          <Link to="/" className="shrink-0 flex items-center gap-1">
+          <Link to="/" className="hidden md:flex shrink-0 items-center gap-1">
             <div className="text-xl font-bold tracking-tight">
               <span className="text-accent">Dukan</span><span>ly</span>
             </div>
@@ -213,7 +213,7 @@ export function Header() {
                 type="button"
                 onClick={() => navigate("/messages")}
                 aria-label={t("header.messages")}
-                className="flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded relative"
+                className="hidden md:flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded relative"
               >
                 <div className="relative">
                   <MessageCircle className="w-6 h-6" />
@@ -229,7 +229,7 @@ export function Header() {
               type="button"
               onClick={() => setIsCartPreviewOpen(true)}
               aria-label={t("header.cart")}
-              className="relative flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded"
+              className="hidden md:flex relative items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded"
             >
               <div className="relative">
                 <ShoppingCart className="w-7 h-7" />
@@ -243,57 +243,28 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-t border-primary-foreground/10 bg-primary/95 text-primary-foreground md:hidden">
-        <div className={`container grid gap-2 px-4 py-2 ${user ? "grid-cols-2" : "grid-cols-3"}`}>
-          <button
-            type="button"
-            onClick={openAddressManager}
-            className="flex min-w-0 items-center gap-2 rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-2 text-left hover:bg-primary-foreground/10"
-          >
-            <MapPin className="h-4 w-4 shrink-0 text-primary-foreground/75" />
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60">{t("header.deliverTo")}</div>
-              <div className="truncate text-xs font-semibold">{deliveryLabel}</div>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsOrdersPreviewOpen(true)}
-            className="flex min-w-0 items-center gap-2 rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-2 text-left hover:bg-primary-foreground/10"
-          >
-            <Package className="h-4 w-4 shrink-0 text-primary-foreground/75" />
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60">{t("header.returns")}</div>
-              <div className="truncate text-xs font-semibold">{t("header.andOrders")}</div>
-            </div>
-          </button>
-          {!user && (
-            <Link
-              to="/auth/signin"
-              className="flex min-w-0 items-center justify-center gap-2 rounded-xl border border-primary-foreground/15 bg-accent/20 px-3 py-2 text-center hover:bg-accent/30"
-            >
-              <span className="truncate text-xs font-semibold">{t("header.signIn")}</span>
-            </Link>
-          )}
-        </div>
-      </div>
 
       {/* Sub Navigation */}
       <nav aria-label="Category navigation" className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
         <div className="container flex items-center gap-1 h-11 px-4 overflow-x-auto scrollbar-hide nav-scroll-fade">
+          {/* Desktop: All button */}
           <button
-            onClick={() => {
-              if (isMobile) {
-                setIsMobileCategoryOpen(true);
-              } else {
-                setIsMegaMenuOpen(!isMegaMenuOpen);
-              }
-            }}
-            className="flex items-center gap-1 nav-item font-semibold"
+            onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+            className="hidden md:flex items-center gap-1 nav-item font-semibold"
           >
             <Menu className="w-4 h-4" />
             {t("common.all")}
+          </button>
+
+          {/* Mobile: Deliver to button */}
+          <button
+            type="button"
+            onClick={openAddressManager}
+            aria-label={`${t("header.deliverTo")} ${deliveryLabel}`}
+            className="flex md:hidden items-center gap-1.5 nav-item font-semibold"
+          >
+            <MapPin className="w-4 h-4 shrink-0 text-primary-foreground/70" />
+            <span className="truncate max-w-[140px] text-xs">{deliveryLabel}</span>
           </button>
           
           {categories.slice(0, 7).map((cat) => (
