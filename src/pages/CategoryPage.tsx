@@ -61,18 +61,18 @@ export default function CategoryPage() {
           <div className="absolute inset-0 bg-muted" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/30" />
-        <div className="container relative h-full flex flex-col justify-end pb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-white capitalize">
+        <div className="container relative h-full flex flex-col justify-end pb-8">
+          <h1 className="page-title text-3xl md:text-4xl text-white capitalize">
             {category?.name || slug || t("category.allProducts")}
           </h1>
-          <p className="text-white/80 mt-1">
+          <p className="text-white/80 mt-1.5">
             {displayProducts.length} {t("common.products")}
           </p>
         </div>
       </div>
-      <div className="container py-6">
+      <div className="container py-10 md:py-14">
         {category?.subcategories && !subcategory && (
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-8">
             {category.subcategories.map((sub) => (
               <Link key={sub.id} to={`/category/${category.slug}/${sub.slug}`} className="filter-chip">{sub.name}</Link>
             ))}
@@ -81,7 +81,7 @@ export default function CategoryPage() {
         {isLoading ? (
           <ProductGridSkeleton count={10} />
         ) : displayProducts.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-16">
             <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
               <PackageOpen className="w-10 h-10 text-muted-foreground" />
             </div>
@@ -89,7 +89,7 @@ export default function CategoryPage() {
             <p className="text-muted-foreground">{t("search.tryAdjusting")}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
             {displayProducts.map((product) => (<ProductCard key={product.id} product={product} />))}
           </div>
         )}

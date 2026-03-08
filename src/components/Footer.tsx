@@ -45,17 +45,17 @@ export function Footer() {
 
       {/* Main Footer Links */}
       <div className="border-t border-primary-foreground/10">
-        <div className="container py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="container py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h3 className="font-semibold text-sm mb-3">{title}</h3>
-                <ul className="space-y-2">
+                <h3 className="font-semibold text-sm mb-4 tracking-wide">{title}</h3>
+                <ul className="space-y-2.5">
                   {links.map((link) => (
                     <li key={link.href}>
                       <Link
                         to={link.href}
-                        className="text-xs text-primary-foreground/70 hover:text-primary-foreground hover:underline"
+                        className="text-sm text-primary-foreground/70 hover:text-primary-foreground hover:underline transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -70,7 +70,7 @@ export function Footer() {
 
       {/* Bottom Footer */}
       <div className="border-t border-primary-foreground/10 bg-primary/80">
-        <div className="container py-6">
+        <div className="container py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Link to="/" className="text-xl font-bold tracking-tight">
               <span className="text-accent">Dukan</span>

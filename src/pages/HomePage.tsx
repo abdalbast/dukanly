@@ -37,8 +37,7 @@ export default function HomePage() {
                 {t("home.heroTagline")}
               </p>
               <h1
-                className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5"
-                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+                className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5 page-title"
               >
                 {t("home.heroTitle")}
               </h1>
@@ -89,10 +88,7 @@ export default function HomePage() {
       {/* Category Cards — clean, editorial grid */}
       <section className="container py-14 md:py-20">
         <div className="text-center mb-10">
-          <h2
-            className="section-header"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
+          <h2 className="section-header">
             Shop by Category
           </h2>
           <p className="section-subheader">Discover products across every department</p>
@@ -132,10 +128,7 @@ export default function HomePage() {
         <div className="container py-14 md:py-20">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h2
-                className="section-header"
-                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-              >
+              <h2 className="section-header">
                 {t("home.todaysDeals")}
               </h2>
               <p className="section-subheader mb-0">Limited-time offers you don't want to miss</p>
@@ -163,10 +156,7 @@ export default function HomePage() {
       <section className="container py-14 md:py-20">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2
-              className="section-header"
-              style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-            >
+              <h2 className="section-header">
               {t("home.bestSellers")}
             </h2>
             <p className="section-subheader mb-0">The products our customers love most</p>
@@ -193,10 +183,7 @@ export default function HomePage() {
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-2">Featured Brand</p>
-                <h2
-                  className="section-header"
-                  style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-                >
+                <h2 className="section-header">
                   Pelin Products
                 </h2>
               </div>
@@ -216,10 +203,7 @@ export default function HomePage() {
       {/* More Categories */}
       <section className="container py-14 md:py-20">
         <div className="text-center mb-10">
-          <h2
-            className="section-header"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
+          <h2 className="section-header">
             More to Explore
           </h2>
           <p className="section-subheader">Browse our full range of departments</p>
@@ -259,10 +243,7 @@ export default function HomePage() {
         <div className="container py-14 md:py-20 pb-16">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h2
-                className="section-header"
-                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-              >
+              <h2 className="section-header">
                 {t("home.trendingNow")}
               </h2>
               <p className="section-subheader mb-0">See what's popular right now</p>
@@ -286,10 +267,7 @@ export default function HomePage() {
       {/* Bottom CTA Band */}
       <section className="bg-primary">
         <div className="container py-16 md:py-20 text-center">
-          <h2
-            className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-foreground mb-4"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-foreground mb-4 page-title">
             Start Selling on Dukanly
           </h2>
           <p className="text-primary-foreground/70 text-lg mb-8 max-w-lg mx-auto">

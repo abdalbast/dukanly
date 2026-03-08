@@ -1,15 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { 
-  Store, 
-  CreditCard, 
-  Truck, 
-  Users, 
-  ChevronRight, 
-  Banknote,
-  Package,
-  Star,
-  ArrowRight
+  Store, CreditCard, Truck, Users, ChevronRight, Banknote, Package, Star, ArrowRight
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,24 +10,11 @@ export default function SellOnDukanlyPage() {
   const { t } = useLanguage();
   const { user } = useAuth();
   const startSellingHref = user ? "/seller" : `/auth/signin?redirect=${encodeURIComponent("/seller")}`;
-  const marketingCardClass = "bg-card rounded-lg border border-border p-4 transition-shadow hover:shadow-card";
 
   const valueProps = [
-    {
-      icon: Users,
-      title: t("sell.reachBuyers"),
-      description: t("sell.reachBuyersDesc"),
-    },
-    {
-      icon: CreditCard,
-      title: t("sell.multiplePayments"),
-      description: t("sell.multiplePaymentsDesc"),
-    },
-    {
-      icon: Truck,
-      title: t("sell.localDelivery"),
-      description: t("sell.localDeliveryDesc"),
-    },
+    { icon: Users, title: t("sell.reachBuyers"), description: t("sell.reachBuyersDesc"), color: "bg-primary/10 text-primary" },
+    { icon: CreditCard, title: t("sell.multiplePayments"), description: t("sell.multiplePaymentsDesc"), color: "bg-info/10 text-info" },
+    { icon: Truck, title: t("sell.localDelivery"), description: t("sell.localDeliveryDesc"), color: "bg-prime/10 text-prime" },
   ];
 
   const steps = [
@@ -84,30 +63,23 @@ export default function SellOnDukanlyPage() {
             `,
           }}
         >
-          {/* Subtle grid pattern */}
           <div
             className="absolute inset-0 opacity-[0.08]"
             style={{
-              backgroundImage: `
-                linear-gradient(to right, white 1px, transparent 1px),
-                linear-gradient(to bottom, white 1px, transparent 1px)
-              `,
+              backgroundImage: `linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)`,
               backgroundSize: "32px 32px",
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/50 to-transparent rtl:bg-gradient-to-l rtl:via-primary/50" />
           <div className="container relative h-full flex items-center">
             <div className="max-w-lg text-primary-foreground">
-              <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("sell.heroTitle")}</h1>
-              <p className="text-lg text-primary-foreground/80 mb-6">{t("sell.heroSubtitle")}</p>
+              <h1 className="page-title text-3xl md:text-4xl text-primary-foreground mb-4">{t("sell.heroTitle")}</h1>
+              <p className="text-lg text-primary-foreground/80 mb-8">{t("sell.heroSubtitle")}</p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link to={startSellingHref} className="btn-cta px-8 py-3 inline-flex items-center justify-center gap-2">
-                  {t("sell.startSelling")}
-                  <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                  {t("sell.startSelling")} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
                 </Link>
-                <a href="#how-it-works" className="hero-secondary-link">
-                  {t("sell.learnMore")}
-                </a>
+                <a href="#how-it-works" className="hero-secondary-link">{t("sell.learnMore")}</a>
               </div>
             </div>
           </div>
@@ -115,30 +87,30 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* Stats Bar */}
-      <section className="bg-card border-b border-border py-4">
+      <section className="bg-card border-b border-border py-6">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {stats.map((stat) => (
               <div key={stat.label}>
                 <p className="text-2xl font-bold text-primary">{stat.value}</p>
-                <p className="text-sm font-semibold">{stat.label}</p>
+                <p className="text-sm font-semibold mt-1">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Sell on Dukanly */}
-      <section className="container py-8">
-        <div className="max-w-2xl mb-4">
-          <h2 className="section-header mb-2">{t("sell.whySellTitle")}</h2>
+      {/* Why Sell */}
+      <section className="container py-14 md:py-20">
+        <div className="max-w-2xl mb-8">
+          <h2 className="section-header mb-3">{t("sell.whySellTitle")}</h2>
           <p className="text-sm text-muted-foreground">{t("sell.heroSubtitle")}</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {valueProps.map((prop) => (
-            <div key={prop.title} className={marketingCardClass}>
-              <div className="w-12 h-12 mb-3 rounded-lg bg-secondary flex items-center justify-center">
-                <prop.icon className="w-6 h-6 text-primary" />
+            <div key={prop.title} className="premium-card p-6">
+              <div className={`w-12 h-12 mb-4 rounded-xl ${prop.color} flex items-center justify-center`}>
+                <prop.icon className="w-6 h-6" />
               </div>
               <h3 className="font-semibold mb-2">{prop.title}</h3>
               <p className="text-sm text-muted-foreground">{prop.description}</p>
@@ -148,15 +120,15 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="bg-secondary/50 py-8 scroll-mt-28">
+      <section id="how-it-works" className="bg-secondary/40 py-14 md:py-20 scroll-mt-28">
         <div className="container">
-          <div className="max-w-2xl mb-4">
-            <h2 className="section-header mb-2">{t("sell.howItWorksTitle")}</h2>
+          <div className="max-w-2xl mb-8">
+            <h2 className="section-header mb-3">{t("sell.howItWorksTitle")}</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {steps.map((step, i) => (
-              <div key={step.number} className={`relative ${marketingCardClass}`}>
-                <div className="w-10 h-10 mb-3 rounded-full bg-primary text-primary-foreground text-base font-bold flex items-center justify-center">
+              <div key={step.number} className="relative premium-card p-6">
+                <div className="w-10 h-10 mb-4 rounded-full bg-primary text-primary-foreground text-base font-bold flex items-center justify-center">
                   {step.number}
                 </div>
                 <h3 className="font-semibold mb-2">{step.title}</h3>
@@ -171,16 +143,16 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* Pricing */}
-      <section className="container py-8">
-        <div className="max-w-2xl mb-4">
-          <h2 className="section-header mb-2">{t("sell.pricingTitle")}</h2>
+      <section className="container py-14 md:py-20">
+        <div className="max-w-2xl mb-8">
+          <h2 className="section-header mb-3">{t("sell.pricingTitle")}</h2>
           <p className="text-sm text-muted-foreground">{t("sell.pricingSubtitle")}</p>
         </div>
-        <div className="max-w-md bg-card border border-border rounded-lg overflow-hidden">
+        <div className="max-w-md premium-card overflow-hidden">
           {feeItems.map((item, i) => (
-            <div key={item.label} className={`flex items-center justify-between gap-4 p-4 ${i < feeItems.length - 1 ? "border-b border-border" : ""}`}>
+            <div key={item.label} className={`flex items-center justify-between gap-4 p-5 ${i < feeItems.length - 1 ? "border-b border-border" : ""}`}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
                   <item.icon className="w-5 h-5 text-primary" />
                 </div>
                 <span className="text-sm font-medium">{item.label}</span>
@@ -192,18 +164,18 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-secondary/50 py-8">
+      <section className="bg-secondary/40 py-14 md:py-20">
         <div className="container">
-          <div className="max-w-2xl mb-4">
-            <h2 className="section-header mb-2">{t("sell.successStoriesTitle")}</h2>
+          <div className="max-w-2xl mb-8">
+            <h2 className="section-header mb-3">{t("sell.successStoriesTitle")}</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((story) => (
-              <div key={story.name} className={marketingCardClass}>
-                <div className="flex gap-1 mb-3">
+              <div key={story.name} className="premium-card p-6">
+                <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-accent text-accent" />)}
                 </div>
-                <p className="text-sm text-muted-foreground italic mb-4">"{story.quote}"</p>
+                <p className="text-sm text-muted-foreground italic mb-5">"{story.quote}"</p>
                 <div>
                   <p className="font-semibold text-sm">{story.name}</p>
                   <p className="text-xs text-muted-foreground">{story.business}</p>
@@ -215,32 +187,31 @@ export default function SellOnDukanlyPage() {
       </section>
 
       {/* FAQ */}
-      <section className="container py-8">
-        <div className="max-w-2xl mb-4">
-          <h2 className="section-header mb-2">{t("sell.faqTitle")}</h2>
+      <section className="container py-14 md:py-20">
+        <div className="max-w-2xl mb-8">
+          <h2 className="section-header mb-3">{t("sell.faqTitle")}</h2>
         </div>
         <div className="max-w-2xl space-y-4">
           {faqs.map((faq) => (
-            <details key={faq.q} className="bg-card border border-border rounded-lg group">
-              <summary className="p-4 font-medium cursor-pointer hover:text-primary transition-colors list-none flex items-center justify-between">
+            <details key={faq.q} className="premium-card group">
+              <summary className="p-5 font-medium cursor-pointer hover:text-primary transition-colors list-none flex items-center justify-between">
                 {faq.q}
                 <ChevronRight className="w-5 h-5 text-muted-foreground transition-transform group-open:rotate-90 rtl:rotate-180 rtl:group-open:rotate-90" />
               </summary>
-              <div className="px-4 pb-4 text-sm text-muted-foreground">{faq.a}</div>
+              <div className="px-5 pb-5 text-sm text-muted-foreground">{faq.a}</div>
             </details>
           ))}
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="container py-8 pb-12">
-        <div className="bg-primary text-primary-foreground rounded-lg px-6 py-8">
+      <section className="container py-14 pb-16">
+        <div className="bg-primary text-primary-foreground rounded-2xl px-8 py-12">
           <div className="max-w-lg">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">{t("sell.ctaTitle")}</h2>
-            <p className="text-lg text-primary-foreground/80 mb-6">{t("sell.ctaSubtitle")}</p>
+            <h2 className="page-title text-3xl md:text-4xl text-primary-foreground mb-4">{t("sell.ctaTitle")}</h2>
+            <p className="text-lg text-primary-foreground/80 mb-8">{t("sell.ctaSubtitle")}</p>
             <Link to={startSellingHref} className="btn-cta px-10 py-3 inline-flex items-center justify-center gap-2">
-              {t("sell.startSelling")}
-              <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+              {t("sell.startSelling")} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </Link>
           </div>
         </div>

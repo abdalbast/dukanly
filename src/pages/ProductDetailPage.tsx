@@ -36,8 +36,8 @@ export default function ProductDetailPage() {
   if (isError) {
     return (
       <Layout>
-        <div className="container py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">{t("common.loading")}</h1>
+        <div className="container py-16 text-center">
+          <h1 className="page-title mb-4">{t("common.loading")}</h1>
           <p className="text-muted-foreground mb-4">Something went wrong loading this product.</p>
           <Button onClick={() => window.location.reload()} variant="outline">Try Again</Button>
         </div>
@@ -48,8 +48,8 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <Layout>
-        <div className="container py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">{t("product.notFound")}</h1>
+        <div className="container py-16 text-center">
+          <h1 className="page-title mb-4">{t("product.notFound")}</h1>
           <Link to="/" className="text-info hover:underline">{t("product.returnToHome")}</Link>
         </div>
       </Layout>
@@ -92,17 +92,17 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <div className="container py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="container py-10 md:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Product Images */}
           <div className="lg:col-span-5">
             <div className="sticky top-24">
-              <div className="bg-card rounded-lg border border-border p-4">
-                <LazyImage src={product.images[selectedImage]} alt={product.title} className="max-w-full max-h-full object-contain group-hover:scale-150 transition-transform duration-500 ease-out cursor-zoom-in" wrapperClassName="group aspect-square bg-secondary rounded flex items-center justify-center mb-4" />
+              <div className="bg-card rounded-xl border border-border p-4">
+                <LazyImage src={product.images[selectedImage]} alt={product.title} className="max-w-full max-h-full object-contain group-hover:scale-150 transition-transform duration-500 ease-out cursor-zoom-in" wrapperClassName="group aspect-square bg-secondary rounded-lg flex items-center justify-center mb-4" />
                 {product.images.length > 1 && (
                   <div className="flex gap-2">
                     {product.images.map((img, idx) => (
-                      <button key={idx} onClick={() => setSelectedImage(idx)} className={`w-16 h-16 rounded border-2 overflow-hidden ${selectedImage === idx ? "border-primary" : "border-border"}`}>
+                      <button key={idx} onClick={() => setSelectedImage(idx)} className={`w-16 h-16 rounded-lg border-2 overflow-hidden transition-colors ${selectedImage === idx ? "border-primary" : "border-border hover:border-primary/50"}`}>
                         <LazyImage src={img} alt="" className="w-full h-full object-contain" />
                       </button>
                     ))}
@@ -114,12 +114,12 @@ export default function ProductDetailPage() {
 
           {/* Product Info */}
           <div className="lg:col-span-4">
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex flex-wrap gap-2">
-                {product.isBestSeller && <span className="bg-accent text-accent-foreground text-xs font-semibold px-2 py-1 rounded">{t("product.bestSeller")}</span>}
-                {product.isLimitedDeal && <span className="deal-badge">{t("product.limitedTimeDeal")}</span>}
+                {product.isBestSeller && <span className="bg-accent text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full">{t("product.bestSeller")}</span>}
+                {product.isLimitedDeal && <span className="deal-badge rounded-full">{t("product.limitedTimeDeal")}</span>}
               </div>
-              <h1 className="text-xl font-medium leading-snug">{product.title}</h1>
+              <h1 className="text-xl font-semibold leading-snug page-title !text-xl">{product.title}</h1>
               <p className="text-sm">{t("product.visitStore")} <Link to={`/brand/${product.brand}`} className="text-info hover:underline">{product.brand} {t("product.store")}</Link></p>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-info">{product.rating.toFixed(1)}</span>
@@ -140,14 +140,14 @@ export default function ProductDetailPage() {
               <hr className="border-border" />
               <div>
                 <h3 className="font-semibold mb-2">{t("product.aboutThisItem")}</h3>
-                <p className="text-dense text-muted-foreground leading-relaxed">{product.description}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
               </div>
             </div>
           </div>
 
           {/* Buy Box */}
           <div className="lg:col-span-3">
-            <div className="bg-card rounded-lg border border-border p-4 space-y-4 sticky top-24">
+            <div className="bg-card rounded-xl border border-border p-5 space-y-4 sticky top-24">
               <PriceDisplay price={offer.price} originalPrice={offer.originalPrice} size="lg" />
               {product.isPrime && (
                 <div className="prime-badge text-sm">
@@ -160,17 +160,17 @@ export default function ProductDetailPage() {
               </p>
               <div className="flex items-center gap-3">
                 <span className="text-sm">{t("product.qty")}</span>
-                <div className="flex items-center border border-border rounded">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2.5 hover:bg-muted" disabled={quantity <= 1}><Minus className="w-4 h-4" /></button>
+                <div className="flex items-center border border-border rounded-lg">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2.5 hover:bg-muted rounded-l-lg" disabled={quantity <= 1}><Minus className="w-4 h-4" /></button>
                   <span className="px-4 py-1 text-sm font-medium">{quantity}</span>
-                  <button onClick={() => setQuantity(Math.min(offer.stock, quantity + 1))} className="p-2.5 hover:bg-muted" disabled={quantity >= offer.stock}><Plus className="w-4 h-4" /></button>
+                  <button onClick={() => setQuantity(Math.min(offer.stock, quantity + 1))} className="p-2.5 hover:bg-muted rounded-r-lg" disabled={quantity >= offer.stock}><Plus className="w-4 h-4" /></button>
                 </div>
               </div>
               <div className="space-y-2">
                 <Button onClick={handleAddToCart} className="w-full btn-cta">{t("product.addToCart")}</Button>
-                <Button onClick={handleBuyNow} variant="outline" className="w-full">{t("product.buyNow")}</Button>
+                <Button onClick={handleBuyNow} variant="outline" className="w-full rounded-full">{t("product.buyNow")}</Button>
               </div>
-              <div className="text-dense text-muted-foreground space-y-1 pt-2 border-t border-border">
+              <div className="text-sm text-muted-foreground space-y-1.5 pt-3 border-t border-border">
                 <div className="flex justify-between"><span>{t("product.shipsFrom")}</span><span className="text-foreground">{offer.sellerName}</span></div>
                 <div className="flex justify-between"><span>{t("product.soldBy")}</span><Link to={`/seller/${offer.sellerId}`} className="text-info hover:underline">{offer.sellerName}</Link></div>
                 <div className="flex justify-between"><span>{t("product.condition")}</span><span className="text-foreground capitalize">{offer.condition}</span></div>
@@ -179,19 +179,19 @@ export default function ProductDetailPage() {
                 <Button variant="ghost" size="sm" className="flex-1 text-xs"><Heart className="w-4 h-4 mr-1 rtl:ml-1 rtl:mr-0" />{t("product.addToList")}</Button>
                 <Button variant="ghost" size="sm" className="flex-1 text-xs"><Share2 className="w-4 h-4 mr-1 rtl:ml-1 rtl:mr-0" />{t("product.share")}</Button>
               </div>
-              <div className="space-y-2 pt-2 border-t border-border text-dense text-muted-foreground">
-                <div className="flex items-center gap-2"><RotateCcw className="w-4 h-4 text-success" /><span>{t("product.dayReturns")}</span></div>
-                <div className="flex items-center gap-2"><Shield className="w-4 h-4 text-info" /><span>{t("product.secureTransaction")}</span></div>
-                <div className="flex items-center gap-2"><Store className="w-4 h-4" /><span>{t("product.buyerProtection")}</span></div>
+              <div className="space-y-2.5 pt-3 border-t border-border text-sm text-muted-foreground">
+                <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center"><RotateCcw className="w-4 h-4 text-success" /></div><span>{t("product.dayReturns")}</span></div>
+                <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-info/10 flex items-center justify-center"><Shield className="w-4 h-4 text-info" /></div><span>{t("product.secureTransaction")}</span></div>
+                <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"><Store className="w-4 h-4" /></div><span>{t("product.buyerProtection")}</span></div>
               </div>
             </div>
           </div>
         </div>
 
         {filteredRelated.length > 0 && (
-          <section className="mt-12">
+          <section className="mt-16">
             <h2 className="section-header">{t("product.customersAlsoViewed")}</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
               {filteredRelated.map((p) => (<ProductCard key={p.id} product={p} />))}
             </div>
           </section>

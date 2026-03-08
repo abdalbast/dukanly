@@ -24,19 +24,19 @@ export default function CartPage() {
   if (activeItems.length === 0 && savedItems.length === 0) {
     return (
       <Layout>
-        <div className="container py-12">
+        <div className="container py-16">
           <div className="max-w-2xl mx-auto text-center">
             <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="w-10 h-10 text-muted-foreground" />
             </div>
-            <h1 className="text-2xl font-bold mb-3">{t("cart.yourCartEmpty")}</h1>
+            <h1 className="page-title mb-3">{t("cart.yourCartEmpty")}</h1>
             <p className="text-muted-foreground mb-6">{t("cart.emptyMessage")}</p>
             <Button asChild className="btn-cta">
               <Link to="/">{t("common.continueShopping")}</Link>
             </Button>
-            <div className="mt-12 text-left rtl:text-right">
+            <div className="mt-16 text-left rtl:text-right">
               <h2 className="section-header">{t("cart.youMightLike")}</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                 {suggestedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} variant="compact" />
                 ))}
@@ -50,12 +50,12 @@ export default function CartPage() {
 
   return (
     <Layout>
-      <div className="container py-6">
-        <h1 className="text-2xl font-bold mb-6">{t("cart.shoppingCart")}</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 space-y-4">
+      <div className="container py-10 md:py-14">
+        <h1 className="page-title mb-8">{t("cart.shoppingCart")}</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-5">
             {!freeShipping && (
-              <div className="bg-card border border-border rounded-lg p-4">
+              <div className="bg-card border border-border rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Truck className="w-5 h-5 text-prime" />
                   <span className="text-sm font-medium">
@@ -69,13 +69,13 @@ export default function CartPage() {
               </div>
             )}
             {freeShipping && (
-              <div className="bg-success/10 border border-success/30 rounded-lg p-4 flex items-center gap-2">
+              <div className="bg-success/10 border border-success/30 rounded-xl p-4 flex items-center gap-2">
                 <Truck className="w-5 h-5 text-success" />
                 <span className="text-sm font-medium text-success">{t("cart.qualifyFreeDelivery")}</span>
               </div>
             )}
 
-            <div className="bg-card border border-border rounded-lg divide-y divide-border">
+            <div className="bg-card border border-border rounded-xl divide-y divide-border">
               <div className="p-4 flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t("cart.price")}</span>
               </div>
@@ -83,7 +83,7 @@ export default function CartPage() {
                 <div key={item.id} className="p-4">
                   <div className="flex gap-4">
                     <Link to={`/product/${item.product.id}`} className="shrink-0">
-                      <LazyImage src={item.product.images[0]} alt={item.product.title} className="w-24 h-24 object-contain" wrapperClassName="w-24 h-24 bg-secondary rounded" />
+                      <LazyImage src={item.product.images[0]} alt={item.product.title} className="w-24 h-24 object-contain" wrapperClassName="w-24 h-24 bg-secondary rounded-lg" />
                     </Link>
                     <div className="flex-1 min-w-0">
                       <Link to={`/product/${item.product.id}`} className="text-sm font-medium hover:text-primary line-clamp-2">{item.product.title}</Link>
@@ -101,10 +101,10 @@ export default function CartPage() {
                         <span className="text-xs flex items-center gap-1"><Gift className="w-3 h-3" />{t("cart.thisIsGift")}</span>
                       </label>
                       <div className="flex items-center gap-3 mt-3 flex-wrap">
-                        <div className="flex items-center border border-border rounded">
-                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-2.5 hover:bg-muted" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
+                        <div className="flex items-center border border-border rounded-lg">
+                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-2.5 hover:bg-muted rounded-l-lg" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
                           <span className="px-3 text-sm font-medium">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-2.5 hover:bg-muted"><Plus className="w-3 h-3" /></button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-2.5 hover:bg-muted rounded-r-lg"><Plus className="w-3 h-3" /></button>
                         </div>
                         <span className="border-r border-border h-4" />
                         <button onClick={() => removeFromCart(item.id)} className="text-xs text-info hover:underline">{t("common.delete")}</button>
@@ -131,7 +131,7 @@ export default function CartPage() {
             </div>
 
             {savedItems.length > 0 && (
-              <div className="bg-card border border-border rounded-lg">
+              <div className="bg-card border border-border rounded-xl">
                 <div className="p-4 border-b border-border">
                   <h2 className="font-semibold">{t("cart.savedForLater")} ({savedItems.length} {savedItems.length === 1 ? t("common.item") : t("common.items")})</h2>
                 </div>
@@ -139,7 +139,7 @@ export default function CartPage() {
                   {savedItems.map((item) => (
                     <div key={item.id} className="p-4 flex gap-4">
                       <Link to={`/product/${item.product.id}`} className="shrink-0">
-                        <LazyImage src={item.product.images[0]} alt={item.product.title} className="w-20 h-20 object-contain" wrapperClassName="w-20 h-20 bg-secondary rounded" />
+                        <LazyImage src={item.product.images[0]} alt={item.product.title} className="w-20 h-20 object-contain" wrapperClassName="w-20 h-20 bg-secondary rounded-lg" />
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.product.id}`} className="text-sm font-medium hover:text-primary line-clamp-2">{item.product.title}</Link>
@@ -157,7 +157,7 @@ export default function CartPage() {
           </div>
 
           <div className="lg:col-span-4">
-            <div className="bg-card border border-border rounded-lg p-4 space-y-4 sticky top-24">
+            <div className="bg-card border border-border rounded-xl p-5 space-y-4 sticky top-24">
               {freeShipping && (
                 <div className="flex items-center gap-2 text-success text-sm">
                   <ShieldCheck className="w-4 h-4" />{t("cart.orderQualifiesFree")}
@@ -173,7 +173,7 @@ export default function CartPage() {
               <Button asChild className="w-full btn-cta">
                 <Link to="/checkout">{t("cart.proceedToCheckout")}</Link>
               </Button>
-              <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-border">
+              <div className="text-xs text-muted-foreground space-y-1.5 pt-3 border-t border-border">
                 <div className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" />{t("cart.secureCheckout")}</div>
                 <div className="flex items-center gap-1"><Truck className="w-3 h-3" />{t("cart.dayReturns")}</div>
               </div>
@@ -181,9 +181,9 @@ export default function CartPage() {
           </div>
         </div>
 
-        <section className="mt-12">
+        <section className="mt-16">
           <h2 className="section-header">{t("cart.customersAlsoBought")}</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
             {suggestedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

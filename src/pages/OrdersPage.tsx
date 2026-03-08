@@ -23,23 +23,18 @@ export default function OrdersPage() {
     const normalizedQuery = searchQuery.trim().toLowerCase();
     const now = Date.now();
     const maxAgeMs =
-      timeFilter === "30"
-        ? 30 * 24 * 60 * 60 * 1000
-        : timeFilter === "90"
-          ? 90 * 24 * 60 * 60 * 1000
-          : timeFilter === "365"
-            ? 365 * 24 * 60 * 60 * 1000
-            : null;
+      timeFilter === "30" ? 30 * 86400000
+      : timeFilter === "90" ? 90 * 86400000
+      : timeFilter === "365" ? 365 * 86400000
+      : null;
 
     return orders.filter((order) => {
       const matchesQuery =
         normalizedQuery.length === 0 ||
         order.orderNumber.toLowerCase().includes(normalizedQuery) ||
         order.items.some((item) => item.title.toLowerCase().includes(normalizedQuery));
-
       const matchesTimeFilter =
         maxAgeMs === null || now - new Date(order.date).getTime() <= maxAgeMs;
-
       return matchesQuery && matchesTimeFilter;
     });
   }, [orders, searchQuery, timeFilter]);
@@ -47,11 +42,7 @@ export default function OrdersPage() {
   const formatOrderTotal = (order: Order) =>
     order.currencyCode === "IQD"
       ? formatIQD(order.total)
-      : new Intl.NumberFormat(locale, {
-          style: "currency",
-          currency: order.currencyCode || "USD",
-          maximumFractionDigits: 2,
-        }).format(order.total);
+      : new Intl.NumberFormat(locale, { style: "currency", currency: order.currencyCode || "USD", maximumFractionDigits: 2 }).format(order.total);
 
   const getStatusBadge = (status: Order["status"]) => {
     const map = {
@@ -61,20 +52,22 @@ export default function OrdersPage() {
       cancelled: { cls: "", icon: Package, label: t("orders.cancelled") },
     };
     const { cls, icon: Icon, label } = map[status];
-    return status === "cancelled" ? <Badge variant="destructive" className="flex items-center gap-1">{label}</Badge> : <Badge className={`${cls} flex items-center gap-1`}><Icon className="w-3 h-3" />{label}</Badge>;
+    return status === "cancelled"
+      ? <Badge variant="destructive" className="flex items-center gap-1">{label}</Badge>
+      : <Badge className={`${cls} flex items-center gap-1`}><Icon className="w-3 h-3" />{label}</Badge>;
   };
 
   return (
     <Layout>
-      <div className="container py-8">
-        <h1 className="text-2xl font-bold mb-6">{t("orders.title")}</h1>
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="container py-10 md:py-14">
+        <h1 className="page-title mb-8">{t("orders.title")}</h1>
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder={t("orders.searchPlaceholder")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 rtl:pl-3 rtl:pr-9" />
+            <Input placeholder={t("orders.searchPlaceholder")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 rtl:pl-3 rtl:pr-9 rounded-xl" />
           </div>
           <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[180px] rounded-xl"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("orders.allOrders")}</SelectItem>
               <SelectItem value="30">{t("orders.last30Days")}</SelectItem>
@@ -85,13 +78,13 @@ export default function OrdersPage() {
         </div>
         {isLoading ? (
           <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <OrderCardSkeleton key={i} />
-            ))}
+            {Array.from({ length: 3 }).map((_, i) => <OrderCardSkeleton key={i} />)}
           </div>
         ) : filteredOrders.length === 0 ? (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+          <div className="bg-card border border-border rounded-xl p-16 text-center">
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Package className="w-10 h-10 text-muted-foreground" />
+            </div>
             <h2 className="text-xl font-semibold mb-2">
               {orders.length === 0 ? t("orders.noOrdersYet") : "No matching orders"}
             </h2>
@@ -101,10 +94,10 @@ export default function OrdersPage() {
             <Button asChild className="btn-cta"><Link to="/">{t("common.startShopping")}</Link></Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="bg-card border border-border rounded-lg overflow-hidden">
-                <div className="bg-muted/50 p-4 flex flex-wrap items-center justify-between gap-4">
+              <div key={order.id} className="bg-card border border-border rounded-xl overflow-hidden">
+                <div className="bg-muted/50 p-5 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex flex-wrap gap-6 text-sm">
                     <div><p className="text-muted-foreground">{t("orders.orderPlaced")}</p><p className="font-medium">{new Date(order.date).toLocaleDateString(locale, { month: "long", day: "numeric", year: "numeric" })}</p></div>
                     <div><p className="text-muted-foreground">{t("orders.total")}</p><p className="font-medium">{formatOrderTotal(order)}</p></div>
@@ -112,21 +105,21 @@ export default function OrdersPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     {getStatusBadge(order.status)}
-                    <Button variant="outline" size="sm">{t("orders.viewOrderDetails")}</Button>
+                    <Button variant="outline" size="sm" className="rounded-full">{t("orders.viewOrderDetails")}</Button>
                   </div>
                 </div>
-                <div className="p-4">
+                <div className="p-5">
                   {order.items.map((item) => (
                     <div key={item.id} className="flex gap-4">
                       <Link to={`/product/${item.id}`} className="shrink-0">
-                        <LazyImage src={item.image} alt={item.title} className="w-20 h-20 object-contain" wrapperClassName="w-20 h-20 bg-secondary rounded" />
+                        <LazyImage src={item.image} alt={item.title} className="w-20 h-20 object-contain" wrapperClassName="w-20 h-20 bg-secondary rounded-lg" />
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.id}`} className="font-medium hover:text-primary line-clamp-2">{item.title}</Link>
                         <p className="text-sm text-muted-foreground mt-1">{t("orders.qty")} {item.quantity}</p>
                         <div className="flex flex-wrap gap-2 mt-3">
-                          <Button variant="outline" size="sm">{t("orders.buyItAgain")}</Button>
-                          <Button variant="outline" size="sm"><RotateCcw className="w-3 h-3 mr-1 rtl:ml-1 rtl:mr-0" />{t("orders.returnOrReplace")}</Button>
+                          <Button variant="outline" size="sm" className="rounded-full">{t("orders.buyItAgain")}</Button>
+                          <Button variant="outline" size="sm" className="rounded-full"><RotateCcw className="w-3 h-3 mr-1 rtl:ml-1 rtl:mr-0" />{t("orders.returnOrReplace")}</Button>
                           <Button variant="ghost" size="sm">{t("orders.writeReview")}</Button>
                         </div>
                       </div>
@@ -141,7 +134,7 @@ export default function OrdersPage() {
                         <p className="font-medium text-info">{t("orders.packageOnWay")}</p>
                         <p className="text-sm text-muted-foreground">{t("orders.expectedDelivery")}</p>
                       </div>
-                      <Button size="sm">{t("orders.trackPackage")}</Button>
+                      <Button size="sm" className="rounded-full">{t("orders.trackPackage")}</Button>
                     </div>
                   </div>
                 )}

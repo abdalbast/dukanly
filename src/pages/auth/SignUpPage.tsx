@@ -34,40 +34,38 @@ export default function SignUpPage() {
       toast({ title: t("auth.signUp"), description: error.message, variant: "destructive" });
       return;
     }
-
     if (needsEmailVerification) {
       toast({ title: t("auth.accountCreated"), description: t("auth.verifyEmailAfterSignUp") });
       navigate(`/auth/verify-email?email=${encodeURIComponent(formData.email)}`);
       return;
     }
-
     toast({ title: t("auth.accountCreated"), description: t("auth.accountCreatedDesc") });
     navigate("/", { replace: true });
   };
 
   return (
     <Layout showFooter={false}>
-      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center py-12">
+      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center py-16">
         <div className="w-full max-w-sm">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h1 className="text-2xl font-bold text-center mb-6">{t("auth.signUp")}</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+            <h1 className="page-title text-center mb-8 !text-2xl">{t("auth.signUp")}</h1>
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <Label htmlFor="name">{t("auth.yourName")}</Label>
-                <Input id="name" type="text" autoComplete="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={t("auth.firstAndLastName")} required />
+                <Input id="name" type="text" autoComplete="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder={t("auth.firstAndLastName")} required className="mt-1.5 rounded-xl" />
               </div>
               <div>
                 <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input id="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={t("auth.emailPlaceholder")} required />
+                <Input id="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={t("auth.emailPlaceholder")} required className="mt-1.5 rounded-xl" />
               </div>
               <div>
                 <Label htmlFor="password">{t("auth.password")}</Label>
-                <Input id="password" type="password" autoComplete="new-password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder={t("auth.atLeast8Chars")} required minLength={8} />
+                <Input id="password" type="password" autoComplete="new-password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder={t("auth.atLeast8Chars")} required minLength={8} className="mt-1.5 rounded-xl" />
                 <p className="text-xs text-muted-foreground mt-1">{t("auth.passwordHint")}</p>
               </div>
               <div>
                 <Label htmlFor="confirmPassword">{t("auth.confirmPassword")}</Label>
-                <Input id="confirmPassword" type="password" autoComplete="new-password" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} placeholder={t("auth.reenterPassword")} required />
+                <Input id="confirmPassword" type="password" autoComplete="new-password" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })} placeholder={t("auth.reenterPassword")} required className="mt-1.5 rounded-xl" />
               </div>
               <label className="flex items-start gap-2 cursor-pointer">
                 <Checkbox checked={formData.agreeToTerms} onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: !!checked })} className="mt-0.5" />
@@ -79,7 +77,7 @@ export default function SignUpPage() {
               </label>
               <Button type="submit" className="w-full btn-cta" disabled={isLoading}>{isLoading ? t("auth.creatingAccount") : t("auth.signUp")}</Button>
             </form>
-            <p className="text-center text-sm text-muted-foreground mt-6">{t("auth.alreadyHaveAccount")} <Link to="/auth/signin" className="text-info hover:underline">{t("auth.signInLink")}</Link></p>
+            <p className="text-center text-sm text-muted-foreground mt-8">{t("auth.alreadyHaveAccount")} <Link to="/auth/signin" className="text-info hover:underline">{t("auth.signInLink")}</Link></p>
           </div>
         </div>
       </div>

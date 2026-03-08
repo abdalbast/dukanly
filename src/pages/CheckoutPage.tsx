@@ -256,15 +256,15 @@ export default function CheckoutPage() {
 
   return (
     <Layout>
-      <div className="container py-6">
-        <div className="max-w-5xl mx-auto mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-5">
-          <h1 className="text-2xl font-bold">{t("checkout.title")}</h1>
+      <div className="container py-10 md:py-14">
+        <div className="max-w-5xl mx-auto mb-8 rounded-2xl border border-primary/15 bg-primary/5 p-6">
+          <h1 className="page-title !text-2xl">{t("checkout.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t("checkout.kurdistanLaunchNote")}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="space-y-6 lg:col-span-8">
-            <section className="rounded-lg border border-border bg-card p-4">
+            <section className="rounded-xl border border-border bg-card p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="flex items-center gap-2 font-semibold">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">1</span>
@@ -351,7 +351,7 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-4">
+            <section className="rounded-xl border border-border bg-card p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="flex items-center gap-2 font-semibold">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">2</span>
@@ -410,7 +410,7 @@ export default function CheckoutPage() {
               )}
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-4">
+            <section className="rounded-xl border border-border bg-card p-5">
               <h2 className="mb-4 flex items-center gap-2 font-semibold">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">3</span>
                 {t("checkout.paymentMethod")}
@@ -454,7 +454,7 @@ export default function CheckoutPage() {
               )}
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-4">
+            <section className="rounded-xl border border-border bg-card p-5">
               <label className="flex cursor-pointer items-start gap-3">
                 <Checkbox checked={isGiftOrder} onCheckedChange={(checked) => setIsGiftOrder(Boolean(checked))} className="mt-1" />
                 <div>
@@ -485,7 +485,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className="lg:col-span-4">
-            <div className="sticky top-24 space-y-4 rounded-lg border border-border bg-card p-4">
+            <div className="sticky top-24 space-y-4 rounded-xl border border-border bg-card p-5">
               <h2 className="font-semibold">{t("checkout.orderSummary")}</h2>
 
               <div className="max-h-48 space-y-3 overflow-y-auto">
