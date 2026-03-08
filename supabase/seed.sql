@@ -58,16 +58,20 @@ BEGIN
   ORDER BY created_at
   LIMIT 1;
 
-  INSERT INTO public.products (seller_id, sku, title, description, status, currency_code, base_price, metadata)
+  INSERT INTO public.products (seller_id, sku, title, description, status, currency_code, base_price, brand, category, stock, images, metadata)
   VALUES
-    (seed_seller_id, 'SEED-PHONE-001', 'Seed Smartphone', 'Phase 1 seed product', 'active', 'USD', 699.00, '{"brand":"Dukanly","category":"electronics"}'::jsonb),
-    (seed_seller_id, 'SEED-HEADPHONES-001', 'Seed Headphones', 'Phase 1 seed product', 'active', 'USD', 129.00, '{"brand":"Dukanly","category":"audio"}'::jsonb)
+    (seed_seller_id, 'SEED-PHONE-001', 'Seed Smartphone', 'Phase 1 seed product', 'active', 'USD', 699.00, 'Dukanly', 'electronics', 50, '["https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&q=80"]'::jsonb, '{}'::jsonb),
+    (seed_seller_id, 'SEED-HEADPHONES-001', 'Seed Headphones', 'Phase 1 seed product', 'active', 'USD', 129.00, 'Dukanly', 'audio', 120, '["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80"]'::jsonb, '{}'::jsonb)
   ON CONFLICT (seller_id, sku) DO UPDATE
     SET title = EXCLUDED.title,
         description = EXCLUDED.description,
         status = EXCLUDED.status,
         currency_code = EXCLUDED.currency_code,
         base_price = EXCLUDED.base_price,
+        brand = EXCLUDED.brand,
+        category = EXCLUDED.category,
+        stock = EXCLUDED.stock,
+        images = EXCLUDED.images,
         metadata = EXCLUDED.metadata,
         updated_at = now();
 
