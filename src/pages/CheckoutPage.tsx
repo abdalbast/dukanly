@@ -239,7 +239,9 @@ export default function CheckoutPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">🛒</div>
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-10 h-10 text-muted-foreground" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("checkout.emptyCart")}</h1>
             <p className="text-muted-foreground mb-6">{t("checkout.addItemsFirst")}</p>
             <Button asChild className="btn-cta">
