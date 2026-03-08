@@ -79,8 +79,10 @@ export default function BrandPage() {
 
   const { data: products = [], isLoading } = useSearchProducts(brandInfo?.name ?? slug);
   const brandProducts = products.filter(
-    (p) => p.brand.toLowerCase() === brandSlug,
+    (p) => p.brand.toLowerCase() === (brandInfo?.name.toLowerCase() ?? slug),
   );
+
+  const canonicalUrl = brandInfo ? `https://dukanly.lovable.app/brand/${brandInfo.slug}` : undefined;
 
   if (!brandInfo) {
     return (
