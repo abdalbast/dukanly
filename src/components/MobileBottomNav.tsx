@@ -8,7 +8,7 @@ const tabs = [
   { icon: Home, label: "Home", path: "/", badge: false, authAware: false },
   { icon: Grid2x2, label: "Categories", path: "/category", badge: false, authAware: false },
   { icon: ShoppingCart, label: "Cart", path: "/cart", badge: true, authAware: false },
-  { icon: User, label: "Account", path: "/account", badge: false, authAware: true },
+  { icon: User, label: "Account", path: "/account", badge: false, authAware: true, authRedirect: "/auth/signin" },
 ] as const;
 
 export function MobileBottomNav() {

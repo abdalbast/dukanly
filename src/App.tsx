@@ -97,6 +97,7 @@ const App = () => (
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/checkout/payment/:orderId" element={<CheckoutPaymentPage />} />
                     <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+                    <Route path="/category" element={<CategoryPage />} />
                     <Route path="/category/:slug" element={<CategoryPage />} />
                     <Route path="/category/:slug/:subcategory" element={<CategoryPage />} />
 
