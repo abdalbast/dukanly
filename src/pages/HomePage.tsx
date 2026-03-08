@@ -88,10 +88,7 @@ export default function HomePage() {
       {/* Category Cards — clean, editorial grid */}
       <section className="container py-14 md:py-20">
         <div className="text-center mb-10">
-          <h2
-            className="section-header"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
+          <h2 className="section-header">
             Shop by Category
           </h2>
           <p className="section-subheader">Discover products across every department</p>
