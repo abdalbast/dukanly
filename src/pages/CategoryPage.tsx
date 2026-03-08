@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronRight, PackageOpen } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { LazyImage } from "@/components/LazyImage";
 import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import { categories } from "@/data/mockData";
 import { useProductsByCategory, useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -12,6 +14,8 @@ export default function CategoryPage() {
   const { slug, subcategory } = useParams<{ slug: string; subcategory?: string }>();
   const { t } = useLanguage();
   const category = categories.find((c) => c.slug === slug);
+  const [handmadeOnly, setHandmadeOnly] = useState(false);
+  const [artisanOnly, setArtisanOnly] = useState(false);
 
   const { data: categoryProducts = [], isLoading: isCatLoading } = useProductsByCategory(slug);
   const { data: allProducts = [], isLoading: isAllLoading } = useProducts();
@@ -19,12 +23,15 @@ export default function CategoryPage() {
   const isLoading = isCatLoading || isAllLoading;
   const baseProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
   const normalizedSubcategory = subcategory?.trim().toLowerCase();
-  const displayProducts = normalizedSubcategory
-    ? baseProducts.filter((product) => {
-        const productSubcategory = product.subcategory?.trim().toLowerCase();
-        return productSubcategory === normalizedSubcategory;
-      })
-    : baseProducts;
+
+  const displayProducts = useMemo(() => {
+    let products = normalizedSubcategory
+      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSubcategory)
+      : baseProducts;
+    if (handmadeOnly) products = products.filter((p) => p.isHandmade);
+    if (artisanOnly) products = products.filter((p) => p.isArtisanBrand);
+    return products;
+  }, [baseProducts, normalizedSubcategory, handmadeOnly, artisanOnly]);
 
   return (
     <Layout>
@@ -78,6 +85,16 @@ export default function CategoryPage() {
             ))}
           </div>
         )}
+        <div className="flex flex-wrap items-center gap-4 mb-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <Checkbox checked={handmadeOnly} onCheckedChange={(c) => setHandmadeOnly(!!c)} />
+            <span className="text-sm">{t("search.handmadeOnly")}</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <Checkbox checked={artisanOnly} onCheckedChange={(c) => setArtisanOnly(!!c)} />
+            <span className="text-sm">{t("search.artisanOnly")}</span>
+          </label>
+        </div>
         {isLoading ? (
           <ProductGridSkeleton count={10} />
         ) : displayProducts.length === 0 ? (
