@@ -97,8 +97,28 @@ export default function BrandPage() {
     );
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Brand",
+    name: brandInfo.name,
+    description: brandInfo.description,
+    url: canonicalUrl,
+    image: brandInfo.heroImage,
+  };
+
   return (
     <Layout>
+      <Helmet>
+        <title>{brandInfo.name} – Shop on Dukanly</title>
+        <meta name="description" content={brandInfo.description.slice(0, 155)} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={`${brandInfo.name} – Shop on Dukanly`} />
+        <meta property="og:description" content={brandInfo.tagline} />
+        <meta property="og:type" content="profile" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={brandInfo.heroImage} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       {/* ─── Hero Banner ─── */}
       <section className="relative h-[420px] sm:h-[500px] md:h-[560px] overflow-hidden">
         <img
