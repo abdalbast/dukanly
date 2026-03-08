@@ -103,6 +103,17 @@ export default function SearchResultsPage() {
         </label>
       </div>
       <div>
+        <h3 className="text-sm font-medium mb-2">{t("search.productType")}</h3>
+        <label className="flex items-center gap-2 cursor-pointer py-1">
+          <Checkbox checked={filters.handmade} onCheckedChange={(c) => setFilters((p) => ({ ...p, handmade: !!c }))} />
+          <span className="text-sm">{t("search.handmadeOnly")}</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer py-1">
+          <Checkbox checked={filters.artisan} onCheckedChange={(c) => setFilters((p) => ({ ...p, artisan: !!c }))} />
+          <span className="text-sm">{t("search.artisanOnly")}</span>
+        </label>
+      </div>
+      <div>
         <h3 className="text-sm font-medium mb-2">{t("search.customerRating")}</h3>
         <div className="space-y-1">
           {[4, 3, 2, 1].map((rating) => (
