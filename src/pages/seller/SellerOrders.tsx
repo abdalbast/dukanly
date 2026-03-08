@@ -61,8 +61,6 @@ export default function SellerOrders() {
   const [fulfillDialogOpen, setFulfillDialogOpen] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const orderActionsUnavailableMessage =
-    "Order status and fulfillment changes are disabled until seller order persistence is fully connected.";
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
