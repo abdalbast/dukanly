@@ -63,7 +63,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             {t("product.limitedDeal")}
           </span>
         )}
-        <LazyImage src={product.images[0]} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" />
+        <LazyImage src={optimizeImageUrl(product.images[0], 250)} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw" />
       </Link>
 
       <div className="flex flex-col flex-1 pt-3">
