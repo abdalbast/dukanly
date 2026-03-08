@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
+import { LazyImage } from "@/components/LazyImage";
 import { categories } from "@/data/mockData";
 import { useProductsByCategory, useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -46,11 +47,28 @@ export default function CategoryPage() {
           </nav>
         </div>
       </div>
-      <div className="container py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold capitalize">{category?.name || slug || t("category.allProducts")}</h1>
-          <p className="text-muted-foreground mt-1">{displayProducts.length} {t("common.products")}</p>
+      <div className="relative h-48 md:h-64 overflow-hidden">
+        {category?.image ? (
+          <LazyImage
+            src={category.image}
+            alt={category.name}
+            className="w-full h-full object-cover absolute inset-0"
+            wrapperClassName="absolute inset-0"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-muted" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/30" />
+        <div className="container relative h-full flex flex-col justify-end pb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-white capitalize">
+            {category?.name || slug || t("category.allProducts")}
+          </h1>
+          <p className="text-white/80 mt-1">
+            {displayProducts.length} {t("common.products")}
+          </p>
         </div>
+      </div>
+      <div className="container py-6">
         {category?.subcategories && !subcategory && (
           <div className="flex flex-wrap gap-2 mb-6">
             {category.subcategories.map((sub) => (
