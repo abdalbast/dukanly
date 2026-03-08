@@ -49,7 +49,7 @@ const HERO_SLIDES: {
     title: "home.slide3.title",
     subtitle: "home.slide3.subtitle",
     cta: "home.slide3.cta",
-    link: "/brand/Pelin%20Products",
+    link: "/brand/pelin-products",
   },
   {
     image: heroSlide4,
