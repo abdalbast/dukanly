@@ -11,7 +11,8 @@ import { formatIQD } from "@/lib/currency";
 
 export default function AccountPage() {
   const { t, language } = useLanguage();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { data: orders = [] } = useOrders();
   const location = useLocation();
   const locale = language === "ckb" ? "ckb" : "en-US";
