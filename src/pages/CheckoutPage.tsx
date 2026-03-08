@@ -352,7 +352,7 @@ export default function CheckoutPage() {
             </section>
 
             <section className="rounded-xl border border-border bg-card p-5">
-              <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="flex items-center gap-2 font-semibold">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">2</span>
                   {t("checkout.deliveryOptions")}
