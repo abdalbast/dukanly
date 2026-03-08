@@ -256,6 +256,22 @@
     @apply text-base text-muted-foreground mb-6;
   }
 
+  /* Page title - premium display heading */
+  .page-title {
+    @apply text-3xl font-extrabold tracking-tight text-foreground;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  }
+
+  /* Premium card - rounded-xl with hover lift */
+  .premium-card {
+    @apply bg-card rounded-xl border border-border transition-all duration-300;
+  }
+
+  .premium-card:hover {
+    box-shadow: var(--shadow-lg);
+    @apply border-primary/20 -translate-y-0.5;
+  }
+
   /* Breadcrumb */
   .breadcrumb {
     @apply flex items-center gap-1 text-sm text-muted-foreground;
