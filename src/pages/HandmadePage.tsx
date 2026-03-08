@@ -54,7 +54,6 @@ export default function HandmadePage() {
                 {t("artisanApply.title")} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            </p>
           </div>
         </div>
         {/* Decorative bottom wave */}
