@@ -93,8 +93,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearCart = useCallback(() => {
-    persistItems([]);
-  }, [persistItems]);
+    setItems([]);
+  }, []);
 
   const activeItems = items.filter((item) => !item.savedForLater);
   const savedItems = items.filter((item) => item.savedForLater);
