@@ -6,9 +6,8 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { fetchPaymentStatus } from "@/lib/paymentApi";
 import { getPaymentStateTranslationKey } from "@/lib/paymentLabels";
-import type { CheckoutResponse, PaymentStatusResponse } from "@/lib/writeApi";
+import { getPaymentStatus, type CheckoutResponse, type PaymentStatusResponse } from "@/lib/writeApi";
 
 interface LocationState {
   payment?: CheckoutResponse;

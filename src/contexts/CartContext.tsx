@@ -42,7 +42,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
   }, []);
 
-  // Persist items to localStorage whenever they change
+  // localStorage persistence is handled by persistItems() for clearCart,
+  // and by the useEffect below for all other mutations via setItems.
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));

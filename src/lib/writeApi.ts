@@ -326,21 +326,6 @@ export function getPaymentStatus(payload: PaymentStatusRequest) {
   return invokeWrite<PaymentStatusRequest, PaymentStatusResponse>("payment-status", payload);
 }
 
-export interface CreateOrderRequest {
-  sourceCartId: string;
-  shippingAddressId: string;
-  billingAddressId?: string;
-  currencyCode: string;
-  note?: string;
-}
-
-export function createOrder(payload: CreateOrderRequest) {
-  return invokeWrite<CreateOrderRequest, { request: CreateOrderRequest; meta: Record<string, unknown> }>(
-    "orders",
-    payload,
-  );
-}
-
 export interface SellerProductWriteRequest {
   sku: string;
   title: string;

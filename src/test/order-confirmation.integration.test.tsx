@@ -17,9 +17,10 @@ vi.mock("@/contexts/CartContext", () => ({
   useCart: () => ({ clearCart: mockClearCart }),
 }));
 
-vi.mock("@/lib/paymentApi", () => ({
-  fetchPaymentStatus: (...args: unknown[]) => mockFetchPaymentStatus(...args),
-}));
+vi.mock("@/lib/writeApi", async () => {
+  const actual = await vi.importActual<Record<string, unknown>>("@/lib/writeApi");
+  return { ...actual, getPaymentStatus: (...args: unknown[]) => mockFetchPaymentStatus(...args) };
+});
 
 vi.mock("@/i18n/LanguageContext", () => ({
   useLanguage: () => ({

@@ -25,11 +25,5 @@ export function formatIQD(iqdAmount: number, language: AppLanguage = getCurrentL
   return `${parts.amount} ${parts.currency}`;
 }
 
-/** Convert USD → IQD and format in one step. */
-export function formatUSDasIQD(usdAmount: number, language: AppLanguage = getCurrentLanguage()): string {
-  return formatIQD(convertToIQD(usdAmount), language);
-}
-
 /** Free-shipping threshold in IQD */
 export const FREE_SHIPPING_THRESHOLD_IQD = 45_000;
-export const FREE_SHIPPING_THRESHOLD_USD = FREE_SHIPPING_THRESHOLD_IQD / EXCHANGE_RATE_USD_TO_IQD;
