@@ -120,7 +120,7 @@ export default function ProductDetailPage() {
                 {product.isLimitedDeal && <span className="deal-badge rounded-full">{t("product.limitedTimeDeal")}</span>}
               </div>
               <h1 className="text-xl font-semibold leading-snug page-title !text-xl">{product.title}</h1>
-              <p className="text-sm">{t("product.visitStore")} <Link to={`/brand/${product.brand}`} className="text-info hover:underline">{product.brand} {t("product.store")}</Link></p>
+              <p className="text-sm">{t("product.visitStore")} <Link to={`/brand/${product.brand.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`} className="text-info hover:underline">{product.brand} {t("product.store")}</Link></p>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-info">{product.rating.toFixed(1)}</span>
                 <StarRating rating={product.rating} size="sm" />

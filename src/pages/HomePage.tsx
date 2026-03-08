@@ -49,7 +49,7 @@ const HERO_SLIDES: {
     title: "home.slide3.title",
     subtitle: "home.slide3.subtitle",
     cta: "home.slide3.cta",
-    link: "/brand/Pelin%20Products",
+    link: "/brand/pelin-products",
   },
   {
     image: heroSlide4,
@@ -316,13 +316,13 @@ export default function HomePage() {
                 name: "Pelin Products",
                 tagline: "Pure Botanicals, Handcrafted in Kurdistan",
                 image: pelinBrandImage,
-                link: "/brand/Pelin%20Products",
+                link: "/brand/pelin-products",
               },
               {
                 name: "Azhin Art",
                 tagline: "Kurdish Heritage Meets Modern Design",
                 image: azhinBrandImage,
-                link: "/brand/Azhin%20Art",
+                link: "/brand/azhin-art",
               },
             ].map((b) => (
               <Link

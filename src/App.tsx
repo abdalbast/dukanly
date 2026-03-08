@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -72,6 +73,7 @@ function RouteFallback() {
 }
 
 const App = () => (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
         <AuthProvider>
@@ -245,7 +247,7 @@ const App = () => (
                     <Route path="/deals" element={<SearchResultsPage />} />
                     <Route path="/bestsellers" element={<SearchResultsPage />} />
                     <Route path="/trending" element={<SearchResultsPage />} />
-                    <Route path="/brand/:brand" element={<BrandPage />} />
+                    <Route path="/brand/:brandSlug" element={<BrandPage />} />
                     <Route path="/seller/:sellerId" element={<SearchResultsPage />} />
 
                     <Route path="*" element={<NotFound />} />
@@ -259,6 +261,7 @@ const App = () => (
         </AuthProvider>
     </LanguageProvider>
   </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

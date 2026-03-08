@@ -1,15 +1,18 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect } from "react";
 
 import { ArrowRight, Leaf, Heart, MapPin, Recycle, Paintbrush, Gem, Award, Sparkles } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { useSearchProducts } from "@/hooks/useProducts";
+import { Helmet } from "react-helmet-async";
 
 import pelinHeroImage from "@/assets/pelin/0T7A0070.webp";
 import azhinHeroImage from "@/assets/brands/azhin-art-hero.jpg";
 
 interface BrandInfo {
+  slug: string;
   name: string;
   tagline: string;
   description: string;
@@ -18,8 +21,17 @@ interface BrandInfo {
   features: { icon: React.ElementType; title: string; description: string }[];
 }
 
+/** Converts a brand name to a URL-friendly slug */
+export function toBrandSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 const BRAND_DATA: Record<string, BrandInfo> = {
-  "pelin products": {
+  "pelin-products": {
+    slug: "pelin-products",
     name: "Pelin Products",
     tagline: "Pure Botanicals, Handcrafted in Kurdistan",
     description:
@@ -34,7 +46,8 @@ const BRAND_DATA: Record<string, BrandInfo> = {
       { icon: Recycle, title: "Eco-Friendly Packaging", description: "Minimal, recyclable packaging that respects our planet" },
     ],
   },
-  "azhin art": {
+  "azhin-art": {
+    slug: "azhin-art",
     name: "Azhin Art",
     tagline: "The Art of Self-Improvement",
     description:
@@ -51,15 +64,25 @@ const BRAND_DATA: Record<string, BrandInfo> = {
   },
 };
 
-export default function BrandPage() {
-  const { brand } = useParams<{ brand: string }>();
-  const brandSlug = (brand ?? "").toLowerCase();
-  const brandInfo = BRAND_DATA[brandSlug];
+/** Also index by lowercase full name for backward-compat redirects */
+const BRAND_BY_NAME: Record<string, BrandInfo> = {};
+Object.values(BRAND_DATA).forEach((b) => {
+  BRAND_BY_NAME[b.name.toLowerCase()] = b;
+});
 
-  const { data: products = [], isLoading } = useSearchProducts(brand ?? "");
+export default function BrandPage() {
+  const { brandSlug: rawSlug } = useParams<{ brandSlug: string }>();
+  const slug = (rawSlug ?? "").toLowerCase();
+
+  // Look up by slug first, then by full name for backward compat
+  const brandInfo = BRAND_DATA[slug] ?? BRAND_BY_NAME[decodeURIComponent(slug)];
+
+  const { data: products = [], isLoading } = useSearchProducts(brandInfo?.name ?? slug);
   const brandProducts = products.filter(
-    (p) => p.brand.toLowerCase() === brandSlug,
+    (p) => p.brand.toLowerCase() === (brandInfo?.name.toLowerCase() ?? slug),
   );
+
+  const canonicalUrl = brandInfo ? `https://dukanly.lovable.app/brand/${brandInfo.slug}` : undefined;
 
   if (!brandInfo) {
     return (
@@ -74,8 +97,28 @@ export default function BrandPage() {
     );
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Brand",
+    name: brandInfo.name,
+    description: brandInfo.description,
+    url: canonicalUrl,
+    image: brandInfo.heroImage,
+  };
+
   return (
     <Layout>
+      <Helmet>
+        <title>{brandInfo.name} – Shop on Dukanly</title>
+        <meta name="description" content={brandInfo.description.slice(0, 155)} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={`${brandInfo.name} – Shop on Dukanly`} />
+        <meta property="og:description" content={brandInfo.tagline} />
+        <meta property="og:type" content="profile" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={brandInfo.heroImage} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       {/* ─── Hero Banner ─── */}
       <section className="relative h-[420px] sm:h-[500px] md:h-[560px] overflow-hidden">
         <img
