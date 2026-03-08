@@ -1,35 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { ProductWithOffer } from "@/types/product";
+import type { DbProduct } from "@/types/db";
 import pelinSoapBarsImage from "@/assets/pelin/0T7A0075.webp";
 import pelinBodyWashImage from "@/assets/pelin/0T7A0072.webp";
 import pelinGiftBasketImage from "@/assets/pelin/0T7A0070.webp";
 import pelinHairCleanserImage from "@/assets/pelin/0T7A0091.webp";
-
-interface DbProduct {
-  id: string;
-  seller_id: string;
-  sku: string;
-  title: string;
-  description: string | null;
-  status: string;
-  currency_code: string;
-  base_price: number;
-  brand: string | null;
-  category: string | null;
-  subcategory: string | null;
-  images: string[];
-  rating: number;
-  review_count: number;
-  is_prime: boolean;
-  is_best_seller: boolean;
-  is_limited_deal: boolean;
-  stock: number;
-  original_price: number | null;
-  delivery_days: number;
-  fulfillment_type: string;
-  sellers: { id: string; store_name: string } | null;
-}
 
 function resolvePelinFallbackImages(row: DbProduct): string[] {
   if ((row.brand ?? "").toLowerCase() !== "pelin products") return [];
