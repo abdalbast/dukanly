@@ -16,6 +16,9 @@ import heroSlide2 from "@/assets/hero/slide-2.jpg";
 import heroSlide3 from "@/assets/hero/slide-3.jpg";
 import heroSlide4 from "@/assets/hero/slide-4.jpg";
 
+import pelinBrandImage from "@/assets/pelin/0T7A0070.webp";
+import azhinBrandImage from "@/assets/brands/azhin-art-hero.jpg";
+
 const HERO_SLIDES: {
   image: string;
   tagline: TranslationKey;
