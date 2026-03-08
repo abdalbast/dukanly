@@ -172,7 +172,7 @@
 
   /* Product Card */
   .product-card {
-    @apply bg-card rounded-xl border border-border p-3 transition-all duration-300;
+    @apply bg-card rounded-xl border border-border p-2 sm:p-3 transition-all duration-300;
     box-shadow: var(--shadow-card);
   }
 
