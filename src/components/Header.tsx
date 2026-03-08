@@ -65,6 +65,7 @@ export function Header() {
           <button
             type="button"
             onClick={openAddressManager}
+            aria-label={`${t("header.deliverTo")} ${deliveryLabel}`}
             className="hidden md:flex items-center gap-1 text-sm hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded px-2 py-1 -ml-2"
           >
             <MapPin className="w-4 h-4 text-primary-foreground/70" />
@@ -114,7 +115,7 @@ export function Header() {
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded">
+                <button aria-label="Change language" className="flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded">
                   <Globe className="w-4 h-4" />
                   <span className="text-xs font-semibold">{language === "ckb" ? "کوردی" : "EN"}</span>
                 </button>
@@ -193,6 +194,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setIsOrdersPreviewOpen(true)}
+              aria-label={`${t("header.returns")} ${t("header.andOrders")}`}
               className="hidden md:flex flex-col items-start px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded"
             >
               <span className="text-[10px] text-primary-foreground/70">{t("header.returns")}</span>
@@ -247,7 +249,7 @@ export function Header() {
       </div>
 
       {/* Sub Navigation */}
-      <nav className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
+      <nav aria-label="Category navigation" className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
         <div className="container flex items-center gap-1 h-10 px-4 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}

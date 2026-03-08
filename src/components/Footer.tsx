@@ -34,7 +34,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-primary text-primary-foreground" role="contentinfo">
       {/* Back to Top */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -44,7 +44,7 @@ export function Footer() {
       </button>
 
       {/* Main Footer Links */}
-      <div className="border-t border-primary-foreground/10">
+      <nav aria-label="Footer navigation" className="border-t border-primary-foreground/10">
         <div className="container py-14">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
             {Object.entries(footerLinks).map(([title, links]) => (
@@ -66,7 +66,7 @@ export function Footer() {
             ))}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Bottom Footer */}
       <div className="border-t border-primary-foreground/10 bg-primary/80">
