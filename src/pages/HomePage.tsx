@@ -124,7 +124,7 @@ export default function HomePage() {
               >
                 <img
                   src={slide.image}
-                  alt=""
+                  alt={t(slide.title)}
                   fetchPriority={i === 0 ? "high" : "low"}
                   decoding="async"
                   sizes="100vw"

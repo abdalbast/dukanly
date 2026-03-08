@@ -66,7 +66,7 @@ export function Footer() {
             ))}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Bottom Footer */}
       <div className="border-t border-primary-foreground/10 bg-primary/80">

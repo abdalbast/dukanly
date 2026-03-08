@@ -194,6 +194,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setIsOrdersPreviewOpen(true)}
+              aria-label={`${t("header.returns")} ${t("header.andOrders")}`}
               className="hidden md:flex flex-col items-start px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded"
             >
               <span className="text-[10px] text-primary-foreground/70">{t("header.returns")}</span>
