@@ -95,8 +95,9 @@ export function useProductById(id: string | undefined) {
         .from("products")
         .select("*, sellers(id, store_name)")
         .eq("id", id)
-        .single();
+        .maybeSingle();
       if (error) throw error;
+      if (!data) return null;
       return mapDbToProduct(data as unknown as DbProduct);
     },
     enabled: !!id,
