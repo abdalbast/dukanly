@@ -265,9 +265,8 @@ export default function SellerProducts() {
                         <DropdownMenuItem
                           onClick={() =>
                             toast({
-                              title: "Product duplication unavailable",
-                              description: productActionsUnavailableMessage,
-                              variant: "destructive",
+                              title: "Coming soon",
+                              description: "Product duplication will be available soon.",
                             })
                           }
                         >
