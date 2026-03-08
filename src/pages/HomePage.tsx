@@ -11,7 +11,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/en";
 
-import heroSlide1 from "@/assets/hero/slide-1.jpg";
+const heroSlide1 = "/hero/slide-1.jpg"; // In public/ for LCP preload discoverability
 import heroSlide2 from "@/assets/hero/slide-2.jpg";
 import heroSlide3 from "@/assets/hero/slide-3.webp";
 import heroSlide4 from "@/assets/hero/slide-4.jpg";
