@@ -55,6 +55,7 @@ const SellerReports = lazy(() => import("./pages/seller/SellerReports"));
 const SellerSupport = lazy(() => import("./pages/seller/SellerSupport"));
 const SellOnDukanlyPage = lazy(() => import("./pages/SellOnDukanlyPage"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
+const HandmadePage = lazy(() => import("./pages/HandmadePage"));
 
 const queryClient = new QueryClient();
 
@@ -248,6 +249,7 @@ const App = () => (
                     <Route path="/bestsellers" element={<SearchResultsPage />} />
                     <Route path="/trending" element={<SearchResultsPage />} />
                     <Route path="/brand/:brandSlug" element={<BrandPage />} />
+                    <Route path="/handmade" element={<HandmadePage />} />
                     <Route path="/seller/:sellerId" element={<SearchResultsPage />} />
 
                     <Route path="*" element={<NotFound />} />
