@@ -261,6 +261,44 @@ Deno.serve((req) =>
       paymentData = newPayment;
     }
 
+    // ── Insert order_items ──
+    const productIds = payload.lineItems
+      .map((item) => item.productRef)
+      .filter((ref) => isUuid(ref));
+
+    let sellerMap: Record<string, string> = {};
+    if (productIds.length > 0) {
+      const { data: productRows } = await admin
+        .from("products")
+        .select("id, seller_id")
+        .in("id", productIds);
+      if (productRows) {
+        sellerMap = Object.fromEntries(productRows.map((p) => [p.id, p.seller_id]));
+      }
+    }
+
+    const orderItemRows = payload.lineItems.map((item) => ({
+      order_id: orderData.id,
+      product_id: isUuid(item.productRef) ? item.productRef : null,
+      product_ref: item.productRef,
+      quantity: item.quantity,
+      unit_price: item.unitPrice,
+      line_total: item.unitPrice * item.quantity,
+      seller_id: isUuid(item.productRef) ? (sellerMap[item.productRef] ?? null) : null,
+    }));
+
+    const { error: orderItemsError } = await admin
+      .from("order_items")
+      .insert(orderItemRows);
+
+    if (orderItemsError) {
+      log("warn", "checkout.order_items_insert_failed", {
+        correlationId,
+        orderId: orderData.id,
+        error: orderItemsError.message,
+      });
+    }
+
     const reservationRows = payload.lineItems.map((item) => ({
       order_id: orderData.id,
       product_id: isUuid(item.productRef) ? item.productRef : null,
