@@ -504,8 +504,10 @@ export const en = {
   "about.sellersWorldwide": "Sellers Worldwide",
   "about.productsListed": "Products Listed",
   "about.countriesServed": "Countries Served",
+  "about.growingMarketplace": "A Growing Marketplace",
+  "about.growingMarketplaceDesc": "Dukanly connects buyers and sellers across Kurdistan and Iraq, with new products and merchants joining every day.",
   "about.readyToStart": "Ready to Get Started?",
-  "about.joinMillions": "Join millions of customers and sellers on Dukanly today.",
+  "about.joinMillions": "Join our growing community of customers and sellers on Dukanly today.",
   "about.becomeSeller": "Become a Seller",
 
   // Privacy

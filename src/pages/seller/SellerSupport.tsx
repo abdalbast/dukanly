@@ -134,19 +134,21 @@ export default function SellerSupport() {
       {/* Help Centre Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { title: "Seller Guidelines", desc: "Product listing rules and policies", icon: ExternalLink },
-          { title: "Shipping FAQ", desc: "Delivery regions and packaging", icon: ExternalLink },
-          { title: "Payment Help", desc: "Payout schedule and fee structure", icon: ExternalLink },
+          { title: "Seller Guidelines", desc: "Product listing rules and policies", href: "/help" },
+          { title: "Shipping FAQ", desc: "Delivery regions and packaging", href: "/shipping" },
+          { title: "Payment Help", desc: "Payout schedule and fee structure", href: "/help" },
         ].map((link) => (
-          <Card key={link.title} className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <CardContent className="p-4 flex items-center gap-3">
-              <link.icon className="w-5 h-5 text-primary" />
-              <div>
-                <p className="font-medium text-sm">{link.title}</p>
-                <p className="text-xs text-muted-foreground">{link.desc}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <a key={link.title} href={link.href} className="block">
+            <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+              <CardContent className="p-4 flex items-center gap-3">
+                <ExternalLink className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="font-medium text-sm">{link.title}</p>
+                  <p className="text-xs text-muted-foreground">{link.desc}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </a>
         ))}
       </div>
 

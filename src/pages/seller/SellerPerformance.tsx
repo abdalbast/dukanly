@@ -51,8 +51,10 @@ export default function SellerPerformance() {
   const cancelledOrders = orders.filter((o) => o.status === "cancelled").length;
   const shippedOrders = orders.filter((o) => o.status === "shipped" || o.status === "delivered").length;
   const cancellationRate = totalOrders > 0 ? ((cancelledOrders / totalOrders) * 100).toFixed(1) : "0";
-  const lateShipmentRate = "0.0"; // placeholder
-  const returnRate = "0.0"; // placeholder
+  const lateShipmentRate = totalOrders > 0
+    ? ((orders.filter((o) => o.fulfillmentStatus === "unfulfilled" && new Date(o.createdAt).getTime() < Date.now() - 3 * 86400000).length / totalOrders) * 100).toFixed(1)
+    : "0.0";
+  const returnRate = "0.0"; // requires return_requests join — not yet wired
 
   const healthScore = 100 - issues.filter((i) => i.status === "open").length * 10;
   const healthStatus = healthScore >= 80 ? "Healthy" : healthScore >= 50 ? "At Risk" : "Critical";
