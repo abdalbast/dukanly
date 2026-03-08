@@ -424,7 +424,7 @@ export default function CheckoutPage() {
                 {paymentMethods.map((method) => (
                   <label
                     key={method.id}
-                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 md:p-3 transition-colors ${
                       selectedPaymentId === method.id
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
