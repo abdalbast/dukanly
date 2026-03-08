@@ -248,7 +248,12 @@
 
   /* Section Headers */
   .section-header {
-    @apply text-lg font-bold text-foreground mb-3;
+    @apply text-2xl font-extrabold tracking-tight text-foreground mb-1;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  }
+
+  .section-subheader {
+    @apply text-base text-muted-foreground mb-6;
   }
 
   /* Breadcrumb */
