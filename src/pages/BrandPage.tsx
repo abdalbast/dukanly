@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+
 import { ArrowRight, Leaf, Heart, MapPin, Recycle, Paintbrush, Gem, Award, Sparkles } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
