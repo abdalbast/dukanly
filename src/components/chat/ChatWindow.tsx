@@ -20,6 +20,7 @@ interface Message {
 interface ChatWindowProps {
   conversationId: string;
   otherPartyName: string;
+  onBack?: () => void;
 }
 
 export function ChatWindow({ conversationId, otherPartyName }: ChatWindowProps) {
