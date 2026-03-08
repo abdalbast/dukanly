@@ -97,6 +97,7 @@ export const en = {
 
   // Home Page
   "home.heroTitle": "Shop millions of products from trusted sellers",
+  "home.heroTagline": "Kurdistan's Marketplace",
   "home.heroSubtitle": "Free shipping on orders over 45,000 IQD. Easy returns. Secure checkout.",
   "home.shopDeals": "Shop Deals",
   "home.sellOnDukanly": "Sell on Dukanly",

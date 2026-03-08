@@ -99,6 +99,7 @@ export const ckb: Record<TranslationKey, string> = {
 
   // Home Page
   "home.heroTitle": "میلیۆنان بەرهەم لە فرۆشیارانی متمانەپێکراو بکڕە",
+  "home.heroTagline": "بازاڕی کوردستان",
   "home.heroSubtitle": "ناردنی بێبەرامبەر بۆ داواکارییەکانی سەروو ٤٥,٠٠٠ دینار. گەڕاندنەوەی ئاسان. پارەدانی پارێزراو.",
   "home.shopDeals": "ئۆفەرەکان بکڕە",
   "home.sellOnDukanly": "لە دوکانلی بفرۆشە",
