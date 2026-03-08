@@ -120,7 +120,7 @@ export default function HomePage() {
             {HERO_SLIDES.map((slide, i) => (
               <div
                 key={i}
-                className="flex-[0_0_100%] min-w-0 relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px]"
+                className="flex-[0_0_100%] min-w-0 relative h-[440px] sm:h-[500px] md:h-[600px] lg:h-[700px]"
               >
                 <img
                   src={slide.image}
