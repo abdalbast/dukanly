@@ -247,18 +247,24 @@ export function Header() {
       {/* Sub Navigation */}
       <nav aria-label="Category navigation" className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
         <div className="container flex items-center gap-1 h-11 px-4 overflow-x-auto scrollbar-hide nav-scroll-fade">
+          {/* Desktop: All button */}
           <button
-            onClick={() => {
-              if (isMobile) {
-                setIsMobileCategoryOpen(true);
-              } else {
-                setIsMegaMenuOpen(!isMegaMenuOpen);
-              }
-            }}
-            className="flex items-center gap-1 nav-item font-semibold"
+            onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+            className="hidden md:flex items-center gap-1 nav-item font-semibold"
           >
             <Menu className="w-4 h-4" />
             {t("common.all")}
+          </button>
+
+          {/* Mobile: Deliver to button */}
+          <button
+            type="button"
+            onClick={openAddressManager}
+            aria-label={`${t("header.deliverTo")} ${deliveryLabel}`}
+            className="flex md:hidden items-center gap-1.5 nav-item font-semibold"
+          >
+            <MapPin className="w-4 h-4 shrink-0 text-primary-foreground/70" />
+            <span className="truncate max-w-[140px] text-xs">{deliveryLabel}</span>
           </button>
           
           {categories.slice(0, 7).map((cat) => (
