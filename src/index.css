@@ -212,13 +212,14 @@
   .btn-cta {
     background: var(--gradient-cta);
     color: hsl(0 0% 0%) !important;
-    @apply font-semibold rounded-full px-6 py-2 transition-all duration-200;
-    box-shadow: 0 2px 4px hsl(81 89% 40% / 0.3);
+    @apply font-bold rounded-full px-8 py-3 text-sm transition-all duration-200;
+    box-shadow: 0 4px 14px hsl(81 89% 40% / 0.35);
   }
 
   .btn-cta:hover {
     @apply brightness-105;
-    box-shadow: 0 4px 8px hsl(81 89% 40% / 0.4);
+    box-shadow: 0 6px 20px hsl(81 89% 40% / 0.45);
+    transform: translateY(-1px);
   }
 
   .hero-secondary-link {
