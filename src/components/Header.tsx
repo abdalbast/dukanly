@@ -30,6 +30,7 @@ export function Header() {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const unreadCount = useUnreadMessages();
   const { user, signOut } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const { selectedAddress, openAddressManager } = useAddressBook();
