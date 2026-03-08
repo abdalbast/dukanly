@@ -987,4 +987,12 @@ export const ckb: Record<TranslationKey, string> = {
   "sellerLayout.sellerCentral": "ناوەندی فرۆشیار",
   "sellerLayout.needHelp": "یارمەتیت دەوێت؟",
   "sellerLayout.sellerSupport": "پشتگیری فرۆشیار",
+
+  // GDPR / Cookie Consent
+  "cookie.title": "ئێمە گرنگی بە تایبەتمەندیت دەدەین",
+  "cookie.description": "ئێمە کوکیز بەکاردەهێنین بۆ باشترکردنی ئەزموونی گەڕانت، پێشکەشکردنی ناوەڕۆکی تایبەت، و شیکردنەوەی هاتوچۆی ماڵپەڕەکەمان.",
+  "cookie.acceptAll": "هەموو قبوڵبکە",
+  "cookie.rejectNonEssential": "ڕەتکردنەوەی نابنەڕەتییەکان",
+  "cookie.settings": "ڕێکخستنی کوکیز",
+  "footer.gdprCompliant": "GDPR هاوخت",
 };

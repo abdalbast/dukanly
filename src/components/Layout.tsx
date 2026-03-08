@@ -1,6 +1,7 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { AddressBookDialog } from "@/components/address/AddressBookDialog";
+import { CookieConsentBanner } from "./CookieConsentBanner";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export function Layout({ children, showFooter = true }: LayoutProps) {
       <AddressBookDialog />
       <main className="flex-1">{children}</main>
       {showFooter && <Footer />}
+      <CookieConsentBanner />
     </div>
   );
 }

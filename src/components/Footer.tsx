@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export function Footer() {
@@ -85,6 +86,19 @@ export function Footer() {
               </Link>
               <Link to="/interest-ads" className="hover:text-primary-foreground hover:underline">
                 {t("footer.interestBasedAds")}
+              </Link>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("dukanly_cookie_consent");
+                  window.location.reload();
+                }}
+                className="hover:text-primary-foreground hover:underline"
+              >
+                {t("cookie.settings")}
+              </button>
+              <Link to="/privacy" className="inline-flex items-center gap-1 hover:text-primary-foreground hover:underline">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {t("footer.gdprCompliant")}
               </Link>
             </div>
 
