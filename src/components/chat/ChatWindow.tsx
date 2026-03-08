@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -20,9 +20,10 @@ interface Message {
 interface ChatWindowProps {
   conversationId: string;
   otherPartyName: string;
+  onBack?: () => void;
 }
 
-export function ChatWindow({ conversationId, otherPartyName }: ChatWindowProps) {
+export function ChatWindow({ conversationId, otherPartyName, onBack }: ChatWindowProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -128,7 +129,12 @@ export function ChatWindow({ conversationId, otherPartyName }: ChatWindowProps) 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border bg-card">
+      <div className="px-4 py-3 border-b border-border bg-card flex items-center gap-2">
+        {onBack && (
+          <Button variant="ghost" size="icon" className="md:hidden shrink-0 -ml-2" onClick={onBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+        )}
         <h3 className="font-semibold text-sm">{otherPartyName}</h3>
       </div>
 

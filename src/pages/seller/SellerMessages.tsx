@@ -4,6 +4,7 @@ import { ConversationList } from "@/components/chat/ConversationList";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function SellerMessages() {
   const { t } = useLanguage();
@@ -21,12 +22,22 @@ export default function SellerMessages() {
     setSearchParams({ chat: conversation.id });
   };
 
+  const handleBack = () => {
+    setActiveConvo(null);
+    setSearchParams({});
+  };
+
+  const hasActiveChat = !!activeConvo?.id;
+
   return (
     <div>
       <h1 className="text-xl font-bold mb-4">{t("chat.messages")}</h1>
       <div className="bg-card border border-border rounded-xl overflow-hidden flex" style={{ height: "calc(100vh - 14rem)" }}>
         {/* Conversation List */}
-        <div className="w-80 border-r rtl:border-r-0 rtl:border-l border-border overflow-y-auto shrink-0">
+        <div className={cn(
+          "md:w-80 border-r rtl:border-r-0 rtl:border-l border-border overflow-y-auto shrink-0",
+          hasActiveChat ? "hidden md:block" : "w-full"
+        )}>
           <ConversationList
             activeId={activeConvo?.id}
             onSelect={handleSelect}
@@ -35,11 +46,15 @@ export default function SellerMessages() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
+        <div className={cn(
+          "flex-1 flex flex-col",
+          hasActiveChat ? "flex" : "hidden md:flex"
+        )}>
           {activeConvo?.id ? (
             <ChatWindow
               conversationId={activeConvo.id}
               otherPartyName={activeConvo.name || t("chat.unknownBuyer")}
+              onBack={handleBack}
             />
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
