@@ -366,6 +366,42 @@ export function Header() {
 
       <OrdersPreviewPanel open={isOrdersPreviewOpen} onOpenChange={setIsOrdersPreviewOpen} />
       <CartPreviewPanel open={isCartPreviewOpen} onOpenChange={setIsCartPreviewOpen} />
+
+      {/* Mobile Category Drawer */}
+      <Sheet open={isMobileCategoryOpen} onOpenChange={setIsMobileCategoryOpen}>
+        <SheetContent side="left" className="w-[300px] p-0">
+          <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
+            <SheetTitle className="text-base font-semibold">{t("header.shopByDepartment")}</SheetTitle>
+          </SheetHeader>
+          <nav className="flex flex-col py-2 overflow-y-auto max-h-[calc(100vh-80px)]">
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                to={`/category/${cat.slug}`}
+                onClick={() => setIsMobileCategoryOpen(false)}
+                className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                {cat.name}
+              </Link>
+            ))}
+            <div className="border-t border-border my-2" />
+            <Link
+              to="/deals"
+              onClick={() => setIsMobileCategoryOpen(false)}
+              className="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-deal-foreground hover:bg-muted transition-colors"
+            >
+              {t("header.todaysDeals")}
+            </Link>
+            <Link
+              to="/seller"
+              onClick={() => setIsMobileCategoryOpen(false)}
+              className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              {t("header.sellerCentral")}
+            </Link>
+          </nav>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }
