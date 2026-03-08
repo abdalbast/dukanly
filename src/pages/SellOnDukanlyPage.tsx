@@ -120,6 +120,78 @@ export default function SellOnDukanlyPage() {
         </div>
       </section>
 
+      {/* Dukanly Handmade — Artisan Community Showcase */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-amber-800 via-amber-700 to-yellow-600">
+        <div className="absolute inset-0 opacity-[0.06]" style={{
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+        }} />
+        <div className="container relative py-14 md:py-20">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-10 items-center">
+            {/* Left — Copy & CTA */}
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 backdrop-blur-sm text-white/90 text-sm font-medium">
+                <Hand className="h-4 w-4" />
+                {t("sell.handmade.sectionTag")}
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">
+                {t("sell.handmade.title")}
+              </h2>
+              <p className="text-white/80 leading-relaxed">
+                {t("sell.handmade.subtitle")}
+              </p>
+              <Link
+                to="/handmade"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-amber-800 font-semibold text-sm hover:bg-white/90 transition-colors"
+              >
+                {t("sell.handmade.cta")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+              </Link>
+            </div>
+
+            {/* Right — Feature cards */}
+            <div className="space-y-4">
+              {[
+                { icon: Shield, title: t("sell.handmade.artisanVerification"), desc: t("sell.handmade.artisanVerificationDesc") },
+                { icon: Palette, title: t("sell.handmade.customProducts"), desc: t("sell.handmade.customProductsDesc") },
+                { icon: Globe, title: t("sell.handmade.sellAcross"), desc: t("sell.handmade.sellAcrossDesc") },
+              ].map((card) => (
+                <div key={card.title} className="flex items-start gap-4 rounded-xl bg-white/10 backdrop-blur-sm p-5">
+                  <div className="w-10 h-10 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                    <card.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white mb-1">{card.title}</h3>
+                    <p className="text-sm text-white/70 leading-relaxed">{card.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Artisan Benefits Grid */}
+      <section className="container py-14 md:py-20">
+        <div className="max-w-2xl mb-8">
+          <h2 className="section-header mb-3">{t("sell.handmade.benefitsTitle")}</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { icon: Fingerprint, title: t("sell.handmade.noMassProduction"), desc: t("sell.handmade.noMassProductionDesc") },
+            { icon: Store, title: t("sell.handmade.artisanProfile"), desc: t("sell.handmade.artisanProfileDesc") },
+            { icon: BadgeCheck, title: t("sell.handmade.badge"), desc: t("sell.handmade.badgeDesc") },
+            { icon: HeartHandshake, title: t("sell.handmade.community"), desc: t("sell.handmade.communityDesc") },
+          ].map((item) => (
+            <div key={item.title} className="premium-card p-6 text-center">
+              <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <item.icon className="w-6 h-6 text-amber-700 dark:text-amber-400" />
+              </div>
+              <h3 className="font-semibold mb-2">{item.title}</h3>
+              <p className="text-sm text-muted-foreground">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* How It Works */}
       <section id="how-it-works" className="bg-secondary/40 py-14 md:py-20 scroll-mt-28">
         <div className="container">
