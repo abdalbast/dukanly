@@ -47,10 +47,14 @@ export default function HomePage() {
     <Layout>
       {/* Hero Section */}
       <section className="relative">
-        <div 
-          className="h-[300px] md:h-[400px] bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroBanner})` }}
-        >
+        <div className="h-[300px] md:h-[400px] relative overflow-hidden">
+          <img
+            src={heroBanner}
+            alt=""
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent rtl:bg-gradient-to-l" />
           <div className="container relative h-full flex items-center">
             <div className="max-w-lg text-primary-foreground">
