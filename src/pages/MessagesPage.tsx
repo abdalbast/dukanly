@@ -22,13 +22,23 @@ export default function MessagesPage() {
     setSearchParams({ chat: conversation.id });
   };
 
+  const handleBack = () => {
+    setActiveConvo(null);
+    setSearchParams({});
+  };
+
+  const hasActiveChat = !!activeConvo?.id;
+
   return (
     <Layout>
       <div className="container py-6">
         <h1 className="text-xl font-bold mb-4">{t("chat.messages")}</h1>
         <div className="bg-card border border-border rounded-xl overflow-hidden flex" style={{ height: "calc(100vh - 16rem)" }}>
           {/* Conversation List */}
-          <div className="w-80 border-r rtl:border-r-0 rtl:border-l border-border overflow-y-auto shrink-0">
+          <div className={cn(
+            "md:w-80 border-r rtl:border-r-0 rtl:border-l border-border overflow-y-auto shrink-0",
+            hasActiveChat ? "hidden md:block" : "w-full"
+          )}>
             <ConversationList
               activeId={activeConvo?.id}
               onSelect={handleSelect}
@@ -37,11 +47,15 @@ export default function MessagesPage() {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col">
+          <div className={cn(
+            "flex-1 flex flex-col",
+            hasActiveChat ? "flex" : "hidden md:flex"
+          )}>
             {activeConvo?.id ? (
               <ChatWindow
                 conversationId={activeConvo.id}
                 otherPartyName={activeConvo.name || t("chat.unknownSeller")}
+                onBack={handleBack}
               />
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
