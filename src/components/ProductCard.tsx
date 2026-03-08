@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { Check, Truck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { optimizeImageUrl } from "@/lib/imageOptimize";
 
 interface ProductCardProps {
   product: ProductWithOffer;
@@ -26,7 +27,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
     return (
       <div className="product-card flex gap-4">
         <Link to={`/product/${product.id}`} className="shrink-0">
-          <LazyImage src={product.images[0]} alt={product.title} className="w-32 h-32 object-contain" wrapperClassName="w-32 h-32 bg-secondary rounded" />
+          <LazyImage src={optimizeImageUrl(product.images[0], 128)} alt={product.title} className="w-32 h-32 object-contain" wrapperClassName="w-32 h-32 bg-secondary rounded" />
         </Link>
         <div className="flex-1 min-w-0">
           <Link to={`/product/${product.id}`}>
@@ -62,7 +63,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             {t("product.limitedDeal")}
           </span>
         )}
-        <LazyImage src={product.images[0]} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" />
+        <LazyImage src={optimizeImageUrl(product.images[0], 250)} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw" />
       </Link>
 
       <div className="flex flex-col flex-1 pt-3">

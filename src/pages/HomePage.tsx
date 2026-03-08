@@ -13,7 +13,7 @@ import type { TranslationKey } from "@/i18n/en";
 
 import heroSlide1 from "@/assets/hero/slide-1.jpg";
 import heroSlide2 from "@/assets/hero/slide-2.jpg";
-import heroSlide3 from "@/assets/hero/slide-3.jpg";
+import heroSlide3 from "@/assets/hero/slide-3.webp";
 import heroSlide4 from "@/assets/hero/slide-4.jpg";
 
 import pelinBrandImage from "@/assets/pelin/0T7A0070.webp";
@@ -124,6 +124,7 @@ export default function HomePage() {
                   alt=""
                   fetchPriority={i === 0 ? "high" : "low"}
                   decoding="async"
+                  sizes="100vw"
                   className="absolute inset-0 w-full h-full object-cover will-change-transform"
                 />
                 {/* Deeper cinematic overlay */}

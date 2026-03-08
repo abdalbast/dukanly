@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface LazyImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   wrapperClassName?: string;
+  sizes?: string;
 }
 
 export function LazyImage({ className, wrapperClassName, onLoad, onError, ...props }: LazyImageProps) {
