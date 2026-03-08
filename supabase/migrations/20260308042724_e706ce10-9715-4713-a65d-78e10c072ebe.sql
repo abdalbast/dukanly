@@ -1,0 +1,1 @@
+UPDATE auth.users SET encrypted_password = extensions.crypt('TestPass123!', extensions.gen_salt('bf')) WHERE id = '68382fba-1c91-4bd9-9570-0de691ab9b6d';
