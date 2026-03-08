@@ -238,10 +238,10 @@ const App = () => (
                   </Suspense>
                 </BrowserRouter>
               </TooltipProvider>
-            </SellerProvider>
-          </CartProvider>
+              </SellerProvider>
+            </CartProvider>
+          </AddressBookProvider>
         </AuthProvider>
-      </AddressBookProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
