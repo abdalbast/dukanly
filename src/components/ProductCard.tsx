@@ -5,7 +5,7 @@ import { PriceDisplay } from "./PriceDisplay";
 import { LazyImage } from "./LazyImage";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { Check, Truck } from "lucide-react";
+import { Check, Truck, Hand, Palette } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { optimizeImageUrl } from "@/lib/imageOptimize";
 
