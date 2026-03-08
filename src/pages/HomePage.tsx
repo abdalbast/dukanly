@@ -120,7 +120,7 @@ export default function HomePage() {
             {HERO_SLIDES.map((slide, i) => (
               <div
                 key={i}
-                className="flex-[0_0_100%] min-w-0 relative h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px]"
+                className="flex-[0_0_100%] min-w-0 relative h-[440px] sm:h-[500px] md:h-[600px] lg:h-[700px]"
               >
                 <img
                   src={slide.image}
@@ -136,32 +136,32 @@ export default function HomePage() {
                 <div className="container relative h-full flex items-center">
                   <div className="max-w-2xl">
                     {/* Frosted tagline pill */}
-                    <span className="tagline-pill mb-5 sm:mb-6">
+                    <span className="tagline-pill mb-4 sm:mb-6">
                       {t(slide.tagline)}
                     </span>
 
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary-foreground leading-[1.04] mb-4 sm:mb-6"
+                    <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] sm:leading-[1.04] mb-4 sm:mb-6"
                       style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
                     >
                       {t(slide.title)}
                     </h2>
 
-                    <p className="text-base sm:text-lg md:text-xl text-primary-foreground/65 mb-8 sm:mb-10 max-w-lg leading-relaxed">
+                    <p className="text-sm sm:text-lg md:text-xl text-primary-foreground/65 mb-6 sm:mb-10 max-w-xs sm:max-w-lg leading-relaxed">
                       {t(slide.subtitle)}
                     </p>
 
                     {/* CTA pair */}
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                       <Link
                         to={slide.link}
-                        className="btn-cta px-10 py-4 text-base inline-flex items-center gap-2.5 group"
+                        className="btn-cta px-10 py-4 text-base inline-flex items-center justify-center gap-2.5 group w-full sm:w-auto"
                       >
                         {t(slide.cta)}
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
                       </Link>
                       <Link
                         to="/category/electronics"
-                        className="hero-secondary-link"
+                        className="hero-secondary-link w-full sm:w-auto text-center"
                       >
                         {t("common.seeMore")}
                       </Link>
@@ -190,7 +190,7 @@ export default function HomePage() {
         </button>
 
         {/* Dot indicators */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
           {HERO_SLIDES.map((_, i) => (
             <button
               key={i}
