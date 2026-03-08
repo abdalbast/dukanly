@@ -410,7 +410,7 @@ export default function CheckoutPage() {
               )}
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-4">
+            <section className="rounded-xl border border-border bg-card p-5">
               <h2 className="mb-4 flex items-center gap-2 font-semibold">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">3</span>
                 {t("checkout.paymentMethod")}
