@@ -2,7 +2,7 @@ import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Package, ShoppingCart, Settings, Store, ChevronLeft,
   TrendingUp, AlertCircle, Warehouse, Truck, RotateCcw, Wallet,
-  BarChart3, FileText, HeadphonesIcon,
+  BarChart3, FileText, HeadphonesIcon, MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSeller } from "@/contexts/SellerContext";
