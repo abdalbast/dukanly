@@ -996,6 +996,24 @@ export const en = {
   "cookie.rejectNonEssential": "Reject Non-Essential",
   "cookie.settings": "Cookie Settings",
   "footer.gdprCompliant": "GDPR Compliant",
+
+  // Hero Carousel Slides
+  "home.slide1.tagline": "Kurdistan's Marketplace",
+  "home.slide1.title": "Shop millions of products from trusted sellers",
+  "home.slide1.subtitle": "Free shipping on orders over 45,000 IQD. Easy returns. Secure checkout.",
+  "home.slide1.cta": "Shop Deals",
+  "home.slide2.tagline": "New Arrivals",
+  "home.slide2.title": "Fresh styles & top brands just landed",
+  "home.slide2.subtitle": "Explore the latest in fashion, electronics, and home essentials.",
+  "home.slide2.cta": "Explore Now",
+  "home.slide3.tagline": "Pelin Products",
+  "home.slide3.title": "Premium quality, crafted in Kurdistan",
+  "home.slide3.subtitle": "Discover our featured brand with handpicked selections for every home.",
+  "home.slide3.cta": "Shop Pelin",
+  "home.slide4.tagline": "Grow Your Business",
+  "home.slide4.title": "Start selling on Dukanly today",
+  "home.slide4.subtitle": "Reach thousands of customers across Kurdistan and Iraq. Set up in minutes.",
+  "home.slide4.cta": "Get Started Free",
 } as const;
 
 export type TranslationKey = keyof typeof en;

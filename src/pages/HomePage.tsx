@@ -1,5 +1,7 @@
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, Truck, Shield, Clock, Percent, ArrowRight } from "lucide-react";
+import { ChevronRight, ChevronLeft, Truck, Shield, Clock, Percent, ArrowRight } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { LazyImage } from "@/components/LazyImage";
@@ -7,11 +9,91 @@ import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { categories } from "@/data/mockData";
 import { useProducts } from "@/hooks/useProducts";
 import heroBanner from "@/assets/hero-banner.jpg";
+import fashionImg from "@/assets/categories/fashion.jpg";
+import electronicsImg from "@/assets/categories/electronics.jpg";
+import homeImg from "@/assets/categories/home.jpg";
 import { useLanguage } from "@/i18n/LanguageContext";
+import type { TranslationKey } from "@/i18n/en";
+
+const HERO_SLIDES: {
+  image: string;
+  tagline: TranslationKey;
+  title: TranslationKey;
+  subtitle: TranslationKey;
+  cta: TranslationKey;
+  link: string;
+}[] = [
+  {
+    image: heroBanner,
+    tagline: "home.slide1.tagline",
+    title: "home.slide1.title",
+    subtitle: "home.slide1.subtitle",
+    cta: "home.slide1.cta",
+    link: "/deals",
+  },
+  {
+    image: fashionImg,
+    tagline: "home.slide2.tagline",
+    title: "home.slide2.title",
+    subtitle: "home.slide2.subtitle",
+    cta: "home.slide2.cta",
+    link: "/category/fashion",
+  },
+  {
+    image: electronicsImg,
+    tagline: "home.slide3.tagline",
+    title: "home.slide3.title",
+    subtitle: "home.slide3.subtitle",
+    cta: "home.slide3.cta",
+    link: "/brand/Pelin%20Products",
+  },
+  {
+    image: homeImg,
+    tagline: "home.slide4.tagline",
+    title: "home.slide4.title",
+    subtitle: "home.slide4.subtitle",
+    cta: "home.slide4.cta",
+    link: "/sell",
+  },
+];
+
+const AUTOPLAY_MS = 5500;
 
 export default function HomePage() {
   const { t } = useLanguage();
   const { data: products = [], isLoading } = useProducts();
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 28 });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isPausedRef = useRef(false);
+
+  const startAutoplay = useCallback(() => {
+    if (autoplayRef.current) clearInterval(autoplayRef.current);
+    autoplayRef.current = setInterval(() => {
+      if (!isPausedRef.current && emblaApi) emblaApi.scrollNext();
+    }, AUTOPLAY_MS);
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setActiveIndex(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+    onSelect();
+    startAutoplay();
+    return () => {
+      emblaApi.off("select", onSelect);
+      if (autoplayRef.current) clearInterval(autoplayRef.current);
+    };
+  }, [emblaApi, startAutoplay]);
+
+  const scrollTo = useCallback(
+    (idx: number) => {
+      emblaApi?.scrollTo(idx);
+      startAutoplay();
+    },
+    [emblaApi, startAutoplay],
+  );
 
   const dealsProducts = products.filter((p) => p.isLimitedDeal || p.offer.originalPrice);
   const bestSellers = products.filter((p) => p.isBestSeller);
@@ -20,44 +102,81 @@ export default function HomePage() {
 
   return (
     <Layout>
-      {/* Hero Section — cinematic, Apple-style */}
-      <section className="relative overflow-hidden">
-        <div className="h-[420px] md:h-[540px] lg:h-[600px] relative">
-          <img
-            src={heroBanner}
-            alt=""
-            fetchPriority="high"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-cover scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent rtl:bg-gradient-to-l" />
-          <div className="container relative h-full flex items-center">
-            <div className="max-w-xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60 mb-4">
-                {t("home.heroTagline")}
-              </p>
-              <h1
-                className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5 page-title"
-              >
-                {t("home.heroTitle")}
-              </h1>
-              <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-md leading-relaxed">
-                {t("home.heroSubtitle")}
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  to="/deals"
-                  className="btn-cta px-8 py-3.5 text-base inline-flex items-center gap-2 group"
-                >
-                  {t("home.shopDeals")}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
-                </Link>
-                <Link to="/sell" className="hero-secondary-link px-8 py-3.5">
-                  {t("home.sellOnDukanly")}
-                </Link>
+      {/* Hero Carousel — Amazon-style */}
+      <section
+        className="relative overflow-hidden group/hero"
+        onMouseEnter={() => (isPausedRef.current = true)}
+        onMouseLeave={() => (isPausedRef.current = false)}
+      >
+        <div ref={emblaRef} className="overflow-hidden">
+          <div className="flex">
+            {HERO_SLIDES.map((slide, i) => (
+              <div key={i} className="flex-[0_0_100%] min-w-0 relative h-[420px] md:h-[540px] lg:h-[600px]">
+                <img
+                  src={slide.image}
+                  alt=""
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  decoding="async"
+                  className="absolute inset-0 w-full h-full object-cover scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent rtl:bg-gradient-to-l" />
+                <div className="container relative h-full flex items-center">
+                  <div className="max-w-xl">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60 mb-4">
+                      {t(slide.tagline)}
+                    </p>
+                    <h2
+                      className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5 page-title"
+                    >
+                      {t(slide.title)}
+                    </h2>
+                    <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-md leading-relaxed">
+                      {t(slide.subtitle)}
+                    </p>
+                    <Link
+                      to={slide.link}
+                      className="btn-cta px-8 py-3.5 text-base inline-flex items-center gap-2 group"
+                    >
+                      {t(slide.cta)}
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        {/* Amazon-style tall edge arrows */}
+        <button
+          onClick={() => { emblaApi?.scrollPrev(); startAutoplay(); }}
+          className="absolute left-0 top-0 bottom-0 w-12 md:w-14 flex items-center justify-center bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-0 group-hover/hero:opacity-100 cursor-pointer"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="w-8 h-8 text-primary-foreground drop-shadow-lg" />
+        </button>
+        <button
+          onClick={() => { emblaApi?.scrollNext(); startAutoplay(); }}
+          className="absolute right-0 top-0 bottom-0 w-12 md:w-14 flex items-center justify-center bg-foreground/0 hover:bg-foreground/10 transition-colors z-10 opacity-0 group-hover/hero:opacity-100 cursor-pointer"
+          aria-label="Next slide"
+        >
+          <ChevronRight className="w-8 h-8 text-primary-foreground drop-shadow-lg" />
+        </button>
+
+        {/* Dot indicators */}
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {HERO_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollTo(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                i === activeIndex
+                  ? "w-8 bg-primary-foreground"
+                  : "w-2.5 bg-primary-foreground/40 hover:bg-primary-foreground/60"
+              }`}
+            />
+          ))}
         </div>
       </section>
 
