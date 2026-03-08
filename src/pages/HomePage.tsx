@@ -106,8 +106,11 @@ export default function HomePage() {
 
   return (
     <Layout>
+      <h1 className="sr-only">Dukanly – Shop Millions of Products</h1>
       {/* ─── Hero Carousel ─── */}
       <section
+        aria-roledescription="carousel"
+        aria-label="Hero promotions"
         className="relative overflow-hidden group/hero"
         onMouseEnter={() => (isPausedRef.current = true)}
         onMouseLeave={() => (isPausedRef.current = false)}
