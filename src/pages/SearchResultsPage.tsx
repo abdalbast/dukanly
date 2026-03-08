@@ -20,7 +20,7 @@ export default function SearchResultsPage() {
   const query = searchParams.get("q") || "";
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
-  const [filters, setFilters] = useState({ primeOnly: false, deals: false, minRating: 0, brands: [] as string[] });
+  const [filters, setFilters] = useState({ primeOnly: false, deals: false, handmade: false, artisan: false, minRating: 0, brands: [] as string[] });
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: fetchedProducts = [], isLoading } = useSearchProducts(query);
