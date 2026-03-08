@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Heart, Share2, Truck, Shield, RotateCcw, Store, Minus, Plus } from "lucide-react";
+import { ChatButton } from "@/components/chat/ChatButton";
 import { Layout } from "@/components/Layout";
 import { StarRating } from "@/components/StarRating";
 import { PriceDisplay } from "@/components/PriceDisplay";
