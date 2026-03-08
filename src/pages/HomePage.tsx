@@ -190,7 +190,7 @@ export default function HomePage() {
         </button>
 
         {/* Dot indicators */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
           {HERO_SLIDES.map((_, i) => (
             <button
               key={i}
