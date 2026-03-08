@@ -247,7 +247,7 @@ const App = () => (
                     <Route path="/deals" element={<SearchResultsPage />} />
                     <Route path="/bestsellers" element={<SearchResultsPage />} />
                     <Route path="/trending" element={<SearchResultsPage />} />
-                    <Route path="/brand/:brand" element={<BrandPage />} />
+                    <Route path="/brand/:brandSlug" element={<BrandPage />} />
                     <Route path="/seller/:sellerId" element={<SearchResultsPage />} />
 
                     <Route path="*" element={<NotFound />} />
