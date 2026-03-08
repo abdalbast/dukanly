@@ -331,6 +331,7 @@ export const en = {
 
   // Category
   "category.allProducts": "All Products",
+  "category.shopByCategory": "Shop by Category",
 
   // Auth
   "auth.signIn": "Sign In",

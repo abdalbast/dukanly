@@ -333,6 +333,7 @@ export const ckb: Record<TranslationKey, string> = {
 
   // Category
   "category.allProducts": "هەموو بەرهەمەکان",
+  "category.shopByCategory": "بەپێی هاوپۆل بگەڕێ",
 
   // Auth
   "auth.signIn": "چوونەژوورەوە",
