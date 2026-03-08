@@ -103,15 +103,66 @@ export default function BrandPage() {
       {/* ─── Brand Story ─── */}
       <section className="bg-card border-b border-border">
         <div className="container py-20 md:py-28">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <span className="tagline-pill mb-4">Our Story</span>
-            <h2 className="section-header">{brandInfo.name}</h2>
-            <p className="text-muted-foreground text-lg leading-relaxed mt-6">
-              {brandInfo.description}
-            </p>
-            <p className="text-muted-foreground leading-relaxed mt-4">
-              {brandInfo.story}
-            </p>
+          {(() => {
+            const storyParagraphs = brandInfo.story.split("\n\n");
+            const lastPara = storyParagraphs[storyParagraphs.length - 1];
+            const isQuote = lastPara.startsWith('"') || lastPara.startsWith('\u201C');
+            const bodyParagraphs = isQuote ? storyParagraphs.slice(0, -1) : storyParagraphs;
+            const pullQuote = isQuote ? lastPara : null;
+            const isLong = brandInfo.story.length > 200;
+
+            return (
+              <div className={isLong ? "grid md:grid-cols-5 gap-12 md:gap-16 items-start" : "max-w-3xl mx-auto text-center"}>
+                {/* Left / Intro column */}
+                <div className={isLong ? "md:col-span-2 md:sticky md:top-28" : ""}>
+                  <span className="tagline-pill mb-4">Our Story</span>
+                  <h2 className="section-header">{brandInfo.name}</h2>
+                  <p className="text-muted-foreground text-lg leading-relaxed mt-6">
+                    {brandInfo.description}
+                  </p>
+                  {pullQuote && isLong && (
+                    <blockquote className="mt-10 border-l-4 border-primary pl-6 py-2">
+                      <p className="text-xl md:text-2xl font-semibold italic text-foreground/80 leading-snug">
+                        {pullQuote}
+                      </p>
+                    </blockquote>
+                  )}
+                </div>
+
+                {/* Right / Story column */}
+                <div className={isLong ? "md:col-span-3 space-y-5" : "mt-8 space-y-5"}>
+                  {bodyParagraphs.map((para, i) => {
+                    // Detect section headings (short lines without periods)
+                    const isHeading = para.length < 60 && !para.includes(".");
+                    return isHeading ? (
+                      <h3 key={i} className="text-lg font-bold text-foreground mt-8 first:mt-0">
+                        {para}
+                      </h3>
+                    ) : (
+                      <p key={i} className="text-muted-foreground leading-relaxed">
+                        {para}
+                      </p>
+                    );
+                  })}
+                  {pullQuote && !isLong && (
+                    <blockquote className="mt-8 border-l-4 border-primary pl-6 py-2">
+                      <p className="text-xl font-semibold italic text-foreground/80 leading-snug">
+                        {pullQuote}
+                      </p>
+                    </blockquote>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ─── Separator ─── */}
+          <div className="flex items-center gap-4 my-16 md:my-20">
+            <div className="flex-1 h-px bg-border" />
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* ─── Standout Features ─── */}
@@ -119,8 +170,9 @@ export default function BrandPage() {
             {brandInfo.features.map((f) => (
               <div
                 key={f.title}
-                className="flex flex-col items-center text-center gap-4 p-6 rounded-2xl bg-secondary/50 border border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+                className="relative flex flex-col items-center text-center gap-4 p-6 pt-8 rounded-2xl bg-secondary/50 border border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-1 overflow-hidden"
               >
+                <div className="absolute top-0 inset-x-0 h-1 bg-primary/60 rounded-t-2xl" />
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
                   <f.icon className="w-6 h-6" />
                 </div>
