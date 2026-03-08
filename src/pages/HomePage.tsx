@@ -124,6 +124,7 @@ export default function HomePage() {
                   alt=""
                   fetchPriority={i === 0 ? "high" : "low"}
                   decoding="async"
+                  sizes="100vw"
                   className="absolute inset-0 w-full h-full object-cover will-change-transform"
                 />
                 {/* Deeper cinematic overlay */}
