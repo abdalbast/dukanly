@@ -34,7 +34,7 @@ export default function HomePage() {
           <div className="container relative h-full flex items-center">
             <div className="max-w-xl">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60 mb-4">
-                {t("home.heroTagline") ?? "Kurdistan's Marketplace"}
+                {t("home.heroTagline")}
               </p>
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5"
