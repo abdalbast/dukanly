@@ -70,14 +70,15 @@ export default function CategoryPage() {
     );
   }
 
-
-    let products = normalizedSubcategory
-      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSubcategory)
+  const displayProducts = useMemo(() => {
+    const normalizedSub = subcategory?.trim().toLowerCase();
+    let products = normalizedSub
+      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSub)
       : baseProducts;
     if (handmadeOnly) products = products.filter((p) => p.isHandmade);
     if (artisanOnly) products = products.filter((p) => p.isArtisanBrand);
     return products;
-  }, [baseProducts, normalizedSubcategory, handmadeOnly, artisanOnly]);
+  }, [baseProducts, subcategory, handmadeOnly, artisanOnly]);
 
   return (
     <Layout>
