@@ -262,7 +262,7 @@ export default function CheckoutPage() {
           <p className="mt-2 text-sm text-muted-foreground">{t("checkout.kurdistanLaunchNote")}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="space-y-6 lg:col-span-8">
             <section className="rounded-lg border border-border bg-card p-4">
               <div className="mb-4 flex items-center justify-between gap-3">
