@@ -140,7 +140,7 @@ export default function HomePage() {
                       {t(slide.tagline)}
                     </span>
 
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary-foreground leading-[1.04] mb-4 sm:mb-6"
+                    <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] sm:leading-[1.04] mb-4 sm:mb-6"
                       style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
                     >
                       {t(slide.title)}
