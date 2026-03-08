@@ -506,8 +506,10 @@ export const ckb: Record<TranslationKey, string> = {
   "about.sellersWorldwide": "فرۆشیاری جیهانی",
   "about.productsListed": "بەرهەمی تۆمارکراو",
   "about.countriesServed": "وڵاتی خزمەتکراو",
+  "about.growingMarketplace": "بازاڕێکی گەشەکردوو",
+  "about.growingMarketplaceDesc": "دوکانلی کڕیار و فرۆشیاران لە هەرێمی کوردستان و عێراقدا بەیەکەوە دەبەستێتەوە، بە بەرهەم و بازرگانی نوێ هەموو ڕۆژێک.",
   "about.readyToStart": "ئامادەیت دەستبکەیت؟",
-  "about.joinMillions": "ئەمڕۆ بەشدار بە لەگەڵ میلیۆنان کڕیار و فرۆشیار لە دوکانلی.",
+  "about.joinMillions": "ئەمڕۆ بەشدار بە لەگەڵ کۆمەڵگەی گەشەکردووی کڕیار و فرۆشیار لە دوکانلی.",
   "about.becomeSeller": "ببە بە فرۆشیار",
 
   // Privacy
