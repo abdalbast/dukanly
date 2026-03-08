@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wallet, ArrowDownLeft, ArrowUpRight, Search, Download, Calendar, CreditCard, Clock } from "lucide-react";
 import { formatIQD } from "@/lib/currency";
+import { useSeller } from "@/contexts/SellerContext";
 
 interface LedgerTransaction {
   id: string;
