@@ -49,7 +49,7 @@ export function useSellerAnalytics(orders: SellerOrder[], products: SellerProduc
       totalOrders,
       totalProducts: products.length,
       averageOrderValue,
-      conversionRate: totalOrders > 0 ? 3.2 : 0,
+      conversionRate: 0,
       revenueChange: 0,
       ordersChange: 0,
       viewsChange: 0,

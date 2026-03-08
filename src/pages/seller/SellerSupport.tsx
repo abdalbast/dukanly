@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { HeadphonesIcon, Plus, Search, Clock, CheckCircle, MessageSquare, ExternalLink } from "lucide-react";
+import { useSeller } from "@/contexts/SellerContext";
 
 interface SupportCase {
   id: string;
@@ -33,6 +34,7 @@ const CATEGORIES = [
 
 export default function SellerSupport() {
   const { toast } = useToast();
+  const { sellerId } = useSeller();
   const [cases, setCases] = useState<SupportCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [newCaseOpen, setNewCaseOpen] = useState(false);
@@ -43,23 +45,23 @@ export default function SellerSupport() {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const fetchCases = async () => {
+    if (!sellerId) { setLoading(false); return; }
     const { data } = await supabase
       .from("support_cases")
       .select("*")
+      .eq("seller_id", sellerId)
       .order("created_at", { ascending: false });
     if (data) setCases(data as unknown as SupportCase[]);
     setLoading(false);
   };
 
-  useEffect(() => { fetchCases(); }, []);
+  useEffect(() => { fetchCases(); }, [sellerId]);
 
   const handleCreateCase = async () => {
-    if (!subject) return;
-    const { data: seller } = await supabase.from("sellers").select("id").eq("user_id", (await supabase.auth.getUser()).data.user?.id).single();
-    if (!seller) return;
+    if (!subject || !sellerId) return;
 
     const { error } = await supabase.from("support_cases").insert({
-      seller_id: seller.id,
+      seller_id: sellerId,
       subject,
       description,
       category,

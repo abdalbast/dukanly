@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { RotateCcw, Search, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import { formatIQD, convertToIQD } from "@/lib/currency";
+import { formatIQD } from "@/lib/currency";
 
 interface ReturnRequest {
   id: string;
@@ -25,6 +25,7 @@ interface ReturnRequest {
 
 export default function SellerReturns() {
   const { toast } = useToast();
+  const { sellerId } = useSeller();
   const [returns, setReturns] = useState<ReturnRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -33,10 +34,12 @@ export default function SellerReturns() {
   const [responseNote, setResponseNote] = useState("");
 
   useEffect(() => {
+    if (!sellerId) { setLoading(false); return; }
     const fetchReturns = async () => {
       const { data, error } = await supabase
         .from("return_requests")
         .select("*")
+        .eq("seller_id", sellerId)
         .order("created_at", { ascending: false });
 
       if (!error && data) {
@@ -45,7 +48,7 @@ export default function SellerReturns() {
       setLoading(false);
     };
     fetchReturns();
-  }, []);
+  }, [sellerId]);
 
   const filtered = returns.filter((r) => {
     const matchesSearch = r.reason.toLowerCase().includes(search.toLowerCase());
@@ -131,7 +134,7 @@ export default function SellerReturns() {
                   <tr key={ret.id} className="border-b hover:bg-muted/30">
                     <td className="p-3 font-mono text-xs">{ret.id.slice(0, 8)}...</td>
                     <td className="p-3">{ret.reason}</td>
-                    <td className="p-3 text-right font-medium">{formatIQD(convertToIQD(Number(ret.refund_amount)))}</td>
+                    <td className="p-3 text-right font-medium">{formatIQD(Number(ret.refund_amount))}</td>
                     <td className="p-3 text-center">{getStatusBadge(ret.status)}</td>
                     <td className="p-3 text-right text-muted-foreground">{new Date(ret.created_at).toLocaleDateString()}</td>
                     <td className="p-3 text-right">
@@ -159,7 +162,7 @@ export default function SellerReturns() {
               </div>
               <div>
                 <Label className="text-muted-foreground">Refund Amount</Label>
-                <p className="font-medium">{formatIQD(convertToIQD(Number(selectedReturn.refund_amount)))}</p>
+                <p className="font-medium">{formatIQD(Number(selectedReturn.refund_amount))}</p>
               </div>
               <div>
                 <Label>Response Note</Label>

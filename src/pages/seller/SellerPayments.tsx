@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Wallet, ArrowDownLeft, ArrowUpRight, Search, Download, Calendar, CreditCard, Clock } from "lucide-react";
 import { formatIQD } from "@/lib/currency";
+import { useSeller } from "@/contexts/SellerContext";
 
 interface LedgerTransaction {
   id: string;
@@ -31,16 +32,19 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default function SellerPayments() {
+  const { sellerId } = useSeller();
   const [transactions, setTransactions] = useState<LedgerTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState("all");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
+    if (!sellerId) { setLoading(false); return; }
     const fetchLedger = async () => {
       const { data, error } = await supabase
         .from("ledger_transactions")
         .select("*")
+        .eq("seller_id", sellerId)
         .order("created_at", { ascending: false })
         .limit(100);
 
@@ -50,7 +54,7 @@ export default function SellerPayments() {
       setLoading(false);
     };
     fetchLedger();
-  }, []);
+  }, [sellerId]);
 
   const filtered = transactions.filter((t) => {
     const matchesSearch = (t.description || "").toLowerCase().includes(search.toLowerCase()) ||

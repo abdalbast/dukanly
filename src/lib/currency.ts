@@ -1,8 +1,9 @@
 import { getCurrentLanguage, getNumberLocale, type AppLanguage } from "@/lib/locale";
 
 /**
- * Identity conversion — products are stored natively in IQD.
- * Kept for backward compatibility with existing call sites.
+ * Round to nearest integer — prices are stored natively in IQD.
+ * Prefer using formatIQD() directly which already rounds.
+ * @deprecated Use Math.round() or formatIQD() directly.
  */
 export function convertToIQD(amount: number): number {
   return Math.round(amount);
