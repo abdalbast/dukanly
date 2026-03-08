@@ -454,7 +454,7 @@ export default function CheckoutPage() {
               )}
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-4">
+            <section className="rounded-xl border border-border bg-card p-5">
               <label className="flex cursor-pointer items-start gap-3">
                 <Checkbox checked={isGiftOrder} onCheckedChange={(checked) => setIsGiftOrder(Boolean(checked))} className="mt-1" />
                 <div>
