@@ -203,10 +203,7 @@ export default function HomePage() {
       {/* More Categories */}
       <section className="container py-14 md:py-20">
         <div className="text-center mb-10">
-          <h2
-            className="section-header"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
+          <h2 className="section-header">
             More to Explore
           </h2>
           <p className="section-subheader">Browse our full range of departments</p>
