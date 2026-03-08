@@ -135,7 +135,7 @@ export default function SellerReturns() {
                   <tr key={ret.id} className="border-b hover:bg-muted/30">
                     <td className="p-3 font-mono text-xs">{ret.id.slice(0, 8)}...</td>
                     <td className="p-3">{ret.reason}</td>
-                    <td className="p-3 text-right font-medium">{formatIQD(convertToIQD(Number(ret.refund_amount)))}</td>
+                    <td className="p-3 text-right font-medium">{formatIQD(Number(ret.refund_amount))}</td>
                     <td className="p-3 text-center">{getStatusBadge(ret.status)}</td>
                     <td className="p-3 text-right text-muted-foreground">{new Date(ret.created_at).toLocaleDateString()}</td>
                     <td className="p-3 text-right">
