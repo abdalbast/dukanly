@@ -112,7 +112,7 @@ export default function HomePage() {
         onMouseEnter={() => (isPausedRef.current = true)}
         onMouseLeave={() => (isPausedRef.current = false)}
       >
-        <div ref={emblaRef} className="overflow-hidden">
+        <div ref={emblaRef} className="overflow-hidden" style={{ contain: "layout style paint" }}>
           <div className="flex">
             {HERO_SLIDES.map((slide, i) => (
               <div
