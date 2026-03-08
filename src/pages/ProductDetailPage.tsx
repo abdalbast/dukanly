@@ -87,14 +87,12 @@ export default function ProductDetailPage() {
           <div className="lg:col-span-5">
             <div className="sticky top-24">
               <div className="bg-card rounded-lg border border-border p-4">
-                <div className="aspect-square bg-secondary rounded flex items-center justify-center mb-4">
-                  <img src={product.images[selectedImage]} alt={product.title} className="max-w-full max-h-full object-contain" />
-                </div>
+                <LazyImage src={product.images[selectedImage]} alt={product.title} className="max-w-full max-h-full object-contain" wrapperClassName="aspect-square bg-secondary rounded flex items-center justify-center mb-4" />
                 {product.images.length > 1 && (
                   <div className="flex gap-2">
                     {product.images.map((img, idx) => (
                       <button key={idx} onClick={() => setSelectedImage(idx)} className={`w-16 h-16 rounded border-2 overflow-hidden ${selectedImage === idx ? "border-primary" : "border-border"}`}>
-                        <img src={img} alt="" className="w-full h-full object-contain" />
+                        <LazyImage src={img} alt="" className="w-full h-full object-contain" />
                       </button>
                     ))}
                   </div>
