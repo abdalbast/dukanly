@@ -71,11 +71,13 @@ Object.values(BRAND_DATA).forEach((b) => {
 });
 
 export default function BrandPage() {
-  const { brand } = useParams<{ brand: string }>();
-  const brandSlug = (brand ?? "").toLowerCase();
-  const brandInfo = BRAND_DATA[brandSlug];
+  const { brandSlug: rawSlug } = useParams<{ brandSlug: string }>();
+  const slug = (rawSlug ?? "").toLowerCase();
 
-  const { data: products = [], isLoading } = useSearchProducts(brand ?? "");
+  // Look up by slug first, then by full name for backward compat
+  const brandInfo = BRAND_DATA[slug] ?? BRAND_BY_NAME[decodeURIComponent(slug)];
+
+  const { data: products = [], isLoading } = useSearchProducts(brandInfo?.name ?? slug);
   const brandProducts = products.filter(
     (p) => p.brand.toLowerCase() === brandSlug,
   );
