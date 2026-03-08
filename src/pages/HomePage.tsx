@@ -136,7 +136,7 @@ export default function HomePage() {
                 <div className="container relative h-full flex items-center">
                   <div className="max-w-2xl">
                     {/* Frosted tagline pill */}
-                    <span className="tagline-pill mb-5 sm:mb-6">
+                    <span className="tagline-pill mb-4 sm:mb-6">
                       {t(slide.tagline)}
                     </span>
 
