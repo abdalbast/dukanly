@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Hand, Palette, Filter } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Hand, Palette, Filter, ArrowRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
