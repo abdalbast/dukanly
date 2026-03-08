@@ -9,9 +9,8 @@ import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getDateLocale } from "@/lib/locale";
-import { fetchPaymentStatus } from "@/lib/paymentApi";
 import { getPaymentMethodTranslationKey, getPaymentStateTranslationKey } from "@/lib/paymentLabels";
-import type { PaymentStatusResponse } from "@/lib/writeApi";
+import { getPaymentStatus, type PaymentStatusResponse } from "@/lib/writeApi";
 
 export default function OrderConfirmationPage() {
   const { t, language } = useLanguage();
@@ -55,7 +54,7 @@ export default function OrderConfirmationPage() {
       setIsVerifyingStripeOrder(true);
       setVerificationError(null);
       clearCart();
-      fetchPaymentStatus({ orderId: stripeOrderId })
+      getPaymentStatus({ orderId: stripeOrderId })
         .then((result) => {
           if (!result.ok) {
             setVerificationError(result.failure?.message ?? t("orderConfirmation.verificationFailed"));

@@ -48,10 +48,6 @@ export function getCorrelationId() {
   return correlationId;
 }
 
-export function resetCorrelationId() {
-  correlationId = crypto.randomUUID();
-  return correlationId;
-}
 
 export function setObservabilityUser(user: UserContext) {
   currentUser = { ...user };

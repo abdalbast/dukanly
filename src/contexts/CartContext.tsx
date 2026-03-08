@@ -35,14 +35,7 @@ function readStoredCartItems(): CartItem[] {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(readStoredCartItems);
 
-  const persistItems = useCallback((nextItems: CartItem[]) => {
-    setItems(nextItems);
-
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-  }, []);
-
-  // Persist items to localStorage whenever they change
+  // Single source of truth for localStorage persistence
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
@@ -100,8 +93,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearCart = useCallback(() => {
-    persistItems([]);
-  }, [persistItems]);
+    setItems([]);
+  }, []);
 
   const activeItems = items.filter((item) => !item.savedForLater);
   const savedItems = items.filter((item) => item.savedForLater);

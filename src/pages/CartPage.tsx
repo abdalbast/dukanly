@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { convertToIQD, formatIQD, FREE_SHIPPING_THRESHOLD_IQD, FREE_SHIPPING_THRESHOLD_USD } from "@/lib/currency";
+import { convertToIQD, formatIQD, FREE_SHIPPING_THRESHOLD_IQD } from "@/lib/currency";
 
 export default function CartPage() {
   const { t } = useLanguage();

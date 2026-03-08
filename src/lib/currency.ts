@@ -1,10 +1,7 @@
 import { getCurrentLanguage, getNumberLocale, type AppLanguage } from "@/lib/locale";
 
-export const EXCHANGE_RATE_USD_TO_IQD = 1300;
-
 /**
- * Convert an amount to IQD.
- * Since products are now stored natively in IQD, this is an identity function.
+ * Identity conversion — products are stored natively in IQD.
  * Kept for backward compatibility with existing call sites.
  */
 export function convertToIQD(amount: number): number {
@@ -28,11 +25,5 @@ export function formatIQD(iqdAmount: number, language: AppLanguage = getCurrentL
   return `${parts.amount} ${parts.currency}`;
 }
 
-/** Convert USD → IQD and format in one step. */
-export function formatUSDasIQD(usdAmount: number, language: AppLanguage = getCurrentLanguage()): string {
-  return formatIQD(convertToIQD(usdAmount), language);
-}
-
 /** Free-shipping threshold in IQD */
 export const FREE_SHIPPING_THRESHOLD_IQD = 45_000;
-export const FREE_SHIPPING_THRESHOLD_USD = FREE_SHIPPING_THRESHOLD_IQD / EXCHANGE_RATE_USD_TO_IQD;
