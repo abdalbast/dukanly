@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, MapPin, ChevronDown, Menu, ShoppingCart, Globe, LogOut, Package, MessageCircle } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +27,8 @@ import {
 export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+  const isMobile = useIsMobile();
   const [isOrdersPreviewOpen, setIsOrdersPreviewOpen] = useState(false);
   const [isCartPreviewOpen, setIsCartPreviewOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -279,7 +283,13 @@ export function Header() {
       <nav aria-label="Category navigation" className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
         <div className="container flex items-center gap-1 h-11 px-4 overflow-x-auto scrollbar-hide nav-scroll-fade">
           <button
-            onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+            onClick={() => {
+              if (isMobile) {
+                setIsMobileCategoryOpen(true);
+              } else {
+                setIsMegaMenuOpen(!isMegaMenuOpen);
+              }
+            }}
             className="flex items-center gap-1 nav-item font-semibold"
           >
             <Menu className="w-4 h-4" />
@@ -356,6 +366,42 @@ export function Header() {
 
       <OrdersPreviewPanel open={isOrdersPreviewOpen} onOpenChange={setIsOrdersPreviewOpen} />
       <CartPreviewPanel open={isCartPreviewOpen} onOpenChange={setIsCartPreviewOpen} />
+
+      {/* Mobile Category Drawer */}
+      <Sheet open={isMobileCategoryOpen} onOpenChange={setIsMobileCategoryOpen}>
+        <SheetContent side="left" className="w-[300px] p-0">
+          <SheetHeader className="px-5 pt-5 pb-3 border-b border-border">
+            <SheetTitle className="text-base font-semibold">{t("header.shopByDepartment")}</SheetTitle>
+          </SheetHeader>
+          <nav className="flex flex-col py-2 overflow-y-auto max-h-[calc(100vh-80px)]">
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                to={`/category/${cat.slug}`}
+                onClick={() => setIsMobileCategoryOpen(false)}
+                className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                {cat.name}
+              </Link>
+            ))}
+            <div className="border-t border-border my-2" />
+            <Link
+              to="/deals"
+              onClick={() => setIsMobileCategoryOpen(false)}
+              className="flex items-center gap-3 px-5 py-3 text-sm font-semibold text-deal-foreground hover:bg-muted transition-colors"
+            >
+              {t("header.todaysDeals")}
+            </Link>
+            <Link
+              to="/seller"
+              onClick={() => setIsMobileCategoryOpen(false)}
+              className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            >
+              {t("header.sellerCentral")}
+            </Link>
+          </nav>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }
