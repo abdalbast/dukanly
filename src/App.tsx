@@ -53,6 +53,8 @@ const SellerPayments = lazy(() => import("./pages/seller/SellerPayments"));
 const SellerPerformance = lazy(() => import("./pages/seller/SellerPerformance"));
 const SellerReports = lazy(() => import("./pages/seller/SellerReports"));
 const SellerSupport = lazy(() => import("./pages/seller/SellerSupport"));
+const SellerMessages = lazy(() => import("./pages/seller/SellerMessages"));
+const MessagesPage = lazy(() => import("./pages/MessagesPage"));
 const SellOnDukanlyPage = lazy(() => import("./pages/SellOnDukanlyPage"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
 const HandmadePage = lazy(() => import("./pages/HandmadePage"));
