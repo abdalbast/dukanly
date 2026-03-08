@@ -174,6 +174,9 @@ export default function ProductDetailPage() {
               <div className="text-sm text-muted-foreground space-y-1.5 pt-3 border-t border-border">
                 <div className="flex justify-between"><span>{t("product.shipsFrom")}</span><span className="text-foreground">{offer.sellerName}</span></div>
                 <div className="flex justify-between"><span>{t("product.soldBy")}</span><Link to={`/seller/${offer.sellerId}`} className="text-info hover:underline">{offer.sellerName}</Link></div>
+                <div className="pt-1">
+                  <ChatButton sellerId={offer.sellerId} productId={product.id} sellerName={offer.sellerName} variant="ghost" size="sm" className="w-full text-xs" />
+                </div>
                 <div className="flex justify-between"><span>{t("product.condition")}</span><span className="text-foreground capitalize">{offer.condition}</span></div>
               </div>
               <div className="flex gap-2 pt-2">
