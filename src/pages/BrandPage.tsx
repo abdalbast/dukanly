@@ -36,11 +36,11 @@ const BRAND_DATA: Record<string, BrandInfo> = {
   },
   "azhin art": {
     name: "Azhin Art",
-    tagline: "Where Kurdish Heritage Meets Modern Design",
+    tagline: "The Art of Self-Improvement",
     description:
-      "Azhin Art brings contemporary Kurdish artistry to the world — handcrafted originals that celebrate cultural heritage through bold, modern design language.",
+      "For Azhin Ehwen Horami, creativity is more than a hobby—it is a way of life. As a music undergraduate and a visual artist, Azhin lives at the intersection where the soul and profession meet. Her journey is defined by the belief that while your profession may take one form of art, your soul often speaks through another.",
     story:
-      "Each piece tells a story rooted in centuries of Kurdish artistic tradition, reimagined for modern living spaces. From hand-painted ceramics to woven textiles, our artists pour their heritage into every brushstroke and thread.",
+      "The Azhinart brand was born from a personal creative journey that embraces every color of life. After rediscovering her own light within art, Azhin began sharing her world with a global community, spanning from Slemany and Kurdistan to the USA and Germany. Her story is rooted in the philosophy that art is a powerful tool for self-improvement and therapy, helping to turn bad habits into good ones and finding beauty in the pleasure of being an artist.\n\nCentral to the Azhinart mission is the concept of \"You vs. You\". The brand represents the discipline required to protect your plans and the patience to wait for your future to unfold. It is a celebration of the colorful journey of your 20s, grounded in the belief that God's plans are more beautiful than yours.\n\nEvery piece shared by Azhinart is a testament to the idea that we are what we put into our bodies and souls. This shop is an extension of that artistry—a place where the discipline of a student and the passion of a creator combine to help you win with your art and live in your own unique way.\n\n\"Try everything; at least the journey is colorful!\"",
     heroImage: azhinHeroImage,
     features: [
       { icon: Paintbrush, title: "Handmade Originals", description: "Every piece is one-of-a-kind, crafted entirely by hand" },
