@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { 
-  Store, CreditCard, Truck, Users, ChevronRight, Banknote, Package, Star, ArrowRight
+  Store, CreditCard, Truck, Users, ChevronRight, Banknote, Package, Star, ArrowRight,
+  Hand, Palette, Globe, Shield, Fingerprint, BadgeCheck, HeartHandshake
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
