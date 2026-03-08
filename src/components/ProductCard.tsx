@@ -27,7 +27,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
     return (
       <div className="product-card flex gap-4">
         <Link to={`/product/${product.id}`} className="shrink-0">
-          <LazyImage src={product.images[0]} alt={product.title} className="w-32 h-32 object-contain" wrapperClassName="w-32 h-32 bg-secondary rounded" />
+          <LazyImage src={optimizeImageUrl(product.images[0], 128)} alt={product.title} className="w-32 h-32 object-contain" wrapperClassName="w-32 h-32 bg-secondary rounded" />
         </Link>
         <div className="flex-1 min-w-0">
           <Link to={`/product/${product.id}`}>
