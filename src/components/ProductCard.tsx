@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ProductWithOffer } from "@/types/product";
 import { StarRating } from "./StarRating";
 import { PriceDisplay } from "./PriceDisplay";
+import { LazyImage } from "./LazyImage";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { Check, Truck } from "lucide-react";
@@ -25,7 +26,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
     return (
       <div className="product-card flex gap-4">
         <Link to={`/product/${product.id}`} className="shrink-0">
-          <img src={product.images[0]} alt={product.title} className="w-32 h-32 object-contain bg-secondary rounded" />
+          <LazyImage src={product.images[0]} alt={product.title} className="w-32 h-32 object-contain" wrapperClassName="w-32 h-32 bg-secondary rounded" />
         </Link>
         <div className="flex-1 min-w-0">
           <Link to={`/product/${product.id}`}>
@@ -52,16 +53,16 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
     <div className="product-card flex flex-col h-full group">
       <Link to={`/product/${product.id}`} className="relative">
         {product.isBestSeller && (
-          <span className="absolute top-0 left-0 rtl:left-auto rtl:right-0 bg-accent text-accent-foreground text-[10px] font-semibold px-2 py-0.5 rounded-br rtl:rounded-br-none rtl:rounded-bl">
+          <span className="absolute top-0 left-0 rtl:left-auto rtl:right-0 bg-accent text-accent-foreground text-[10px] font-semibold px-2 py-0.5 rounded-br rtl:rounded-br-none rtl:rounded-bl z-10">
             {t("product.bestSeller")}
           </span>
         )}
         {product.isLimitedDeal && (
-          <span className="absolute top-0 left-0 rtl:left-auto rtl:right-0 deal-badge rounded-tl-none rounded-br text-[10px]">
+          <span className="absolute top-0 left-0 rtl:left-auto rtl:right-0 deal-badge rounded-tl-none rounded-br text-[10px] z-10">
             {t("product.limitedDeal")}
           </span>
         )}
-        <img src={product.images[0]} alt={product.title} className="w-full aspect-square object-contain bg-secondary rounded-t transition-transform group-hover:scale-105" />
+        <LazyImage src={product.images[0]} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" />
       </Link>
 
       <div className="flex flex-col flex-1 pt-3">

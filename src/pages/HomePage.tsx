@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Truck, Shield, Clock, Percent } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
+import { LazyImage } from "@/components/LazyImage";
 import { categories } from "@/data/mockData";
 import { useProducts } from "@/hooks/useProducts";
 import heroBanner from "@/assets/hero-banner.jpg";
@@ -15,6 +16,31 @@ export default function HomePage() {
   const bestSellers = products.filter((p) => p.isBestSeller);
   const pelinProducts = products.filter((p) => p.brand.toLowerCase() === "pelin products");
   const trendingProducts = products.slice(0, 8);
+
+  const CategoryGrid = ({ cats }: { cats: typeof categories }) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {cats.map((cat) => (
+        <Link key={cat.id} to={`/category/${cat.slug}`} className="bg-card rounded-lg p-4 border border-border hover:shadow-card transition-shadow group">
+          <h3 className="font-semibold mb-3">{cat.name}</h3>
+          {cat.image ? (
+            <LazyImage
+              src={cat.image}
+              alt={cat.name}
+              className="w-full h-full object-cover"
+              wrapperClassName="aspect-square rounded mb-3"
+            />
+          ) : (
+            <div className="aspect-square bg-secondary rounded flex items-center justify-center text-muted-foreground mb-3">
+              <span className="text-4xl opacity-30">📦</span>
+            </div>
+          )}
+          <span className="text-sm text-info group-hover:underline flex items-center gap-1">
+            {t("common.shopNow")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
 
   return (
     <Layout>
@@ -78,19 +104,7 @@ export default function HomePage() {
 
       {/* Category Cards */}
       <section className="container py-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.slice(0, 4).map((cat) => (
-            <Link key={cat.id} to={`/category/${cat.slug}`} className="bg-card rounded-lg p-4 border border-border hover:shadow-card transition-shadow group">
-              <h3 className="font-semibold mb-3">{cat.name}</h3>
-              <div className="aspect-square bg-secondary rounded flex items-center justify-center text-muted-foreground mb-3">
-                <span className="text-4xl opacity-30">📦</span>
-              </div>
-              <span className="text-sm text-info group-hover:underline flex items-center gap-1">
-                {t("common.shopNow")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-              </span>
-            </Link>
-          ))}
-        </div>
+        <CategoryGrid cats={categories.slice(0, 4)} />
       </section>
 
       {/* Today's Deals */}
@@ -148,19 +162,7 @@ export default function HomePage() {
 
       {/* More Categories */}
       <section className="container py-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {categories.slice(4, 8).map((cat) => (
-            <Link key={cat.id} to={`/category/${cat.slug}`} className="bg-card rounded-lg p-4 border border-border hover:shadow-card transition-shadow group">
-              <h3 className="font-semibold mb-3">{cat.name}</h3>
-              <div className="aspect-square bg-secondary rounded flex items-center justify-center text-muted-foreground mb-3">
-                <span className="text-4xl opacity-30">📦</span>
-              </div>
-              <span className="text-sm text-info group-hover:underline flex items-center gap-1">
-                {t("common.shopNow")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-              </span>
-            </Link>
-          ))}
-        </div>
+        <CategoryGrid cats={categories.slice(4, 8)} />
       </section>
 
       {/* Trending Products */}

@@ -1,10 +1,19 @@
 import { Category } from "@/types/product";
+import electronicsImg from "@/assets/categories/electronics.jpg";
+import fashionImg from "@/assets/categories/fashion.jpg";
+import homeImg from "@/assets/categories/home.jpg";
+import sportsImg from "@/assets/categories/sports.jpg";
+import beautyImg from "@/assets/categories/beauty.jpg";
+import toysImg from "@/assets/categories/toys.jpg";
+import booksImg from "@/assets/categories/books.jpg";
+import groceryImg from "@/assets/categories/grocery.jpg";
 
 export const categories: Category[] = [
   {
     id: "electronics",
     name: "Electronics",
     slug: "electronics",
+    image: electronicsImg,
     subcategories: [
       { id: "phones", name: "Cell Phones", slug: "phones" },
       { id: "computers", name: "Computers", slug: "computers" },
@@ -18,6 +27,7 @@ export const categories: Category[] = [
     id: "fashion",
     name: "Fashion",
     slug: "fashion",
+    image: fashionImg,
     subcategories: [
       { id: "mens", name: "Men's Clothing", slug: "mens" },
       { id: "womens", name: "Women's Clothing", slug: "womens" },
@@ -30,6 +40,7 @@ export const categories: Category[] = [
     id: "home",
     name: "Home & Kitchen",
     slug: "home",
+    image: homeImg,
     subcategories: [
       { id: "furniture", name: "Furniture", slug: "furniture" },
       { id: "bedding", name: "Bedding", slug: "bedding" },
@@ -42,6 +53,7 @@ export const categories: Category[] = [
     id: "sports",
     name: "Sports & Outdoors",
     slug: "sports",
+    image: sportsImg,
     subcategories: [
       { id: "fitness", name: "Fitness", slug: "fitness" },
       { id: "outdoor", name: "Outdoor Recreation", slug: "outdoor" },
@@ -53,6 +65,7 @@ export const categories: Category[] = [
     id: "beauty",
     name: "Beauty & Personal Care",
     slug: "beauty",
+    image: beautyImg,
     subcategories: [
       { id: "skincare", name: "Skincare", slug: "skincare" },
       { id: "makeup", name: "Makeup", slug: "makeup" },
@@ -64,6 +77,7 @@ export const categories: Category[] = [
     id: "toys",
     name: "Toys & Games",
     slug: "toys",
+    image: toysImg,
     subcategories: [
       { id: "action", name: "Action Figures", slug: "action" },
       { id: "dolls", name: "Dolls", slug: "dolls" },
@@ -75,6 +89,7 @@ export const categories: Category[] = [
     id: "books",
     name: "Books",
     slug: "books",
+    image: booksImg,
     subcategories: [
       { id: "fiction", name: "Fiction", slug: "fiction" },
       { id: "nonfiction", name: "Non-Fiction", slug: "nonfiction" },
@@ -86,6 +101,7 @@ export const categories: Category[] = [
     id: "grocery",
     name: "Grocery",
     slug: "grocery",
+    image: groceryImg,
     subcategories: [
       { id: "snacks", name: "Snacks", slug: "snacks" },
       { id: "beverages", name: "Beverages", slug: "beverages" },
