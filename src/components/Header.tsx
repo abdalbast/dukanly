@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CartPreviewPanel, OrdersPreviewPanel } from "@/components/header/HeaderPreviewPanels";
 import { useCart } from "@/contexts/CartContext";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAddressBook } from "@/contexts/AddressBookContext";
 import { useLanguage } from "@/i18n/LanguageContext";
