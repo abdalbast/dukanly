@@ -36,13 +36,9 @@ export default function AboutPage() {
             </div>
           </section>
           <section className="bg-secondary/50 rounded-lg p-8 mb-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              {[
-                { num: "10M+", label: t("about.activeCustomers") },
-                { num: "500K+", label: t("about.sellersWorldwide") },
-                { num: "50M+", label: t("about.productsListed") },
-                { num: "190+", label: t("about.countriesServed") },
-              ].map((s) => (<div key={s.label}><p className="text-3xl font-bold text-primary">{s.num}</p><p className="text-sm text-muted-foreground">{s.label}</p></div>))}
+            <div className="text-center">
+              <p className="text-lg font-semibold mb-2">{t("about.growingMarketplace")}</p>
+              <p className="text-sm text-muted-foreground">{t("about.growingMarketplaceDesc")}</p>
             </div>
           </section>
           <section className="text-center">

@@ -152,7 +152,7 @@ export default function SellerPayments() {
                 <Clock className="w-5 h-5 text-muted-foreground" />
                 <div>
                   <p className="font-medium">Next Payout</p>
-                  <p className="text-sm text-muted-foreground">Estimated: {new Date(Date.now() + 7 * 86400000).toLocaleDateString()}</p>
+                  <p className="text-sm text-muted-foreground">Schedule: Weekly</p>
                 </div>
               </div>
               <p className="text-lg font-bold">{formatIQD(availableBalance)}</p>
