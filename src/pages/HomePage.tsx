@@ -151,17 +151,17 @@ export default function HomePage() {
                     </p>
 
                     {/* CTA pair */}
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                       <Link
                         to={slide.link}
-                        className="btn-cta px-10 py-4 text-base inline-flex items-center gap-2.5 group"
+                        className="btn-cta px-10 py-4 text-base inline-flex items-center justify-center gap-2.5 group w-full sm:w-auto"
                       >
                         {t(slide.cta)}
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
                       </Link>
                       <Link
                         to="/category/electronics"
-                        className="hero-secondary-link"
+                        className="hero-secondary-link w-full sm:w-auto text-center"
                       >
                         {t("common.seeMore")}
                       </Link>
