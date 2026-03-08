@@ -49,6 +49,12 @@ export default function HandmadePage() {
             <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
               {t("handmade.description")}
             </p>
+            <Button asChild size="lg" variant="secondary" className="mt-2">
+              <Link to="/handmade/apply">
+                {t("artisanApply.title")} <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            </p>
           </div>
         </div>
         {/* Decorative bottom wave */}
