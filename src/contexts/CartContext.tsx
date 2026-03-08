@@ -35,15 +35,7 @@ function readStoredCartItems(): CartItem[] {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(readStoredCartItems);
 
-  const persistItems = useCallback((nextItems: CartItem[]) => {
-    setItems(nextItems);
-
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
-  }, []);
-
-  // localStorage persistence is handled by persistItems() for clearCart,
-  // and by the useEffect below for all other mutations via setItems.
+  // Single source of truth for localStorage persistence
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
