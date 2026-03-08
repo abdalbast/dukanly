@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Package, MapPin, CreditCard, Shield, Bell, Heart, Gift, Store, ChevronRight } from "lucide-react";
+import { User, Package, MapPin, CreditCard, Shield, Bell, Heart, Gift, Store, ChevronRight, LogOut } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrders } from "@/hooks/useOrders";
