@@ -16,6 +16,9 @@ import heroSlide2 from "@/assets/hero/slide-2.jpg";
 import heroSlide3 from "@/assets/hero/slide-3.jpg";
 import heroSlide4 from "@/assets/hero/slide-4.jpg";
 
+import pelinBrandImage from "@/assets/pelin/0T7A0070.webp";
+import azhinBrandImage from "@/assets/brands/azhin-art-hero.jpg";
+
 const HERO_SLIDES: {
   image: string;
   tagline: TranslationKey;
@@ -98,7 +101,7 @@ export default function HomePage() {
 
   const dealsProducts = products.filter((p) => p.isLimitedDeal || p.offer.originalPrice);
   const bestSellers = products.filter((p) => p.isBestSeller);
-  const pelinProducts = products.filter((p) => p.brand.toLowerCase() === "pelin products");
+  
   const trendingProducts = products.slice(0, 8);
 
   return (
@@ -317,29 +320,59 @@ export default function HomePage() {
         ) : null}
       </section>
 
-      {/* ─── Featured Brand ─── */}
-      {!isLoading && pelinProducts.length > 0 && (
-        <section className="bg-secondary/40">
-          <div className="container py-20 md:py-28">
-            <div className="flex items-end justify-between mb-12">
-              <div>
-                <span className="tagline-pill mb-4">Featured Brand</span>
-                <h2 className="section-header">
-                  Pelin Products
-                </h2>
-              </div>
-              <Link to="/brand/Pelin%20Products" className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
-                Shop Pelin Products <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
-              {pelinProducts.slice(0, 4).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+      {/* ─── Featured Brands ─── */}
+      <section className="bg-secondary/40">
+        <div className="container py-20 md:py-28">
+          <div className="text-center mb-14">
+            <span className="tagline-pill mb-4">Spotlight</span>
+            <h2 className="section-header">Featured Brands</h2>
+            <p className="section-subheader">Discover the makers behind the products</p>
           </div>
-        </section>
-      )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                name: "Pelin Products",
+                tagline: "Pure Botanicals, Handcrafted in Kurdistan",
+                image: pelinBrandImage,
+                link: "/brand/Pelin%20Products",
+              },
+              {
+                name: "Azhin Art",
+                tagline: "Kurdish Heritage Meets Modern Design",
+                image: azhinBrandImage,
+                link: "/brand/Azhin%20Art",
+              },
+            ].map((b) => (
+              <Link
+                key={b.name}
+                to={b.link}
+                className="group relative rounded-2xl overflow-hidden h-[320px] md:h-[380px] border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                <img
+                  src={b.image}
+                  alt={b.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/40 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-8">
+                  <h3
+                    className="text-2xl md:text-3xl font-extrabold text-primary-foreground tracking-tight mb-2"
+                    style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+                  >
+                    {b.name}
+                  </h3>
+                  <p className="text-primary-foreground/65 text-sm md:text-base mb-4 max-w-sm">
+                    {b.tagline}
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-foreground group-hover:gap-2.5 transition-all">
+                    Explore Brand <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ─── More Categories ─── */}
       <section className="container py-20 md:py-28">
