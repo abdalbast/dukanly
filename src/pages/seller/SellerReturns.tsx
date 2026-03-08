@@ -26,6 +26,7 @@ interface ReturnRequest {
 
 export default function SellerReturns() {
   const { toast } = useToast();
+  const { sellerId } = useSeller();
   const [returns, setReturns] = useState<ReturnRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -34,10 +35,12 @@ export default function SellerReturns() {
   const [responseNote, setResponseNote] = useState("");
 
   useEffect(() => {
+    if (!sellerId) { setLoading(false); return; }
     const fetchReturns = async () => {
       const { data, error } = await supabase
         .from("return_requests")
         .select("*")
+        .eq("seller_id", sellerId)
         .order("created_at", { ascending: false });
 
       if (!error && data) {
@@ -46,7 +49,7 @@ export default function SellerReturns() {
       setLoading(false);
     };
     fetchReturns();
-  }, []);
+  }, [sellerId]);
 
   const filtered = returns.filter((r) => {
     const matchesSearch = r.reason.toLowerCase().includes(search.toLowerCase());
