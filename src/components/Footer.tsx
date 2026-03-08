@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export function Footer() {
