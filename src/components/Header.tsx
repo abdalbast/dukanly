@@ -277,10 +277,10 @@ export function Header() {
         </div>
       </nav>
 
-      {/* Mega Menu */}
+      {/* Mega Menu — hidden on mobile, categories already in sub-nav */}
       {isMegaMenuOpen && (
         <div
-          className="mega-menu animate-fade-in"
+          className="mega-menu animate-fade-in hidden md:block"
           onMouseLeave={() => setIsMegaMenuOpen(false)}
         >
           <div className="container py-6">
