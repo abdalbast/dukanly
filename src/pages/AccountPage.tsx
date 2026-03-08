@@ -1,20 +1,27 @@
 import { Link, useLocation } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { User, Package, MapPin, CreditCard, Shield, Bell, Heart, Gift, Store, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOrders } from "@/hooks/useOrders";
 import { AddressBookManager } from "@/components/address/AddressBookManager";
+import { formatIQD } from "@/lib/currency";
 
 export default function AccountPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useAuth();
+  const { data: orders = [] } = useOrders();
   const location = useLocation();
+  const locale = language === "ckb" ? "ckb" : "en-US";
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Account";
   const email = user?.email || "Signed-in account";
   const memberSince = user?.created_at
     ? new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : t("account.memberSince");
+
+  const recentOrders = orders.slice(0, 3);
 
   const accountSections = [
     { title: t("account.yourOrders"), description: t("account.yourOrdersDesc"), icon: Package, href: "/orders" },
@@ -36,15 +43,18 @@ export default function AccountPage() {
               <p className="text-sm text-muted-foreground">{t("account.title")}</p>
               <h1 className="text-2xl font-bold">{t("account.yourAddresses")}</h1>
             </div>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/account">{t("common.back")}</Link>
-            </Button>
+            <Button asChild variant="outline" size="sm"><Link to="/account">{t("common.back")}</Link></Button>
           </div>
           <AddressBookManager mode="page" />
         </div>
       </Layout>
     );
   }
+
+  const formatOrderTotal = (order: { total: number; currencyCode: string }) =>
+    order.currencyCode === "IQD"
+      ? formatIQD(order.total)
+      : new Intl.NumberFormat(locale, { style: "currency", currency: order.currencyCode || "USD", maximumFractionDigits: 2 }).format(order.total);
 
   return (
     <Layout>
@@ -56,9 +66,7 @@ export default function AccountPage() {
             <div className="flex-1">
               <h2 className="font-semibold text-lg">{displayName}</h2>
               <p className="text-sm text-muted-foreground">{email}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {t("account.memberSince")} {memberSince}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{t("account.memberSince")} {memberSince}</p>
             </div>
             <Button variant="outline" size="sm">{t("account.editProfile")}</Button>
           </div>
@@ -82,11 +90,34 @@ export default function AccountPage() {
             <h2 className="text-xl font-semibold">{t("account.recentOrders")}</h2>
             <Link to="/orders" className="text-sm text-info hover:underline">{t("account.viewAllOrders")}</Link>
           </div>
-          <div className="bg-card border border-border rounded-lg p-8 text-center">
-            <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground mb-4">{t("account.noOrdersYet")}</p>
-            <Button asChild className="btn-cta"><Link to="/">{t("common.startShopping")}</Link></Button>
-          </div>
+          {recentOrders.length === 0 ? (
+            <div className="bg-card border border-border rounded-lg p-8 text-center">
+              <Package className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground mb-4">{t("account.noOrdersYet")}</p>
+              <Button asChild className="btn-cta"><Link to="/">{t("common.startShopping")}</Link></Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentOrders.map((order) => (
+                <div key={order.id} className="bg-card border border-border rounded-lg p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <Package className="w-8 h-8 text-muted-foreground shrink-0" />
+                    <div className="min-w-0">
+                      <p className="font-medium">{order.orderNumber}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(order.date).toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}
+                        {" · "}{order.items.length} item{order.items.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Badge variant={order.status === "delivered" ? "default" : "secondary"}>{order.status}</Badge>
+                    <span className="font-semibold text-sm">{formatOrderTotal(order)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </Layout>

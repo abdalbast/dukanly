@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useSeller } from "@/contexts/SellerContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Truck, Package, MapPin, Clock, Search } from "lucide-react";
+import { Truck, MapPin, Search } from "lucide-react";
 import { formatIQD } from "@/lib/currency";
+
+interface ShipmentRow {
+  id: string;
+  order_id: string;
+  status: string;
+  tracking_number: string | null;
+  carrier: string | null;
+  service_level: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+  created_at: string;
+  orders: { order_number: string; user_id: string } | null;
+}
 
 const REGIONS = [
   { name: "Erbil", standardRate: 5000, expressRate: 10000, standardDays: "2-3", expressDays: "1" },
@@ -21,18 +35,37 @@ const REGIONS = [
 ];
 
 export default function SellerShipping() {
-  const { orders } = useSeller();
+  const { sellerId } = useSeller();
   const { toast } = useToast();
+  const [shipments, setShipments] = useState<ShipmentRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [handlingTime, setHandlingTime] = useState("1");
 
-  // Extract shipment-relevant orders
-  const shippableOrders = orders.filter((o) => {
-    const matchesSearch = o.orderNumber.toLowerCase().includes(search.toLowerCase());
-    if (statusFilter === "pending") return matchesSearch && o.fulfillmentStatus === "unfulfilled";
-    if (statusFilter === "shipped") return matchesSearch && o.status === "shipped";
-    if (statusFilter === "delivered") return matchesSearch && o.status === "delivered";
+  useEffect(() => {
+    if (!sellerId) return;
+    const fetchShipments = async () => {
+      const { data, error } = await supabase
+        .from("shipments")
+        .select("id, order_id, status, tracking_number, carrier, service_level, shipped_at, delivered_at, created_at, orders(order_number, user_id)")
+        .eq("seller_id", sellerId)
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        setShipments(data as unknown as ShipmentRow[]);
+      }
+      setLoading(false);
+    };
+    fetchShipments();
+  }, [sellerId]);
+
+  const filtered = shipments.filter((s) => {
+    const orderNum = s.orders?.order_number?.toLowerCase() || "";
+    const matchesSearch = orderNum.includes(search.toLowerCase()) || (s.tracking_number || "").toLowerCase().includes(search.toLowerCase());
+    if (statusFilter === "pending") return matchesSearch && s.status === "pending";
+    if (statusFilter === "shipped") return matchesSearch && s.status === "shipped";
+    if (statusFilter === "delivered") return matchesSearch && s.status === "delivered";
     return matchesSearch;
   });
 
@@ -58,7 +91,7 @@ export default function SellerShipping() {
           <div className="flex items-center gap-4">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Search by order #..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+              <Input placeholder="Search by order # or tracking..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
@@ -73,39 +106,50 @@ export default function SellerShipping() {
 
           <Card>
             <CardContent className="p-0">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="text-left p-3 font-medium">Order</th>
-                    <th className="text-left p-3 font-medium">Items</th>
-                    <th className="text-left p-3 font-medium">Destination</th>
-                    <th className="text-center p-3 font-medium">Status</th>
-                    <th className="text-left p-3 font-medium">Tracking</th>
-                    <th className="text-right p-3 font-medium">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {shippableOrders.map((order) => (
-                    <tr key={order.id} className="border-b hover:bg-muted/30">
-                      <td className="p-3 font-medium">{order.orderNumber}</td>
-                      <td className="p-3">{order.items.length} item{order.items.length > 1 ? "s" : ""}</td>
-                      <td className="p-3 text-muted-foreground">{order.shippingAddress.city || "—"}</td>
-                      <td className="p-3 text-center">
-                        <Badge variant={order.status === "delivered" ? "default" : order.status === "shipped" ? "secondary" : "outline"}>
-                          {order.fulfillmentStatus}
-                        </Badge>
-                      </td>
-                      <td className="p-3">{order.trackingNumber || "—"}</td>
-                      <td className="p-3 text-right text-muted-foreground">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </td>
+              {loading ? (
+                <div className="p-8 text-center text-muted-foreground">Loading shipments...</div>
+              ) : filtered.length === 0 ? (
+                <div className="p-8 text-center">
+                  <Truck className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">No shipments found</p>
+                  <p className="text-xs text-muted-foreground mt-1">Shipments will appear here when orders are fulfilled</p>
+                </div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b bg-muted/50">
+                      <th className="text-left p-3 font-medium">Order</th>
+                      <th className="text-left p-3 font-medium">Carrier</th>
+                      <th className="text-left p-3 font-medium">Service</th>
+                      <th className="text-center p-3 font-medium">Status</th>
+                      <th className="text-left p-3 font-medium">Tracking</th>
+                      <th className="text-right p-3 font-medium">Shipped</th>
+                      <th className="text-right p-3 font-medium">Delivered</th>
                     </tr>
-                  ))}
-                  {shippableOrders.length === 0 && (
-                    <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">No shipments found</td></tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filtered.map((s) => (
+                      <tr key={s.id} className="border-b hover:bg-muted/30">
+                        <td className="p-3 font-medium">{s.orders?.order_number || s.order_id.slice(0, 8)}</td>
+                        <td className="p-3 text-muted-foreground">{s.carrier || "—"}</td>
+                        <td className="p-3 text-muted-foreground">{s.service_level || "—"}</td>
+                        <td className="p-3 text-center">
+                          <Badge variant={s.status === "delivered" ? "default" : s.status === "shipped" ? "secondary" : "outline"}>
+                            {s.status}
+                          </Badge>
+                        </td>
+                        <td className="p-3 font-mono text-xs">{s.tracking_number || "—"}</td>
+                        <td className="p-3 text-right text-muted-foreground">
+                          {s.shipped_at ? new Date(s.shipped_at).toLocaleDateString() : "—"}
+                        </td>
+                        <td className="p-3 text-right text-muted-foreground">
+                          {s.delivered_at ? new Date(s.delivered_at).toLocaleDateString() : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
