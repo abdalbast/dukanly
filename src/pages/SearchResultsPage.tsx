@@ -55,6 +55,8 @@ export default function SearchResultsPage() {
     let products = [...baseProducts];
     if (filters.primeOnly) products = products.filter((p) => p.isPrime);
     if (filters.deals) products = products.filter((p) => p.offer.originalPrice);
+    if (filters.handmade) products = products.filter((p) => p.isHandmade);
+    if (filters.artisan) products = products.filter((p) => p.isArtisanBrand);
     if (filters.minRating > 0) products = products.filter((p) => p.rating >= filters.minRating);
     if (filters.brands.length > 0) products = products.filter((p) => filters.brands.includes(p.brand));
     switch (sortBy) {
