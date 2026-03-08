@@ -61,7 +61,7 @@ export function Header() {
       <div className="bg-primary text-primary-foreground">
         <div className="container flex h-14 items-center gap-3 px-4 md:gap-4">
           {/* Logo */}
-          <Link to="/" className="shrink-0 flex items-center gap-1">
+          <Link to="/" className="hidden md:flex shrink-0 items-center gap-1">
             <div className="text-xl font-bold tracking-tight">
               <span className="text-accent">Dukan</span><span>ly</span>
             </div>
