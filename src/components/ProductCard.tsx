@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { Check, Truck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { optimizeImageUrl } from "@/lib/imageOptimize";
 
 interface ProductCardProps {
   product: ProductWithOffer;
