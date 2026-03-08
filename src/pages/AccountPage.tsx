@@ -130,7 +130,7 @@ export default function AccountPage() {
             }}
           >
             <LogOut className="w-4 h-4" />
-            {t("account.signOut") || "Sign Out"}
+            {language === "ckb" ? "چوونەدەرەوە" : "Sign Out"}
           </Button>
         </div>
       </div>
