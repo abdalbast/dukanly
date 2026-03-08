@@ -56,6 +56,10 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
+      dedupe: ["react", "react-dom", "react/jsx-runtime", "embla-carousel-react", "@tanstack/react-query"],
+    },
+    optimizeDeps: {
+      include: ["embla-carousel-react", "@tanstack/react-query"],
     },
   };
 });
