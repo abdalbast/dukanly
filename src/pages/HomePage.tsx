@@ -11,13 +11,10 @@ import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/en";
 
-/* High-res Unsplash hero images */
-const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=80&auto=format&fit=crop",
-];
+import heroSlide1 from "@/assets/hero/slide-1.jpg";
+import heroSlide2 from "@/assets/hero/slide-2.jpg";
+import heroSlide3 from "@/assets/hero/slide-3.jpg";
+import heroSlide4 from "@/assets/hero/slide-4.jpg";
 
 const HERO_SLIDES: {
   image: string;
