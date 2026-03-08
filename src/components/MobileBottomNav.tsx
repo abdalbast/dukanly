@@ -20,7 +20,7 @@ export function MobileBottomNav() {
     <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
       <div className="flex h-14">
         {tabs.map(({ icon: Icon, label, path, badge, authAware }) => {
-          const href = authAware && !user ? "/auth/sign-in" : path;
+          const href = authAware && !user ? "/auth/signin" : path;
           const isActive =
             path === "/" ? pathname === "/" : pathname.startsWith(path);
 
