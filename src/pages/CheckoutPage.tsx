@@ -485,7 +485,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className="lg:col-span-4">
-            <div className="sticky top-24 space-y-4 rounded-lg border border-border bg-card p-4">
+            <div className="sticky top-24 space-y-4 rounded-xl border border-border bg-card p-5">
               <h2 className="font-semibold">{t("checkout.orderSummary")}</h2>
 
               <div className="max-h-48 space-y-3 overflow-y-auto">
