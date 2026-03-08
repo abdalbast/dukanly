@@ -25,7 +25,7 @@ const HERO_SLIDES: {
   link: string;
 }[] = [
   {
-    image: HERO_IMAGES[0],
+    image: heroSlide1,
     tagline: "home.slide1.tagline",
     title: "home.slide1.title",
     subtitle: "home.slide1.subtitle",
@@ -33,7 +33,7 @@ const HERO_SLIDES: {
     link: "/deals",
   },
   {
-    image: HERO_IMAGES[1],
+    image: heroSlide2,
     tagline: "home.slide2.tagline",
     title: "home.slide2.title",
     subtitle: "home.slide2.subtitle",
@@ -41,7 +41,7 @@ const HERO_SLIDES: {
     link: "/category/fashion",
   },
   {
-    image: HERO_IMAGES[2],
+    image: heroSlide3,
     tagline: "home.slide3.tagline",
     title: "home.slide3.title",
     subtitle: "home.slide3.subtitle",
@@ -49,7 +49,7 @@ const HERO_SLIDES: {
     link: "/brand/Pelin%20Products",
   },
   {
-    image: HERO_IMAGES[3],
+    image: heroSlide4,
     tagline: "home.slide4.tagline",
     title: "home.slide4.title",
     subtitle: "home.slide4.subtitle",
