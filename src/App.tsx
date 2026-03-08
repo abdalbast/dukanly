@@ -251,6 +251,11 @@ const App = () => (
                     <Route path="/trending" element={<SearchResultsPage />} />
                     <Route path="/brand/:brandSlug" element={<BrandPage />} />
                     <Route path="/handmade" element={<HandmadePage />} />
+                    <Route path="/handmade/apply" element={
+                      <RequireAuth>
+                        <ArtisanApplicationPage />
+                      </RequireAuth>
+                    } />
                     <Route path="/seller/:sellerId" element={<SearchResultsPage />} />
 
                     <Route path="*" element={<NotFound />} />
