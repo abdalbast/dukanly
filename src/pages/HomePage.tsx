@@ -122,7 +122,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent rtl:bg-gradient-to-l" />
                 <div className="container relative h-full flex items-center">
                   <div className="max-w-xl">
-                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60 mb-4">
+                    <p className="text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-primary-foreground/60 mb-2 sm:mb-4">
                       {t(slide.tagline)}
                     </p>
                     <h2
