@@ -111,7 +111,7 @@ export default function HomePage() {
         <div ref={emblaRef} className="overflow-hidden">
           <div className="flex">
             {HERO_SLIDES.map((slide, i) => (
-              <div key={i} className="flex-[0_0_100%] min-w-0 relative h-[420px] md:h-[540px] lg:h-[600px]">
+              <div key={i} className="flex-[0_0_100%] min-w-0 relative h-[320px] sm:h-[420px] md:h-[540px] lg:h-[600px]">
                 <img
                   src={slide.image}
                   alt=""
