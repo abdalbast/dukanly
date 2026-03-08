@@ -240,7 +240,7 @@ export function Header() {
       </div>
 
       <div className="border-t border-primary-foreground/10 bg-primary/95 text-primary-foreground md:hidden">
-        <div className="container grid grid-cols-2 gap-2 px-4 py-2">
+        <div className={`container grid gap-2 px-4 py-2 ${user ? "grid-cols-2" : "grid-cols-3"}`}>
           <button
             type="button"
             onClick={openAddressManager}
