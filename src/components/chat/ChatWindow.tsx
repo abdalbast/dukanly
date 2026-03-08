@@ -23,7 +23,7 @@ interface ChatWindowProps {
   onBack?: () => void;
 }
 
-export function ChatWindow({ conversationId, otherPartyName }: ChatWindowProps) {
+export function ChatWindow({ conversationId, otherPartyName, onBack }: ChatWindowProps) {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
