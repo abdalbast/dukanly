@@ -54,6 +54,7 @@ export const ckb: Record<TranslationKey, string> = {
   "header.orders": "داواکارییەکان",
   "header.returns": "گەڕاندنەوە",
   "header.andOrders": "و داواکارییەکان",
+  "header.messages": "نامەکان",
   "header.cart": "سەبەتە",
   "header.todaysDeals": "ئۆفەرەکانی ئەمڕۆ",
   "header.sellerCentral": "ناوەندی فرۆشیار",
