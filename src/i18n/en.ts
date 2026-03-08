@@ -147,7 +147,7 @@ export const en = {
   "cart.yourCartEmpty": "Your cart is empty",
   "cart.emptyMessage": "Looks like you haven't added anything to your cart yet.",
   "cart.youMightLike": "You might like",
-  "cart.addMore": "Add ${amount} more for",
+  "cart.addMore": "Add {amount} more for",
   "cart.freeDelivery": "FREE Delivery",
   "cart.qualifyFreeDelivery": "You qualify for FREE Delivery!",
   "cart.price": "Price",
