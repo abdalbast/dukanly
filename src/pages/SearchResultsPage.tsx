@@ -20,7 +20,7 @@ export default function SearchResultsPage() {
   const query = searchParams.get("q") || "";
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
-  const [filters, setFilters] = useState({ primeOnly: false, deals: false, minRating: 0, brands: [] as string[] });
+  const [filters, setFilters] = useState({ primeOnly: false, deals: false, handmade: false, artisan: false, minRating: 0, brands: [] as string[] });
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: fetchedProducts = [], isLoading } = useSearchProducts(query);
@@ -55,6 +55,8 @@ export default function SearchResultsPage() {
     let products = [...baseProducts];
     if (filters.primeOnly) products = products.filter((p) => p.isPrime);
     if (filters.deals) products = products.filter((p) => p.offer.originalPrice);
+    if (filters.handmade) products = products.filter((p) => p.isHandmade);
+    if (filters.artisan) products = products.filter((p) => p.isArtisanBrand);
     if (filters.minRating > 0) products = products.filter((p) => p.rating >= filters.minRating);
     if (filters.brands.length > 0) products = products.filter((p) => filters.brands.includes(p.brand));
     switch (sortBy) {
@@ -77,8 +79,8 @@ export default function SearchResultsPage() {
 
   const availableBrands = [...new Set(baseProducts.map((p) => p.brand))];
   const toggleBrand = (brand: string) => setFilters((prev) => ({ ...prev, brands: prev.brands.includes(brand) ? prev.brands.filter((b) => b !== brand) : [...prev.brands, brand] }));
-  const clearFilters = () => setFilters({ primeOnly: false, deals: false, minRating: 0, brands: [] });
-  const activeFilterCount = [filters.primeOnly, filters.deals, filters.minRating > 0, filters.brands.length > 0].filter(Boolean).length;
+  const clearFilters = () => setFilters({ primeOnly: false, deals: false, handmade: false, artisan: false, minRating: 0, brands: [] });
+  const activeFilterCount = [filters.primeOnly, filters.deals, filters.handmade, filters.artisan, filters.minRating > 0, filters.brands.length > 0].filter(Boolean).length;
 
   const renderFilters = () => (
     <>
@@ -98,6 +100,17 @@ export default function SearchResultsPage() {
         <label className="flex items-center gap-2 cursor-pointer">
           <Checkbox checked={filters.deals} onCheckedChange={(c) => setFilters((p) => ({ ...p, deals: !!c }))} />
           <span className="text-sm">{t("search.allDiscounts")}</span>
+        </label>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium mb-2">{t("search.productType")}</h3>
+        <label className="flex items-center gap-2 cursor-pointer py-1">
+          <Checkbox checked={filters.handmade} onCheckedChange={(c) => setFilters((p) => ({ ...p, handmade: !!c }))} />
+          <span className="text-sm">{t("search.handmadeOnly")}</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer py-1">
+          <Checkbox checked={filters.artisan} onCheckedChange={(c) => setFilters((p) => ({ ...p, artisan: !!c }))} />
+          <span className="text-sm">{t("search.artisanOnly")}</span>
         </label>
       </div>
       <div>
@@ -146,6 +159,8 @@ export default function SearchResultsPage() {
                 </Button>
                 {filters.primeOnly && <span className="filter-chip active text-xs">{t("search.freeDelivery")}<button onClick={() => setFilters((p) => ({ ...p, primeOnly: false }))}><X className="w-3 h-3" /></button></span>}
                 {filters.deals && <span className="filter-chip active text-xs">{t("search.deals")}<button onClick={() => setFilters((p) => ({ ...p, deals: false }))}><X className="w-3 h-3" /></button></span>}
+                {filters.handmade && <span className="filter-chip active text-xs">{t("search.handmadeOnly")}<button onClick={() => setFilters((p) => ({ ...p, handmade: false }))}><X className="w-3 h-3" /></button></span>}
+                {filters.artisan && <span className="filter-chip active text-xs">{t("search.artisanOnly")}<button onClick={() => setFilters((p) => ({ ...p, artisan: false }))}><X className="w-3 h-3" /></button></span>}
               </div>
               <div className="flex items-center gap-2">
                 <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
