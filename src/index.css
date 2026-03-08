@@ -212,13 +212,14 @@
   .btn-cta {
     background: var(--gradient-cta);
     color: hsl(0 0% 0%) !important;
-    @apply font-semibold rounded-full px-6 py-2 transition-all duration-200;
-    box-shadow: 0 2px 4px hsl(81 89% 40% / 0.3);
+    @apply font-bold rounded-full px-8 py-3 text-sm transition-all duration-200;
+    box-shadow: 0 4px 14px hsl(81 89% 40% / 0.35);
   }
 
   .btn-cta:hover {
     @apply brightness-105;
-    box-shadow: 0 4px 8px hsl(81 89% 40% / 0.4);
+    box-shadow: 0 6px 20px hsl(81 89% 40% / 0.45);
+    transform: translateY(-1px);
   }
 
   .hero-secondary-link {
@@ -248,12 +249,20 @@
 
   /* Section Headers */
   .section-header {
-    @apply text-2xl font-extrabold tracking-tight text-foreground mb-1;
+    @apply text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-2;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   }
 
   .section-subheader {
-    @apply text-base text-muted-foreground mb-6;
+    @apply text-lg text-muted-foreground mb-8;
+  }
+
+  /* Tagline Pill — frosted glass chip */
+  .tagline-pill {
+    @apply inline-flex items-center px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] rounded-full border border-border;
+    background: hsl(var(--background) / 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   /* Page title - premium display heading */
