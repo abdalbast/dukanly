@@ -163,7 +163,7 @@ export default function SellerReturns() {
               </div>
               <div>
                 <Label className="text-muted-foreground">Refund Amount</Label>
-                <p className="font-medium">{formatIQD(convertToIQD(Number(selectedReturn.refund_amount)))}</p>
+                <p className="font-medium">{formatIQD(Number(selectedReturn.refund_amount))}</p>
               </div>
               <div>
                 <Label>Response Note</Label>
