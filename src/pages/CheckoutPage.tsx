@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                   {addresses.map((address) => (
                     <label
                       key={address.id}
-                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 md:p-3 transition-colors ${
                         selectedAddressId === address.id
                           ? "border-primary bg-primary/5"
                           : "border-border hover:border-primary/50"
