@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronRight, Truck, Shield, Clock, Percent } from "lucide-react";
+import { ChevronRight, Truck, Shield, Clock, Percent, ArrowRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { LazyImage } from "@/components/LazyImage";
@@ -18,51 +18,42 @@ export default function HomePage() {
   const pelinProducts = products.filter((p) => p.brand.toLowerCase() === "pelin products");
   const trendingProducts = products.slice(0, 8);
 
-  const CategoryGrid = ({ cats }: { cats: typeof categories }) => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {cats.map((cat) => (
-        <Link key={cat.id} to={`/category/${cat.slug}`} className="bg-card rounded-lg p-4 border border-border hover:shadow-card transition-shadow group">
-          <h3 className="font-semibold mb-3">{cat.name}</h3>
-          {cat.image ? (
-            <LazyImage
-              src={cat.image}
-              alt={cat.name}
-              className="w-full h-full object-cover"
-              wrapperClassName="aspect-square rounded mb-3"
-            />
-          ) : (
-            <div className="aspect-square bg-secondary rounded flex items-center justify-center text-muted-foreground mb-3">
-              <span className="text-4xl opacity-30">📦</span>
-            </div>
-          )}
-          <span className="text-sm text-info group-hover:underline flex items-center gap-1">
-            {t("common.shopNow")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-          </span>
-        </Link>
-      ))}
-    </div>
-  );
-
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative">
-        <div className="h-[300px] md:h-[400px] relative overflow-hidden">
+      {/* Hero Section — cinematic, Apple-style */}
+      <section className="relative overflow-hidden">
+        <div className="h-[420px] md:h-[540px] lg:h-[600px] relative">
           <img
             src={heroBanner}
             alt=""
             fetchPriority="high"
             decoding="async"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent rtl:bg-gradient-to-l" />
+          <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent rtl:bg-gradient-to-l" />
           <div className="container relative h-full flex items-center">
-            <div className="max-w-lg text-primary-foreground">
-              <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("home.heroTitle")}</h1>
-              <p className="text-lg text-primary-foreground/80 mb-6">{t("home.heroSubtitle")}</p>
-              <div className="flex gap-3">
-                <Link to="/deals" className="btn-cta px-8 py-3 inline-block">{t("home.shopDeals")}</Link>
-                <Link to="/sell" className="hero-secondary-link">
+            <div className="max-w-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/60 mb-4">
+                {t("home.heroTagline")}
+              </p>
+              <h1
+                className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5"
+                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+              >
+                {t("home.heroTitle")}
+              </h1>
+              <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-md leading-relaxed">
+                {t("home.heroSubtitle")}
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  to="/deals"
+                  className="btn-cta px-8 py-3.5 text-base inline-flex items-center gap-2 group"
+                >
+                  {t("home.shopDeals")}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                </Link>
+                <Link to="/sell" className="hero-secondary-link px-8 py-3.5">
                   {t("home.sellOnDukanly")}
                 </Link>
               </div>
@@ -71,127 +62,244 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Value Props */}
-      <section className="bg-card border-b border-border py-4">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center gap-3 justify-center">
-              <Truck className="w-6 h-6 text-prime" />
-              <div>
-                <p className="text-sm font-semibold">{t("home.freeShipping")}</p>
-                <p className="text-xs text-muted-foreground">{t("home.onOrders35")}</p>
+      {/* Value Propositions — spacious, icon-forward */}
+      <section className="border-b border-border bg-card">
+        <div className="container py-8 md:py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            {[
+              { icon: Truck, color: "text-prime bg-prime/10", title: t("home.freeShipping"), desc: t("home.onOrders35") },
+              { icon: Shield, color: "text-success bg-success/10", title: t("home.buyerProtection"), desc: t("home.secure100") },
+              { icon: Clock, color: "text-info bg-info/10", title: t("home.easyReturns"), desc: t("home.dayPolicy") },
+              { icon: Percent, color: "text-deal bg-deal/10", title: t("home.dailyDeals"), desc: t("home.upTo70Off") },
+            ].map((v) => (
+              <div key={v.title} className="flex items-start gap-4">
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${v.color}`}>
+                  <v.icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold leading-tight">{v.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{v.desc}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 justify-center">
-              <Shield className="w-6 h-6 text-success" />
-              <div>
-                <p className="text-sm font-semibold">{t("home.buyerProtection")}</p>
-                <p className="text-xs text-muted-foreground">{t("home.secure100")}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 justify-center">
-              <Clock className="w-6 h-6 text-info" />
-              <div>
-                <p className="text-sm font-semibold">{t("home.easyReturns")}</p>
-                <p className="text-xs text-muted-foreground">{t("home.dayPolicy")}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 justify-center">
-              <Percent className="w-6 h-6 text-deal" />
-              <div>
-                <p className="text-sm font-semibold">{t("home.dailyDeals")}</p>
-                <p className="text-xs text-muted-foreground">{t("home.upTo70Off")}</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Category Cards */}
-      <section className="container py-8">
-        <h2 className="sr-only">Shop by Category</h2>
-        <CategoryGrid cats={categories.slice(0, 4)} />
+      {/* Category Cards — clean, editorial grid */}
+      <section className="container py-14 md:py-20">
+        <div className="text-center mb-10">
+          <h2
+            className="section-header"
+            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+          >
+            Shop by Category
+          </h2>
+          <p className="section-subheader">Discover products across every department</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          {categories.slice(0, 4).map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/category/${cat.slug}`}
+              className="group relative bg-card rounded-2xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+            >
+              {cat.image ? (
+                <LazyImage
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  wrapperClassName="aspect-[4/5]"
+                />
+              ) : (
+                <div className="aspect-[4/5] bg-secondary flex items-center justify-center text-muted-foreground">
+                  <span className="text-5xl opacity-20">📦</span>
+                </div>
+              )}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent p-5 pt-12">
+                <h3 className="font-bold text-primary-foreground text-lg">{cat.name}</h3>
+                <span className="text-sm text-primary-foreground/70 flex items-center gap-1 mt-1">
+                  {t("common.shopNow")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       {/* Today's Deals */}
-      <section className="container py-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="section-header mb-0">{t("home.todaysDeals")}</h2>
-          <Link to="/deals" className="text-sm text-info hover:underline flex items-center gap-1">
-            {t("common.seeAllDeals")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+      <section className="bg-secondary/40">
+        <div className="container py-14 md:py-20">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2
+                className="section-header"
+                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+              >
+                {t("home.todaysDeals")}
+              </h2>
+              <p className="section-subheader mb-0">Limited-time offers you don't want to miss</p>
+            </div>
+            <Link to="/deals" className="hidden md:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+              {t("common.seeAllDeals")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+            </Link>
+          </div>
+          {isLoading ? (
+            <ProductGridSkeleton count={5} />
+          ) : dealsProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+              {dealsProducts.slice(0, 5).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : null}
+          <Link to="/deals" className="md:hidden mt-6 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+            {t("common.seeAllDeals")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Best Sellers */}
+      <section className="container py-14 md:py-20">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2
+              className="section-header"
+              style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+            >
+              {t("home.bestSellers")}
+            </h2>
+            <p className="section-subheader mb-0">The products our customers love most</p>
+          </div>
+          <Link to="/bestsellers" className="hidden md:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+            {t("common.seeMore")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
           </Link>
         </div>
         {isLoading ? (
           <ProductGridSkeleton count={5} />
-        ) : dealsProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {dealsProducts.slice(0, 5).map((product) => (
+        ) : bestSellers.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+            {bestSellers.slice(0, 5).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : null}
       </section>
 
-      {/* Best Sellers */}
-      <section className="bg-secondary/50 py-8">
-        <div className="container">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="section-header mb-0">{t("home.bestSellers")}</h2>
-            <Link to="/bestsellers" className="text-sm text-info hover:underline flex items-center gap-1">
-              {t("common.seeMore")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+      {/* Featured Brand */}
+      {!isLoading && pelinProducts.length > 0 && (
+        <section className="bg-secondary/40">
+          <div className="container py-14 md:py-20">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-2">Featured Brand</p>
+                <h2
+                  className="section-header"
+                  style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+                >
+                  Pelin Products
+                </h2>
+              </div>
+              <Link to="/brand/Pelin%20Products" className="hidden md:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                Shop Pelin Products <ArrowRight className="w-4 h-4 rtl:rotate-180" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+              {pelinProducts.slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* More Categories */}
+      <section className="container py-14 md:py-20">
+        <div className="text-center mb-10">
+          <h2
+            className="section-header"
+            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+          >
+            More to Explore
+          </h2>
+          <p className="section-subheader">Browse our full range of departments</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+          {categories.slice(4, 8).map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/category/${cat.slug}`}
+              className="group relative bg-card rounded-2xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+            >
+              {cat.image ? (
+                <LazyImage
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  wrapperClassName="aspect-[4/5]"
+                />
+              ) : (
+                <div className="aspect-[4/5] bg-secondary flex items-center justify-center text-muted-foreground">
+                  <span className="text-5xl opacity-20">📦</span>
+                </div>
+              )}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/70 to-transparent p-5 pt-12">
+                <h3 className="font-bold text-primary-foreground text-lg">{cat.name}</h3>
+                <span className="text-sm text-primary-foreground/70 flex items-center gap-1 mt-1">
+                  {t("common.shopNow")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Trending Products */}
+      <section className="bg-secondary/40">
+        <div className="container py-14 md:py-20 pb-16">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2
+                className="section-header"
+                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+              >
+                {t("home.trendingNow")}
+              </h2>
+              <p className="section-subheader mb-0">See what's popular right now</p>
+            </div>
+            <Link to="/trending" className="hidden md:inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+              {t("common.seeMore")} <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
           </div>
           {isLoading ? (
-            <ProductGridSkeleton count={5} />
-          ) : bestSellers.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {bestSellers.slice(0, 5).map((product) => (
-                <ProductCard key={product.id} product={product} />
+            <ProductGridSkeleton count={6} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" />
+          ) : trendingProducts.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+              {trendingProducts.slice(0, 6).map((product) => (
+                <ProductCard key={product.id} product={product} variant="compact" />
               ))}
             </div>
           ) : null}
         </div>
       </section>
 
-      {/* Featured Brand */}
-      {!isLoading && pelinProducts.length > 0 && (
-        <section className="container py-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="section-header mb-0">Featured Brand: Pelin Products</h2>
-            <Link to="/brand/Pelin%20Products" className="text-sm text-info hover:underline flex items-center gap-1">
-              Shop Pelin Products <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {pelinProducts.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* More Categories */}
-      <section className="container py-8">
-        <CategoryGrid cats={categories.slice(4, 8)} />
-      </section>
-
-      {/* Trending Products */}
-      <section className="container py-8 pb-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="section-header mb-0">{t("home.trendingNow")}</h2>
-          <Link to="/trending" className="text-sm text-info hover:underline flex items-center gap-1">
-            {t("common.seeMore")} <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+      {/* Bottom CTA Band */}
+      <section className="bg-primary">
+        <div className="container py-16 md:py-20 text-center">
+          <h2
+            className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-foreground mb-4"
+            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+          >
+            Start Selling on Dukanly
+          </h2>
+          <p className="text-primary-foreground/70 text-lg mb-8 max-w-lg mx-auto">
+            Reach thousands of customers across Kurdistan and Iraq. Set up your store in minutes.
+          </p>
+          <Link to="/sell" className="btn-cta px-10 py-4 text-base inline-flex items-center gap-2 group">
+            Get Started Free
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
           </Link>
         </div>
-        {isLoading ? (
-          <ProductGridSkeleton count={6} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" />
-        ) : trendingProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {trendingProducts.slice(0, 6).map((product) => (
-              <ProductCard key={product.id} product={product} variant="compact" />
-            ))}
-          </div>
-        ) : null}
       </section>
     </Layout>
   );
