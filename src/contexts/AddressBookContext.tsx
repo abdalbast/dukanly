@@ -73,31 +73,16 @@ function savedAddressToDbFields(draft: AddressDraft) {
 const ADDRESS_STORAGE_KEY = "dukanly.addresses.v1";
 const SELECTED_ADDRESS_STORAGE_KEY = "dukanly.addresses.selected.v1";
 
-const seededAddresses: SavedAddress[] = [
-  {
-    id: "addr-1", name: "Ahmed Karim", phone: "+9647501234567",
-    street: "100 Gulan Street", district: "Gulan", city: "Erbil",
-    governorate: "Erbil Governorate", landmark: "Near Dream City",
-    postalCode: "44001", countryCode: "IQ", isDefault: true,
-  },
-  {
-    id: "addr-2", name: "Shilan Omer", phone: "+9647712345678",
-    street: "21 Salim Street", district: "Sarchnar", city: "Sulaymaniyah",
-    governorate: "Sulaymaniyah Governorate", landmark: "Close to Family Mall",
-    postalCode: "46001", countryCode: "IQ", isDefault: false,
-  },
-];
-
 function readGuestAddresses(): SavedAddress[] {
-  if (typeof window === "undefined") return seededAddresses;
+  if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(ADDRESS_STORAGE_KEY);
-    if (!raw) return seededAddresses;
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) return seededAddresses;
+    if (!Array.isArray(parsed) || parsed.length === 0) return [];
     return parsed as SavedAddress[];
   } catch {
-    return seededAddresses;
+    return [];
   }
 }
 
