@@ -66,10 +66,10 @@ function RouteFallback() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <AddressBookProvider>
         <AuthProvider>
-          <CartProvider>
-            <SellerProvider>
+          <AddressBookProvider>
+            <CartProvider>
+              <SellerProvider>
               <TooltipProvider>
                 <Toaster />
                 <Sonner />
@@ -238,10 +238,10 @@ const App = () => (
                   </Suspense>
                 </BrowserRouter>
               </TooltipProvider>
-            </SellerProvider>
-          </CartProvider>
+              </SellerProvider>
+            </CartProvider>
+          </AddressBookProvider>
         </AuthProvider>
-      </AddressBookProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
