@@ -243,41 +243,6 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-t border-primary-foreground/10 bg-primary/95 text-primary-foreground md:hidden">
-        <div className={`container grid gap-2 px-4 py-2 ${user ? "grid-cols-2" : "grid-cols-3"}`}>
-          <button
-            type="button"
-            onClick={openAddressManager}
-            className="flex min-w-0 items-center gap-2 rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-2 text-left hover:bg-primary-foreground/10"
-          >
-            <MapPin className="h-4 w-4 shrink-0 text-primary-foreground/75" />
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60">{t("header.deliverTo")}</div>
-              <div className="truncate text-xs font-semibold">{deliveryLabel}</div>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsOrdersPreviewOpen(true)}
-            className="flex min-w-0 items-center gap-2 rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-2 text-left hover:bg-primary-foreground/10"
-          >
-            <Package className="h-4 w-4 shrink-0 text-primary-foreground/75" />
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-[0.14em] text-primary-foreground/60">{t("header.returns")}</div>
-              <div className="truncate text-xs font-semibold">{t("header.andOrders")}</div>
-            </div>
-          </button>
-          {!user && (
-            <Link
-              to="/auth/signin"
-              className="flex min-w-0 items-center justify-center gap-2 rounded-xl border border-primary-foreground/15 bg-accent/20 px-3 py-2 text-center hover:bg-accent/30"
-            >
-              <span className="truncate text-xs font-semibold">{t("header.signIn")}</span>
-            </Link>
-          )}
-        </div>
-      </div>
 
       {/* Sub Navigation */}
       <nav aria-label="Category navigation" className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
