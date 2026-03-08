@@ -19,6 +19,7 @@ export default function SignInPage() {
   const { signIn, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAppleLoading, setIsAppleLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
 
   useEffect(() => {
