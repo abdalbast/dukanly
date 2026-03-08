@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { LazyImage } from "@/components/LazyImage";
+import { OrderCardSkeleton } from "@/components/ProductCardSkeleton";
 import { Search, Package, Truck, CheckCircle, RotateCcw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useOrders, type Order } from "@/hooks/useOrders";
@@ -82,8 +84,10 @@ export default function OrdersPage() {
           </Select>
         </div>
         {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading orders...</p>
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <OrderCardSkeleton key={i} />
+            ))}
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="bg-card border border-border rounded-lg p-12 text-center">
@@ -114,7 +118,9 @@ export default function OrdersPage() {
                 <div className="p-4">
                   {order.items.map((item) => (
                     <div key={item.id} className="flex gap-4">
-                      <Link to={`/product/${item.id}`} className="shrink-0"><img src={item.image} alt={item.title} className="w-20 h-20 object-contain bg-secondary rounded" /></Link>
+                      <Link to={`/product/${item.id}`} className="shrink-0">
+                        <LazyImage src={item.image} alt={item.title} className="w-20 h-20 object-contain" wrapperClassName="w-20 h-20 bg-secondary rounded" />
+                      </Link>
                       <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.id}`} className="font-medium hover:text-primary line-clamp-2">{item.title}</Link>
                         <p className="text-sm text-muted-foreground mt-1">{t("orders.qty")} {item.quantity}</p>

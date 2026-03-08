@@ -490,10 +490,11 @@ export default function CheckoutPage() {
               <div className="max-h-48 space-y-3 overflow-y-auto">
                 {activeItems.map((item) => (
                   <div key={item.id} className="flex gap-3">
-                    <img
+                    <LazyImage
                       src={item.product.images[0]}
                       alt={item.product.title}
-                      className="h-12 w-12 rounded bg-secondary object-contain"
+                      className="h-12 w-12 rounded object-contain"
+                      wrapperClassName="h-12 w-12 rounded bg-secondary"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-1 text-sm">{item.product.title}</p>

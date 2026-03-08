@@ -1,4 +1,5 @@
 import { formatIQDParts } from "@/lib/currency";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface PriceDisplayProps {
   /** Price in IQD (native currency) */
@@ -13,6 +14,7 @@ export function PriceDisplay({
   originalPrice,
   size = "md",
 }: PriceDisplayProps) {
+  const { t } = useLanguage();
   const iqdPrice = Math.round(price);
   const iqdOriginal = originalPrice ? Math.round(originalPrice) : undefined;
   const priceParts = formatIQDParts(iqdPrice);
@@ -33,9 +35,9 @@ export function PriceDisplay({
     <div className="flex flex-col gap-0.5">
       {iqdOriginal && discount > 0 && (
         <div className="flex items-center gap-2">
-          <span className="deal-badge">{discount}% off</span>
+          <span className="deal-badge">{discount}% {t("product.off")}</span>
           {size !== "sm" && (
-            <span className="text-muted-foreground text-sm">Limited time deal</span>
+            <span className="text-muted-foreground text-sm">{t("product.limitedTimeDealLabel")}</span>
           )}
         </div>
       )}

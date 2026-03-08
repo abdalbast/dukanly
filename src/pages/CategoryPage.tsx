@@ -1,8 +1,9 @@
 import { useParams, Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, PackageOpen } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { LazyImage } from "@/components/LazyImage";
+import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { categories } from "@/data/mockData";
 import { useProductsByCategory, useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -12,9 +13,10 @@ export default function CategoryPage() {
   const { t } = useLanguage();
   const category = categories.find((c) => c.slug === slug);
 
-  const { data: categoryProducts = [] } = useProductsByCategory(slug);
-  const { data: allProducts = [] } = useProducts();
+  const { data: categoryProducts = [], isLoading: isCatLoading } = useProductsByCategory(slug);
+  const { data: allProducts = [], isLoading: isAllLoading } = useProducts();
 
+  const isLoading = isCatLoading || isAllLoading;
   const baseProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
   const normalizedSubcategory = subcategory?.trim().toLowerCase();
   const displayProducts = normalizedSubcategory
@@ -76,9 +78,21 @@ export default function CategoryPage() {
             ))}
           </div>
         )}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {displayProducts.map((product) => (<ProductCard key={product.id} product={product} />))}
-        </div>
+        {isLoading ? (
+          <ProductGridSkeleton count={10} />
+        ) : displayProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <PackageOpen className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <p className="text-lg font-medium mb-2">{t("search.noResults")}</p>
+            <p className="text-muted-foreground">{t("search.tryAdjusting")}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {displayProducts.map((product) => (<ProductCard key={product.id} product={product} />))}
+          </div>
+        )}
       </div>
     </Layout>
   );
