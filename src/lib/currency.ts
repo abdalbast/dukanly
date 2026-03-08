@@ -1,10 +1,7 @@
 import { getCurrentLanguage, getNumberLocale, type AppLanguage } from "@/lib/locale";
 
-export const EXCHANGE_RATE_USD_TO_IQD = 1300;
-
 /**
- * Convert an amount to IQD.
- * Since products are now stored natively in IQD, this is an identity function.
+ * Identity conversion — products are stored natively in IQD.
  * Kept for backward compatibility with existing call sites.
  */
 export function convertToIQD(amount: number): number {
