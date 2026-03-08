@@ -172,13 +172,13 @@
 
   /* Product Card */
   .product-card {
-    @apply bg-card rounded-md border border-border p-3 transition-all duration-200;
+    @apply bg-card rounded-xl border border-border p-3 transition-all duration-300;
     box-shadow: var(--shadow-card);
   }
 
   .product-card:hover {
-    box-shadow: var(--shadow-md);
-    @apply border-primary/20;
+    box-shadow: var(--shadow-lg);
+    @apply border-primary/20 -translate-y-1;
   }
 
   /* Deal Badge */
