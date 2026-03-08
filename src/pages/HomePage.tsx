@@ -109,6 +109,7 @@ export default function HomePage() {
 
       {/* Category Cards */}
       <section className="container py-8">
+        <h2 className="sr-only">{t("home.shopByCategory") ?? "Shop by Category"}</h2>
         <CategoryGrid cats={categories.slice(0, 4)} />
       </section>
 

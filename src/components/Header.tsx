@@ -102,6 +102,7 @@ export function Header() {
               <Button
                 type="submit"
                 className="rounded-l-none bg-accent hover:bg-accent/90 text-accent-foreground h-10 px-4"
+                aria-label="Search"
               >
                 <Search className="w-5 h-5" />
               </Button>
