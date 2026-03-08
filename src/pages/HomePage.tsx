@@ -204,28 +204,6 @@ export default function HomePage() {
       </section>
 
       {/* ─── Value Propositions — centered cards ─── */}
-      <section className="border-b border-border bg-card">
-        <div className="container py-10 md:py-14">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
-            {[
-              { icon: Truck, color: "text-prime bg-prime/10", title: t("home.freeShipping"), desc: t("home.onOrders35") },
-              { icon: Shield, color: "text-success bg-success/10", title: t("home.buyerProtection"), desc: t("home.secure100") },
-              { icon: Clock, color: "text-info bg-info/10", title: t("home.easyReturns"), desc: t("home.dayPolicy") },
-              { icon: Percent, color: "text-deal bg-deal/10", title: t("home.dailyDeals"), desc: t("home.upTo70Off") },
-            ].map((v) => (
-              <div key={v.title} className="flex flex-col items-center text-center gap-3 py-2">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${v.color}`}>
-                  <v.icon className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold leading-tight">{v.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{v.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ─── Category Cards ─── */}
       <section className="container py-20 md:py-28">
