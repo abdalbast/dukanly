@@ -248,12 +248,20 @@
 
   /* Section Headers */
   .section-header {
-    @apply text-2xl font-extrabold tracking-tight text-foreground mb-1;
+    @apply text-3xl md:text-4xl font-extrabold tracking-tight text-foreground mb-2;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   }
 
   .section-subheader {
-    @apply text-base text-muted-foreground mb-6;
+    @apply text-lg text-muted-foreground mb-8;
+  }
+
+  /* Tagline Pill — frosted glass chip */
+  .tagline-pill {
+    @apply inline-flex items-center px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] rounded-full border border-border;
+    background: hsl(var(--background) / 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   /* Page title - premium display heading */
