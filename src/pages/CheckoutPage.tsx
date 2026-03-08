@@ -578,6 +578,19 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Sticky mobile CTA bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-card p-3 shadow-lg lg:hidden">
+        <div className="container flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">{t("checkout.orderTotal")}</p>
+            <p className="text-lg font-bold truncate">{formatIQD(orderTotalIqd)}</p>
+          </div>
+          <Button className="btn-cta shrink-0 h-12 px-6 text-base" onClick={handlePlaceOrder} disabled={isPlacingOrder}>
+            {isPlacingOrder ? t("checkout.processing") : t("checkout.placeOrder")}
+          </Button>
+        </div>
+      </div>
     </Layout>
   );
 }
