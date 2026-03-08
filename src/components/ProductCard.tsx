@@ -63,6 +63,18 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             {t("product.limitedDeal")}
           </span>
         )}
+        {product.isHandmade && (
+          <span className="absolute top-7 left-0 rtl:left-auto rtl:right-0 bg-amber-700 text-white text-[10px] font-semibold px-2 py-0.5 rounded-br rtl:rounded-br-none rtl:rounded-bl z-10 flex items-center gap-1">
+            <Hand className="w-3 h-3" />
+            {t("product.handmade")}
+          </span>
+        )}
+        {product.isArtisanBrand && (
+          <span className="absolute top-7 left-0 rtl:left-auto rtl:right-0 bg-indigo-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-br rtl:rounded-br-none rtl:rounded-bl z-10 flex items-center gap-1" style={{ top: product.isHandmade ? '3.5rem' : '1.75rem' }}>
+            <Palette className="w-3 h-3" />
+            {t("product.artisan")}
+          </span>
+        )}
         <LazyImage src={optimizeImageUrl(product.images[0], 250)} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw" />
       </Link>
 

@@ -764,7 +764,9 @@ export type Database = {
           fulfillment_type: string | null
           id: string
           images: Json | null
+          is_artisan_brand: boolean | null
           is_best_seller: boolean | null
+          is_handmade: boolean | null
           is_limited_deal: boolean | null
           is_prime: boolean | null
           metadata: Json | null
@@ -790,7 +792,9 @@ export type Database = {
           fulfillment_type?: string | null
           id?: string
           images?: Json | null
+          is_artisan_brand?: boolean | null
           is_best_seller?: boolean | null
+          is_handmade?: boolean | null
           is_limited_deal?: boolean | null
           is_prime?: boolean | null
           metadata?: Json | null
@@ -816,7 +820,9 @@ export type Database = {
           fulfillment_type?: string | null
           id?: string
           images?: Json | null
+          is_artisan_brand?: boolean | null
           is_best_seller?: boolean | null
+          is_handmade?: boolean | null
           is_limited_deal?: boolean | null
           is_prime?: boolean | null
           metadata?: Json | null

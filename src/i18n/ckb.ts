@@ -118,6 +118,8 @@ export const ckb: Record<TranslationKey, string> = {
   // Product Detail
   "product.bestSeller": "باشترین فرۆشراو",
   "product.limitedTimeDeal": "ئۆفەری کاتی سنووردار",
+  "product.handmade": "دەستکرد",
+  "product.artisan": "پیشەگەر",
   "product.visitStore": "سەردانی",
   "product.store": "فرۆشگا",
   "product.ratings": "هەڵسەنگاندن",
