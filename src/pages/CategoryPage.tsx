@@ -22,7 +22,16 @@ export default function CategoryPage() {
 
   const isLoading = isCatLoading || isAllLoading;
   const baseProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
-  const normalizedSubcategory = subcategory?.trim().toLowerCase();
+
+  const displayProducts = useMemo(() => {
+    const normalizedSub = subcategory?.trim().toLowerCase();
+    let products = normalizedSub
+      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSub)
+      : baseProducts;
+    if (handmadeOnly) products = products.filter((p) => p.isHandmade);
+    if (artisanOnly) products = products.filter((p) => p.isArtisanBrand);
+    return products;
+  }, [baseProducts, subcategory, handmadeOnly, artisanOnly]);
 
   if (!slug) {
     return (
@@ -70,15 +79,6 @@ export default function CategoryPage() {
     );
   }
 
-  const displayProducts = useMemo(() => {
-    const normalizedSub = subcategory?.trim().toLowerCase();
-    let products = normalizedSub
-      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSub)
-      : baseProducts;
-    if (handmadeOnly) products = products.filter((p) => p.isHandmade);
-    if (artisanOnly) products = products.filter((p) => p.isArtisanBrand);
-    return products;
-  }, [baseProducts, subcategory, handmadeOnly, artisanOnly]);
 
   return (
     <Layout>
