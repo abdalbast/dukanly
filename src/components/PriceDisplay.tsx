@@ -22,7 +22,7 @@ export function PriceDisplay({
 
   const sizeClasses = {
     sm: { whole: "text-sm font-semibold", suffix: "text-[10px]" },
-    md: { whole: "text-lg font-bold", suffix: "text-xs" },
+    md: { whole: "text-base sm:text-lg font-bold", suffix: "text-[10px] sm:text-xs" },
     lg: { whole: "text-2xl font-bold", suffix: "text-sm" },
     xl: { whole: "text-3xl font-bold", suffix: "text-base" },
   };
@@ -34,20 +34,20 @@ export function PriceDisplay({
   return (
     <div className="flex flex-col gap-0.5">
       {iqdOriginal && discount > 0 && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <span className="deal-badge">{discount}% {t("product.off")}</span>
           {size !== "sm" && (
-            <span className="text-muted-foreground text-sm">{t("product.limitedTimeDealLabel")}</span>
+            <span className="hidden sm:inline text-muted-foreground text-sm">{t("product.limitedTimeDealLabel")}</span>
           )}
         </div>
       )}
-      <div className="flex items-baseline gap-1">
+      <div className="flex items-baseline gap-1 flex-wrap">
         <span className={sizeClasses[size].whole}>
           {priceParts.amount}
         </span>
         <span className={sizeClasses[size].suffix}>{priceParts.currency}</span>
         {originalPriceParts && (
-          <span className="ml-2 text-muted-foreground text-sm line-through">
+          <span className="ml-1 sm:ml-2 text-muted-foreground text-xs sm:text-sm line-through whitespace-nowrap">
             {originalPriceParts.amount} {originalPriceParts.currency}
           </span>
         )}
