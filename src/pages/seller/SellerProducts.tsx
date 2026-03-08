@@ -317,9 +317,9 @@ export default function SellerProducts() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete unavailable</DialogTitle>
+            <DialogTitle>Delete Product</DialogTitle>
             <DialogDescription>
-              Product deletion is intentionally disabled until seller product persistence is fully connected.
+              Are you sure you want to delete "{productToDelete?.title}"? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

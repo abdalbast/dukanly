@@ -153,10 +153,6 @@ export default function SellerOrders() {
         </p>
       </div>
 
-      <Alert>
-        <AlertTitle>Order updates are disabled</AlertTitle>
-        <AlertDescription>{orderActionsUnavailableMessage}</AlertDescription>
-      </Alert>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
