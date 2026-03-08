@@ -1,19 +1,40 @@
 
 
-## Plan: Restore Previous Slides 2 & 3, Keep Current Slides 1 & 4
+## Plan: Add Handmade & Artisan Badges
 
-**Problem**: The last edit regenerated all 4 hero slides. The user prefers the **previous** versions of slides 2 and 3, but wants to keep the **current** slides 1 and 4.
+### Overview
+Add two new badge types to the product card system:
+- **Handmade** badge: shown on products flagged as handmade
+- **Artisan** badge: shown on products from sellers/brands flagged as artisan
 
-**Action**: Copy `slide-2.jpg` and `slide-3.webp` from the previous commit (`d5e4fe19` — the one you're currently viewing in the preview) back into `src/assets/hero/`. No code changes needed.
+### 1. Database Migration
+Add two new columns to the `products` table:
+- `is_handmade boolean DEFAULT false`
+- `is_artisan_brand boolean DEFAULT false`
 
-### Files to restore from previous build
-1. `src/assets/hero/slide-2.jpg` — revert to previous version
-2. `src/assets/hero/slide-3.webp` — revert to previous version
+### 2. TypeScript Types
+Update `src/types/product.ts` — add `isHandmade?: boolean` and `isArtisanBrand?: boolean` to the `Product` interface.
 
-### Files to keep as-is (no changes)
-- `src/assets/hero/slide-1.jpg` + `public/hero/slide-1.jpg` — current version stays
-- `src/assets/hero/slide-4.jpg` — current version stays
+### 3. i18n Strings
+Add to both `src/i18n/en.ts` and `src/i18n/ckb.ts`:
+- `"product.handmade": "Handmade"` / Kurdish equivalent
+- `"product.artisan": "Artisan"` / Kurdish equivalent
 
-### Approach
-Use the cross-project asset tools to read slides 2 and 3 from the previous commit and write them back to the current project.
+### 4. ProductCard Component
+Add two new badge overlays in `src/components/ProductCard.tsx`, positioned below the existing Best Seller / Limited Deal badges (stacked vertically). Style:
+- **Handmade**: warm earthy tone (amber/brown) with a small hand/craft icon
+- **Artisan**: rich purple/indigo tone with a palette/award icon
+
+Both badges appear on the product image overlay, similar to the existing `isBestSeller` badge pattern.
+
+### 5. Data Mapping
+Update `src/hooks/useProducts.ts` (or wherever DB rows are mapped to `Product` objects) to include the new `is_handmade` and `is_artisan_brand` columns.
+
+### Files to modify
+- `products` table (migration)
+- `src/types/product.ts`
+- `src/i18n/en.ts`, `src/i18n/ckb.ts`
+- `src/components/ProductCard.tsx`
+- `src/hooks/useProducts.ts`
+- `src/data/mockData.ts` (if products are sourced from mock data)
 
