@@ -15,6 +15,7 @@ export function Layout({ children, showFooter = true }: LayoutProps) {
       <AddressBookDialog />
       <main className="flex-1">{children}</main>
       {showFooter && <Footer />}
+      <CookieConsentBanner />
     </div>
   );
 }

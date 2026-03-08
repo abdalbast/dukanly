@@ -985,6 +985,14 @@ export const en = {
   "sellerLayout.sellerCentral": "Seller Central",
   "sellerLayout.needHelp": "Need help?",
   "sellerLayout.sellerSupport": "Seller Support",
+
+  // GDPR / Cookie Consent
+  "cookie.title": "We value your privacy",
+  "cookie.description": "We use cookies to enhance your browsing experience, serve personalised content, and analyse our traffic. By clicking \"Accept All\", you consent to our use of cookies.",
+  "cookie.acceptAll": "Accept All",
+  "cookie.rejectNonEssential": "Reject Non-Essential",
+  "cookie.settings": "Cookie Settings",
+  "footer.gdprCompliant": "GDPR Compliant",
 } as const;
 
 export type TranslationKey = keyof typeof en;
