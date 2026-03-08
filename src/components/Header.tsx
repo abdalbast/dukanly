@@ -115,7 +115,7 @@ export function Header() {
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded">
+                <button aria-label="Change language" className="flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded">
                   <Globe className="w-4 h-4" />
                   <span className="text-xs font-semibold">{language === "ckb" ? "کوردی" : "EN"}</span>
                 </button>
