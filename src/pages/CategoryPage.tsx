@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
+import { LazyImage } from "@/components/LazyImage";
 import { categories } from "@/data/mockData";
 import { useProductsByCategory, useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
