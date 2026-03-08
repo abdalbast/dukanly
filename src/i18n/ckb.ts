@@ -998,4 +998,22 @@ export const ckb: Record<TranslationKey, string> = {
   "cookie.rejectNonEssential": "ڕەتکردنەوەی نابنەڕەتییەکان",
   "cookie.settings": "ڕێکخستنی کوکیز",
   "footer.gdprCompliant": "GDPR هاوخت",
+
+  // Hero Carousel Slides
+  "home.slide1.tagline": "بازاڕی کوردستان",
+  "home.slide1.title": "میلیۆنان بەرهەم لە فرۆشیارانی متمانەپێکراو بکڕە",
+  "home.slide1.subtitle": "ناردنی بێبەرامبەر بۆ داواکارییەکانی سەروو ٤٥,٠٠٠ دینار. گەڕاندنەوەی ئاسان. پارەدانی پارێزراو.",
+  "home.slide1.cta": "ئۆفەرەکان بکڕە",
+  "home.slide2.tagline": "بەرهەمە نوێیەکان",
+  "home.slide2.title": "ستایلی نوێ و برانی باش تازە هاتوون",
+  "home.slide2.subtitle": "نوێترین بەرهەمەکانی مۆد، ئەلیکترۆنیات، و پێداویستییەکانی ماڵ ببینە.",
+  "home.slide2.cta": "ئێستا بگەڕێ",
+  "home.slide3.tagline": "بەرهەمەکانی پەلین",
+  "home.slide3.title": "کوالیتیی بەرز، دروستکراو لە کوردستان",
+  "home.slide3.subtitle": "براندی تایبەتمەندمان بدۆزەرەوە بە هەڵبژاردنی تایبەت بۆ هەموو ماڵێک.",
+  "home.slide3.cta": "پەلین بکڕە",
+  "home.slide4.tagline": "بازرگانییەکەت گەشەبدە",
+  "home.slide4.title": "ئەمڕۆ دەستبکە بە فرۆشتن لە دوکانلی",
+  "home.slide4.subtitle": "بگە بە هەزاران کڕیار لە کوردستان و عێراق. لە چەند خولەکێکدا دامەزرێنە.",
+  "home.slide4.cta": "بێبەرامبەر دەستبکە",
 };
