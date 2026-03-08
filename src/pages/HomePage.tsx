@@ -130,7 +130,7 @@ export default function HomePage() {
                     >
                       {t(slide.title)}
                     </h2>
-                    <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-md leading-relaxed">
+                    <p className="text-base sm:text-lg md:text-xl text-primary-foreground/70 mb-5 sm:mb-8 max-w-md leading-relaxed">
                       {t(slide.subtitle)}
                     </p>
                     <Link
