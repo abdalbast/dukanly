@@ -149,7 +149,7 @@ export const ckb: Record<TranslationKey, string> = {
   "cart.yourCartEmpty": "سەبەتەکەت بەتاڵە",
   "cart.emptyMessage": "وادیارە هێشتا هیچ شتێکت زیاد نەکردووە بۆ سەبەتەکەت.",
   "cart.youMightLike": "ئەمانە حەز بکەیت",
-  "cart.addMore": "${amount} ی تر زیادبکە بۆ",
+  "cart.addMore": "{amount} ی تر زیادبکە بۆ",
   "cart.freeDelivery": "گەیاندنی بێبەرامبەر",
   "cart.qualifyFreeDelivery": "تۆ شایەنی گەیاندنی بێبەرامبەریت!",
   "cart.price": "نرخ",
