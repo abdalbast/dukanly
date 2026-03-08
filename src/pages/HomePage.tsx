@@ -67,7 +67,7 @@ export default function HomePage() {
   const { t } = useLanguage();
   const { data: products = [], isLoading } = useProducts();
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 28 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 28, active: typeof window !== "undefined" });
   const [activeIndex, setActiveIndex] = useState(0);
   const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isPausedRef = useRef(false);
