@@ -183,10 +183,7 @@ export default function HomePage() {
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mb-2">Featured Brand</p>
-                <h2
-                  className="section-header"
-                  style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-                >
+                <h2 className="section-header">
                   Pelin Products
                 </h2>
               </div>
