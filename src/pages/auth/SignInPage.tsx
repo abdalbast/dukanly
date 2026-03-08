@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -16,10 +16,16 @@ export default function SignInPage() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
+
+  useEffect(() => {
+    if (user) {
+      navigate(resolveRedirectTarget(), { replace: true });
+    }
+  }, [user]);
 
   const resolveRedirectTarget = () => {
     const redirect = searchParams.get("redirect");
