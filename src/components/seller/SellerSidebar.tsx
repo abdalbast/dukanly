@@ -17,6 +17,7 @@ export function SellerSidebar() {
   const navItems = [
     { title: t("seller.overview"), path: "/seller", icon: LayoutDashboard },
     { title: t("seller.orders"), path: "/seller/orders", icon: ShoppingCart },
+    { title: t("seller.messages"), path: "/seller/messages", icon: MessageCircle },
     { title: t("seller.products"), path: "/seller/products", icon: Package },
     { title: "Inventory", path: "/seller/inventory", icon: Warehouse },
     { title: "Shipping", path: "/seller/shipping", icon: Truck },

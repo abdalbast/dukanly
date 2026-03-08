@@ -59,15 +59,13 @@ export function ChatButton({
       }
 
       // Create new conversation
-      const insertData: Record<string, string> = {
-        buyer_id: user.id,
-        seller_id: sellerId,
-      };
-      if (productId) insertData.product_id = productId;
-
       const { data: created, error } = await supabase
         .from("conversations")
-        .insert(insertData)
+        .insert({
+          buyer_id: user.id,
+          seller_id: sellerId,
+          ...(productId ? { product_id: productId } : {}),
+        })
         .select("id")
         .single();
 

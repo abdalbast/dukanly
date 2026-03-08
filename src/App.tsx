@@ -249,6 +249,11 @@ const App = () => (
                       <Route path="settings" element={<SellerSettings />} />
                     </Route>
 
+                    <Route path="/messages" element={
+                      <RequireAuth>
+                        <MessagesPage />
+                      </RequireAuth>
+                    } />
                     <Route path="/deals" element={<SearchResultsPage />} />
                     <Route path="/bestsellers" element={<SearchResultsPage />} />
                     <Route path="/trending" element={<SearchResultsPage />} />
