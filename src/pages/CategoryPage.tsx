@@ -22,16 +22,63 @@ export default function CategoryPage() {
 
   const isLoading = isCatLoading || isAllLoading;
   const baseProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
-  const normalizedSubcategory = subcategory?.trim().toLowerCase();
 
   const displayProducts = useMemo(() => {
-    let products = normalizedSubcategory
-      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSubcategory)
+    const normalizedSub = subcategory?.trim().toLowerCase();
+    let products = normalizedSub
+      ? baseProducts.filter((p) => p.subcategory?.trim().toLowerCase() === normalizedSub)
       : baseProducts;
     if (handmadeOnly) products = products.filter((p) => p.isHandmade);
     if (artisanOnly) products = products.filter((p) => p.isArtisanBrand);
     return products;
-  }, [baseProducts, normalizedSubcategory, handmadeOnly, artisanOnly]);
+  }, [baseProducts, subcategory, handmadeOnly, artisanOnly]);
+
+  if (!slug) {
+    return (
+      <Layout>
+        <div className="bg-card border-b border-border">
+          <div className="container py-2">
+            <nav className="breadcrumb">
+              <Link to="/">{t("common.home")}</Link>
+              <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+              <span className="text-foreground">{t("category.shopByCategory")}</span>
+            </nav>
+          </div>
+        </div>
+        <div className="relative h-48 md:h-64 overflow-hidden bg-muted">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary/40" />
+          <div className="container relative h-full flex flex-col justify-end pb-8">
+            <h1 className="page-title text-3xl md:text-4xl text-white">{t("category.shopByCategory")}</h1>
+            <p className="text-white/80 mt-1.5">{categories.length} {t("category.allProducts")}</p>
+          </div>
+        </div>
+        <div className="container py-10 md:py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                to={`/category/${cat.slug}`}
+                className="group relative rounded-xl overflow-hidden aspect-[4/3]"
+              >
+                <LazyImage
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover absolute inset-0 transition-transform duration-300 group-hover:scale-105"
+                  wrapperClassName="absolute inset-0"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <h2 className="text-white font-semibold text-lg">{cat.name}</h2>
+                  <span className="text-white/70 text-sm">{t("common.shopNow")} →</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
 
   return (
     <Layout>
