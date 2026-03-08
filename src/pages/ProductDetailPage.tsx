@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
           <div className="lg:col-span-5">
             <div className="sticky top-24">
               <div className="bg-card rounded-lg border border-border p-4">
-                <LazyImage src={product.images[selectedImage]} alt={product.title} className="max-w-full max-h-full object-contain" wrapperClassName="aspect-square bg-secondary rounded flex items-center justify-center mb-4" />
+                <LazyImage src={product.images[selectedImage]} alt={product.title} className="max-w-full max-h-full object-contain group-hover:scale-150 transition-transform duration-500 ease-out cursor-zoom-in" wrapperClassName="group aspect-square bg-secondary rounded flex items-center justify-center mb-4" />
                 {product.images.length > 1 && (
                   <div className="flex gap-2">
                     {product.images.map((img, idx) => (
