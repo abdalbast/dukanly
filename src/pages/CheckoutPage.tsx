@@ -256,7 +256,7 @@ export default function CheckoutPage() {
 
   return (
     <Layout>
-      <div className="container py-10 md:py-14">
+      <div className="container py-6 pb-28 md:py-14 lg:pb-14">
         <div className="max-w-5xl mx-auto mb-8 rounded-2xl border border-primary/15 bg-primary/5 p-6">
           <h1 className="page-title !text-2xl">{t("checkout.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t("checkout.kurdistanLaunchNote")}</p>
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                   {addresses.map((address) => (
                     <label
                       key={address.id}
-                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 md:p-3 transition-colors ${
                         selectedAddressId === address.id
                           ? "border-primary bg-primary/5"
                           : "border-border hover:border-primary/50"
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                     placeholder={t("checkout.contactPhonePlaceholder")}
                     maxLength={15}
                     pattern="^\+?[0-9]{7,15}$"
-                    className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-2 flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">{t("checkout.contactPhoneHint")}</p>
                 </div>
@@ -345,14 +345,14 @@ export default function CheckoutPage() {
                     value={deliveryInstructions}
                     onChange={(event) => setDeliveryInstructions(event.target.value)}
                     placeholder={t("checkout.deliveryInstructionsPlaceholder")}
-                    className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-2 flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                   />
                 </div>
               </div>
             </section>
 
             <section className="rounded-xl border border-border bg-card p-5">
-              <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="flex items-center gap-2 font-semibold">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">2</span>
                   {t("checkout.deliveryOptions")}
@@ -372,7 +372,7 @@ export default function CheckoutPage() {
                   return (
                     <label
                       key={option.id}
-                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 md:p-3 transition-colors ${
                         selectedDelivery === option.id
                           ? "border-primary bg-primary/5"
                           : "border-border hover:border-primary/50"
@@ -424,7 +424,7 @@ export default function CheckoutPage() {
                 {paymentMethods.map((method) => (
                   <label
                     key={method.id}
-                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 md:p-3 transition-colors ${
                       selectedPaymentId === method.id
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
@@ -576,6 +576,19 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Sticky mobile CTA bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-card p-3 shadow-lg lg:hidden">
+        <div className="container flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">{t("checkout.orderTotal")}</p>
+            <p className="text-lg font-bold truncate">{formatIQD(orderTotalIqd)}</p>
+          </div>
+          <Button className="btn-cta shrink-0 h-12 px-6 text-base" onClick={handlePlaceOrder} disabled={isPlacingOrder}>
+            {isPlacingOrder ? t("checkout.processing") : t("checkout.placeOrder")}
+          </Button>
         </div>
       </div>
     </Layout>

@@ -206,11 +206,11 @@ export default function CheckoutPaymentPage() {
           </div>
         </section>
 
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button variant="outline" asChild className="h-12 sm:h-10 text-base sm:text-sm">
             <Link to="/orders">{t("checkoutPayment.goToOrders")}</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="h-12 sm:h-10 text-base sm:text-sm">
             <Link to="/checkout">{t("checkoutPayment.returnToCheckout")}</Link>
           </Button>
         </div>
