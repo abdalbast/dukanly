@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { HeadphonesIcon, Plus, Search, Clock, CheckCircle, MessageSquare, ExternalLink } from "lucide-react";
+import { useSeller } from "@/contexts/SellerContext";
 
 interface SupportCase {
   id: string;
