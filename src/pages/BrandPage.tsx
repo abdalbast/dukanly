@@ -106,6 +106,15 @@ export default function BrandPage() {
     image: brandInfo.heroImage,
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://dukanly.lovable.app/" },
+      { "@type": "ListItem", position: 2, name: brandInfo.name, item: canonicalUrl },
+    ],
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -118,7 +127,18 @@ export default function BrandPage() {
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={brandInfo.heroImage} />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </Helmet>
+
+      {/* ─── Breadcrumb ─── */}
+      <nav aria-label="Breadcrumb" className="container pt-3 pb-1">
+        <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <li><Link to="/" className="hover:text-foreground transition-colors">Home</Link></li>
+          <li aria-hidden="true" className="text-muted-foreground/50">/</li>
+          <li aria-current="page" className="text-foreground font-medium truncate">{brandInfo.name}</li>
+        </ol>
+      </nav>
+
       {/* ─── Hero Banner ─── */}
       <section className="relative h-[420px] sm:h-[500px] md:h-[560px] overflow-hidden">
         <img
