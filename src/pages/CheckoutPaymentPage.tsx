@@ -52,7 +52,7 @@ export default function CheckoutPaymentPage() {
     setIsRefreshing(true);
     setError(null);
 
-    const result = await fetchPaymentStatus({ orderId });
+    const result = await getPaymentStatus({ orderId });
     setIsRefreshing(false);
 
     if (!result.ok) {

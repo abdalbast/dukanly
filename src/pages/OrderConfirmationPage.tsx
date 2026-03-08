@@ -54,7 +54,7 @@ export default function OrderConfirmationPage() {
       setIsVerifyingStripeOrder(true);
       setVerificationError(null);
       clearCart();
-      fetchPaymentStatus({ orderId: stripeOrderId })
+      getPaymentStatus({ orderId: stripeOrderId })
         .then((result) => {
           if (!result.ok) {
             setVerificationError(result.failure?.message ?? t("orderConfirmation.verificationFailed"));
