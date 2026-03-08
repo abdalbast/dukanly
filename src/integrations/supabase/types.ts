@@ -123,6 +123,57 @@ export type Database = {
           },
         ]
       }
+      artisan_applications: {
+        Row: {
+          admin_notes: string | null
+          business_name: string
+          craft_category: string
+          craft_description: string
+          created_at: string
+          id: string
+          production_method: string
+          sample_images: Json | null
+          social_media_url: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          website_url: string | null
+          years_experience: number
+        }
+        Insert: {
+          admin_notes?: string | null
+          business_name: string
+          craft_category: string
+          craft_description: string
+          created_at?: string
+          id?: string
+          production_method?: string
+          sample_images?: Json | null
+          social_media_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+          years_experience?: number
+        }
+        Update: {
+          admin_notes?: string | null
+          business_name?: string
+          craft_category?: string
+          craft_description?: string
+          created_at?: string
+          id?: string
+          production_method?: string
+          sample_images?: Json | null
+          social_media_url?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+          years_experience?: number
+        }
+        Relationships: []
+      }
       audit_events: {
         Row: {
           action: string

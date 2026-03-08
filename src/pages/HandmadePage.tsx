@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Hand, Palette, Filter } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Hand, Palette, Filter, ArrowRight } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useProducts } from "@/hooks/useProducts";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -47,6 +49,11 @@ export default function HandmadePage() {
             <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
               {t("handmade.description")}
             </p>
+            <Button asChild size="lg" variant="secondary" className="mt-2">
+              <Link to="/handmade/apply">
+                {t("artisanApply.title")} <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
         {/* Decorative bottom wave */}
