@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
+
 export default function SignInPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -52,21 +53,21 @@ export default function SignInPage() {
 
   return (
     <Layout showFooter={false}>
-      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center py-12">
+      <div className="min-h-[calc(100vh-120px)] flex items-center justify-center py-16">
         <div className="w-full max-w-sm">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h1 className="text-2xl font-bold text-center mb-6">{t("auth.signIn")}</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+            <h1 className="page-title text-center mb-8 !text-2xl">{t("auth.signIn")}</h1>
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <Label htmlFor="email">{t("auth.email")}</Label>
-                <Input id="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={t("auth.emailPlaceholder")} required />
+                <Input id="email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder={t("auth.emailPlaceholder")} required className="mt-1.5 rounded-xl" />
               </div>
               <div>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <Label htmlFor="password">{t("auth.password")}</Label>
                   <Link to="/auth/forgot-password" className="text-xs text-info hover:underline">{t("auth.forgotPassword")}</Link>
                 </div>
-                <Input id="password" type="password" autoComplete="current-password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder={t("auth.passwordPlaceholder")} required />
+                <Input id="password" type="password" autoComplete="current-password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder={t("auth.passwordPlaceholder")} required className="rounded-xl" />
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox checked={formData.rememberMe} onCheckedChange={(checked) => setFormData({ ...formData, rememberMe: !!checked })} />
@@ -75,7 +76,7 @@ export default function SignInPage() {
               <Button type="submit" className="w-full btn-cta" disabled={isLoading}>{isLoading ? t("auth.signingIn") : t("auth.signIn")}</Button>
             </form>
 
-            <div className="flex items-center gap-3 my-4">
+            <div className="flex items-center gap-3 my-5">
               <Separator className="flex-1" />
               <span className="text-xs text-muted-foreground uppercase">or</span>
               <Separator className="flex-1" />
@@ -85,7 +86,7 @@ export default function SignInPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full rounded-xl"
                 onClick={handleGoogleSignIn}
                 disabled={isGoogleLoading}
               >
@@ -98,9 +99,9 @@ export default function SignInPage() {
                 {isGoogleLoading ? "Signing in..." : "Continue with Google"}
               </Button>
             </div>
-            <p className="text-center text-sm text-muted-foreground mt-6">{t("auth.newToMarketplace")} <Link to="/auth/signup" className="text-info hover:underline">{t("auth.createAnAccount")}</Link></p>
+            <p className="text-center text-sm text-muted-foreground mt-8">{t("auth.newToMarketplace")} <Link to="/auth/signup" className="text-info hover:underline">{t("auth.createAnAccount")}</Link></p>
           </div>
-          <p className="text-xs text-muted-foreground text-center mt-4">{t("auth.bySigningIn")} <Link to="/conditions" className="text-info hover:underline">{t("auth.conditionsOfUse")}</Link> {t("common.and")} <Link to="/privacy" className="text-info hover:underline">{t("auth.privacyNotice")}</Link></p>
+          <p className="text-xs text-muted-foreground text-center mt-5">{t("auth.bySigningIn")} <Link to="/conditions" className="text-info hover:underline">{t("auth.conditionsOfUse")}</Link> {t("common.and")} <Link to="/privacy" className="text-info hover:underline">{t("auth.privacyNotice")}</Link></p>
         </div>
       </div>
     </Layout>

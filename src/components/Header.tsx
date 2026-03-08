@@ -248,7 +248,7 @@ export function Header() {
 
       {/* Sub Navigation */}
       <nav className="bg-primary/90 text-primary-foreground border-t border-primary-foreground/10">
-        <div className="container flex items-center gap-0 h-10 px-4 overflow-x-auto scrollbar-hide">
+        <div className="container flex items-center gap-1 h-10 px-4 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
             className="flex items-center gap-1 nav-item font-semibold"

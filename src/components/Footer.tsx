@@ -70,7 +70,7 @@ export function Footer() {
 
       {/* Bottom Footer */}
       <div className="border-t border-primary-foreground/10 bg-primary/80">
-        <div className="container py-6">
+        <div className="container py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Link to="/" className="text-xl font-bold tracking-tight">
               <span className="text-accent">Dukan</span>

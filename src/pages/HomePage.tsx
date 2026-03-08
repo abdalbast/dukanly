@@ -267,10 +267,7 @@ export default function HomePage() {
       {/* Bottom CTA Band */}
       <section className="bg-primary">
         <div className="container py-16 md:py-20 text-center">
-          <h2
-            className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-foreground mb-4"
-            style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
-          >
+          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-foreground mb-4 page-title">
             Start Selling on Dukanly
           </h2>
           <p className="text-primary-foreground/70 text-lg mb-8 max-w-lg mx-auto">
