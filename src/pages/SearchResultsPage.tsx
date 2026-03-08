@@ -159,6 +159,8 @@ export default function SearchResultsPage() {
                 </Button>
                 {filters.primeOnly && <span className="filter-chip active text-xs">{t("search.freeDelivery")}<button onClick={() => setFilters((p) => ({ ...p, primeOnly: false }))}><X className="w-3 h-3" /></button></span>}
                 {filters.deals && <span className="filter-chip active text-xs">{t("search.deals")}<button onClick={() => setFilters((p) => ({ ...p, deals: false }))}><X className="w-3 h-3" /></button></span>}
+                {filters.handmade && <span className="filter-chip active text-xs">{t("search.handmadeOnly")}<button onClick={() => setFilters((p) => ({ ...p, handmade: false }))}><X className="w-3 h-3" /></button></span>}
+                {filters.artisan && <span className="filter-chip active text-xs">{t("search.artisanOnly")}<button onClick={() => setFilters((p) => ({ ...p, artisan: false }))}><X className="w-3 h-3" /></button></span>}
               </div>
               <div className="flex items-center gap-2">
                 <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
