@@ -52,10 +52,10 @@ export default function SellerPerformance() {
   const shippedOrders = orders.filter((o) => o.status === "shipped" || o.status === "delivered").length;
   const cancellationRate = totalOrders > 0 ? ((cancelledOrders / totalOrders) * 100).toFixed(1) : "0";
   const lateShipmentRate = totalOrders > 0
-    ? ((orders.filter((o) => o.fulfillment_status === "unfulfilled" && new Date(o.created_at).getTime() < Date.now() - 3 * 86400000).length / totalOrders) * 100).toFixed(1)
+    ? ((orders.filter((o) => o.fulfillmentStatus === "unfulfilled" && new Date(o.createdAt).getTime() < Date.now() - 3 * 86400000).length / totalOrders) * 100).toFixed(1)
     : "0.0";
   const returnRate = totalOrders > 0
-    ? ((orders.filter((o) => o.fulfillment_status === "returned").length / totalOrders) * 100).toFixed(1)
+    ? ((orders.filter((o) => o.fulfillmentStatus === "returned").length / totalOrders) * 100).toFixed(1)
     : "0.0";
 
   const healthScore = 100 - issues.filter((i) => i.status === "open").length * 10;
