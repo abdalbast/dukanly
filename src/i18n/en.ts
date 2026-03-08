@@ -52,6 +52,7 @@ export const en = {
   "header.orders": "Orders",
   "header.returns": "Returns",
   "header.andOrders": "& Orders",
+  "header.messages": "Messages",
   "header.cart": "Cart",
   "header.todaysDeals": "Today's Deals",
   "header.sellerCentral": "Seller Central",

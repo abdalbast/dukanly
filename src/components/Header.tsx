@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, ChevronDown, Menu, ShoppingCart, Globe, LogOut, Package } from "lucide-react";
+import { Search, MapPin, ChevronDown, Menu, ShoppingCart, Globe, LogOut, Package, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CartPreviewPanel, OrdersPreviewPanel } from "@/components/header/HeaderPreviewPanels";
 import { useCart } from "@/contexts/CartContext";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAddressBook } from "@/contexts/AddressBookContext";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -29,6 +30,7 @@ export function Header() {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const unreadCount = useUnreadMessages();
   const { user, signOut } = useAuth();
   const { t, language, setLanguage } = useLanguage();
   const { selectedAddress, openAddressManager } = useAddressBook();
@@ -200,6 +202,23 @@ export function Header() {
               <span className="text-[10px] text-primary-foreground/70">{t("header.returns")}</span>
               <span className="text-xs font-semibold">{t("header.andOrders")}</span>
             </button>
+
+            {/* Messages */}
+            {user && (
+              <button
+                type="button"
+                onClick={() => navigate("/messages")}
+                aria-label={t("header.messages")}
+                className="hidden md:flex items-center gap-1 px-2 py-1 hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded relative"
+              >
+                <div className="relative">
+                  <MessageCircle className="w-6 h-6" />
+                  {unreadCount > 0 && (
+                    <span className="cart-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>
+                  )}
+                </div>
+              </button>
+            )}
 
             {/* Cart */}
             <button
