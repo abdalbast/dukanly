@@ -57,7 +57,6 @@ export default function SellerProducts() {
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<SellerProduct | null>(null);
-  const productActionsUnavailableMessage =
     "Create, publish, archive, duplicate, and delete actions are disabled until seller product persistence is fully connected.";
 
   const filteredProducts = products.filter((product) => {
