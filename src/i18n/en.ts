@@ -1084,6 +1084,19 @@ export const en = {
   "artisanApply.method.hand_altered": "Hand-altered — modified by hand from base materials",
   "artisanApply.method.hand_assembled": "Hand-assembled — assembled by hand from components",
   "common.error": "Error",
+
+  // Chat
+  "chat.messages": "Messages",
+  "chat.messageSeller": "Message Seller",
+  "chat.typeMessage": "Type a message...",
+  "chat.send": "Send",
+  "chat.noMessages": "No messages yet. Start the conversation!",
+  "chat.noConversations": "No conversations yet",
+  "chat.selectConversation": "Select a conversation to start chatting",
+  "chat.unknownSeller": "Seller",
+  "chat.unknownBuyer": "Buyer",
+  "chat.errorStarting": "Could not start conversation. Please try again.",
+  "seller.messages": "Messages",
 } as const;
 
 export type TranslationKey = keyof typeof en;

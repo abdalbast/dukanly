@@ -53,6 +53,8 @@ const SellerPayments = lazy(() => import("./pages/seller/SellerPayments"));
 const SellerPerformance = lazy(() => import("./pages/seller/SellerPerformance"));
 const SellerReports = lazy(() => import("./pages/seller/SellerReports"));
 const SellerSupport = lazy(() => import("./pages/seller/SellerSupport"));
+const SellerMessages = lazy(() => import("./pages/seller/SellerMessages"));
+const MessagesPage = lazy(() => import("./pages/MessagesPage"));
 const SellOnDukanlyPage = lazy(() => import("./pages/SellOnDukanlyPage"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
 const HandmadePage = lazy(() => import("./pages/HandmadePage"));
@@ -235,6 +237,7 @@ const App = () => (
                       <Route path="products/new" element={<AddProduct />} />
                       <Route path="products/:id/edit" element={<AddProduct />} />
                       <Route path="orders" element={<SellerOrders />} />
+                      <Route path="messages" element={<SellerMessages />} />
                       <Route path="inventory" element={<SellerInventory />} />
                       <Route path="shipping" element={<SellerShipping />} />
                       <Route path="returns" element={<SellerReturns />} />
@@ -246,6 +249,11 @@ const App = () => (
                       <Route path="settings" element={<SellerSettings />} />
                     </Route>
 
+                    <Route path="/messages" element={
+                      <RequireAuth>
+                        <MessagesPage />
+                      </RequireAuth>
+                    } />
                     <Route path="/deals" element={<SearchResultsPage />} />
                     <Route path="/bestsellers" element={<SearchResultsPage />} />
                     <Route path="/trending" element={<SearchResultsPage />} />

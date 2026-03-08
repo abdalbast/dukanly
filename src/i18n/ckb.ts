@@ -1086,4 +1086,17 @@ export const ckb: Record<TranslationKey, string> = {
   "artisanApply.method.hand_altered": "دەست‌گۆڕدراو — بە دەست لە مادەی بنەڕەت گۆڕدراو",
   "artisanApply.method.hand_assembled": "دەست‌کۆکراوە — بە دەست لە پارچەکان کۆکراوەتەوە",
   "common.error": "هەڵە",
+
+  // Chat
+  "chat.messages": "نامەکان",
+  "chat.messageSeller": "نامە بۆ فرۆشیار",
+  "chat.typeMessage": "نامەیەک بنووسە...",
+  "chat.send": "ناردن",
+  "chat.noMessages": "هێشتا هیچ نامەیەک نییە. گفتوگۆ دەستپێبکە!",
+  "chat.noConversations": "هێشتا هیچ گفتوگۆیەک نییە",
+  "chat.selectConversation": "گفتوگۆیەک هەڵبژێرە بۆ دەستپێکردنی چات",
+  "chat.unknownSeller": "فرۆشیار",
+  "chat.unknownBuyer": "کڕیار",
+  "chat.errorStarting": "نەتوانرا گفتوگۆ دەستپێبکرێت. تکایە دووبارە هەوڵبدەوە.",
+  "seller.messages": "نامەکان",
 };
