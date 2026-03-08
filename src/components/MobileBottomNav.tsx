@@ -5,10 +5,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Grid2x2, label: "Categories", path: "/category" },
-  { icon: ShoppingCart, label: "Cart", path: "/cart", badge: true },
-  { icon: User, label: "Account", path: "/account", authAware: true },
+  { icon: Home, label: "Home", path: "/", badge: false, authAware: false },
+  { icon: Grid2x2, label: "Categories", path: "/category", badge: false, authAware: false },
+  { icon: ShoppingCart, label: "Cart", path: "/cart", badge: true, authAware: false },
+  { icon: User, label: "Account", path: "/account", badge: false, authAware: true },
 ] as const;
 
 export function MobileBottomNav() {
