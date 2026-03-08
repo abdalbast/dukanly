@@ -101,7 +101,7 @@ export default function HomePage() {
 
   const dealsProducts = products.filter((p) => p.isLimitedDeal || p.offer.originalPrice);
   const bestSellers = products.filter((p) => p.isBestSeller);
-  const pelinProducts = products.filter((p) => p.brand.toLowerCase() === "pelin products");
+  
   const trendingProducts = products.slice(0, 8);
 
   return (
