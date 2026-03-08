@@ -120,6 +120,19 @@ export default function AccountPage() {
             </div>
           )}
         </section>
+        <div className="mt-10">
+          <Button
+            variant="outline"
+            className="w-full border-destructive/30 text-destructive hover:bg-destructive/10"
+            onClick={async () => {
+              await signOut();
+              navigate("/", { replace: true });
+            }}
+          >
+            <LogOut className="w-4 h-4" />
+            {t("account.signOut") || "Sign Out"}
+          </Button>
+        </div>
       </div>
     </Layout>
   );
