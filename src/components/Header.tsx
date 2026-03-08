@@ -65,6 +65,7 @@ export function Header() {
           <button
             type="button"
             onClick={openAddressManager}
+            aria-label={`${t("header.deliverTo")} ${deliveryLabel}`}
             className="hidden md:flex items-center gap-1 text-sm hover:outline hover:outline-1 hover:outline-primary-foreground/50 rounded px-2 py-1 -ml-2"
           >
             <MapPin className="w-4 h-4 text-primary-foreground/70" />
