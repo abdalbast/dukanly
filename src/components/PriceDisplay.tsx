@@ -22,7 +22,7 @@ export function PriceDisplay({
 
   const sizeClasses = {
     sm: { whole: "text-sm font-semibold", suffix: "text-[10px]" },
-    md: { whole: "text-lg font-bold", suffix: "text-xs" },
+    md: { whole: "text-base sm:text-lg font-bold", suffix: "text-[10px] sm:text-xs" },
     lg: { whole: "text-2xl font-bold", suffix: "text-sm" },
     xl: { whole: "text-3xl font-bold", suffix: "text-base" },
   };
