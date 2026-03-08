@@ -256,9 +256,9 @@ export default function CheckoutPage() {
 
   return (
     <Layout>
-      <div className="container py-6">
-        <div className="max-w-5xl mx-auto mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-5">
-          <h1 className="text-2xl font-bold">{t("checkout.title")}</h1>
+      <div className="container py-10 md:py-14">
+        <div className="max-w-5xl mx-auto mb-8 rounded-2xl border border-primary/15 bg-primary/5 p-6">
+          <h1 className="page-title !text-2xl">{t("checkout.title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t("checkout.kurdistanLaunchNote")}</p>
         </div>
 
