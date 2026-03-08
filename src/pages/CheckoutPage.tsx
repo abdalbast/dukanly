@@ -345,7 +345,7 @@ export default function CheckoutPage() {
                     value={deliveryInstructions}
                     onChange={(event) => setDeliveryInstructions(event.target.value)}
                     placeholder={t("checkout.deliveryInstructionsPlaceholder")}
-                    className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="mt-2 flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
                   />
                 </div>
               </div>
