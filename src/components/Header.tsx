@@ -27,6 +27,8 @@ import {
 export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+  const isMobile = useIsMobile();
   const [isOrdersPreviewOpen, setIsOrdersPreviewOpen] = useState(false);
   const [isCartPreviewOpen, setIsCartPreviewOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
