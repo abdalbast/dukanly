@@ -1,0 +1,167 @@
+import { useParams, Link } from "react-router-dom";
+import { ArrowRight, Leaf, Heart, MapPin, Recycle, Paintbrush, Gem, Award, Sparkles } from "lucide-react";
+import { Layout } from "@/components/Layout";
+import { ProductCard } from "@/components/ProductCard";
+import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
+import { useSearchProducts } from "@/hooks/useProducts";
+
+import pelinHeroImage from "@/assets/pelin/0T7A0070.webp";
+import azhinHeroImage from "@/assets/brands/azhin-art-hero.jpg";
+
+interface BrandInfo {
+  name: string;
+  tagline: string;
+  description: string;
+  story: string;
+  heroImage: string;
+  features: { icon: React.ElementType; title: string; description: string }[];
+}
+
+const BRAND_DATA: Record<string, BrandInfo> = {
+  "pelin products": {
+    name: "Pelin Products",
+    tagline: "Pure Botanicals, Handcrafted in Kurdistan",
+    description:
+      "Born in the heart of Kurdistan, Pelin Products creates luxurious handcrafted skincare using locally sourced botanicals and time-honoured recipes passed down through generations.",
+    story:
+      "Every bar of soap, every cleanser, and every gift set is carefully crafted by hand using 100% natural ingredients — from cold-pressed olive oil to wildcrafted herbs. We believe in beauty that's gentle on your skin and kind to the earth.",
+    heroImage: pelinHeroImage,
+    features: [
+      { icon: Leaf, title: "100% Natural", description: "Pure botanical ingredients with zero synthetic additives" },
+      { icon: Heart, title: "Handcrafted with Care", description: "Small-batch production ensures artisan quality in every piece" },
+      { icon: MapPin, title: "Locally Sourced", description: "Ingredients harvested from Kurdistan's rich natural landscape" },
+      { icon: Recycle, title: "Eco-Friendly Packaging", description: "Minimal, recyclable packaging that respects our planet" },
+    ],
+  },
+  "azhin art": {
+    name: "Azhin Art",
+    tagline: "Where Kurdish Heritage Meets Modern Design",
+    description:
+      "Azhin Art brings contemporary Kurdish artistry to the world — handcrafted originals that celebrate cultural heritage through bold, modern design language.",
+    story:
+      "Each piece tells a story rooted in centuries of Kurdish artistic tradition, reimagined for modern living spaces. From hand-painted ceramics to woven textiles, our artists pour their heritage into every brushstroke and thread.",
+    heroImage: azhinHeroImage,
+    features: [
+      { icon: Paintbrush, title: "Handmade Originals", description: "Every piece is one-of-a-kind, crafted entirely by hand" },
+      { icon: Award, title: "Cultural Heritage", description: "Designs inspired by centuries of Kurdish artistic tradition" },
+      { icon: Gem, title: "Premium Materials", description: "Finest quality materials sourced for lasting beauty" },
+      { icon: Sparkles, title: "Limited Editions", description: "Small runs ensure exclusivity and collectible value" },
+    ],
+  },
+};
+
+export default function BrandPage() {
+  const { brand } = useParams<{ brand: string }>();
+  const brandSlug = (brand ?? "").toLowerCase();
+  const brandInfo = BRAND_DATA[brandSlug];
+
+  const { data: products = [], isLoading } = useSearchProducts(brand ?? "");
+  const brandProducts = products.filter(
+    (p) => p.brand.toLowerCase() === brandSlug,
+  );
+
+  if (!brandInfo) {
+    return (
+      <Layout>
+        <div className="container py-28 text-center">
+          <h1 className="text-3xl font-bold mb-4">Brand not found</h1>
+          <Link to="/" className="text-primary hover:underline">
+            Back to Home
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      {/* ─── Hero Banner ─── */}
+      <section className="relative h-[420px] sm:h-[500px] md:h-[560px] overflow-hidden">
+        <img
+          src={brandInfo.heroImage}
+          alt={brandInfo.name}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/65 to-foreground/30" />
+        <div className="container relative h-full flex items-center">
+          <div className="max-w-2xl">
+            <span className="tagline-pill mb-5">Featured Brand</span>
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-primary-foreground leading-[1.04] mb-4 sm:mb-6"
+              style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+            >
+              {brandInfo.name}
+            </h1>
+            <p className="text-lg sm:text-xl text-primary-foreground/70 max-w-lg leading-relaxed">
+              {brandInfo.tagline}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Brand Story ─── */}
+      <section className="bg-card border-b border-border">
+        <div className="container py-20 md:py-28">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <span className="tagline-pill mb-4">Our Story</span>
+            <h2 className="section-header">{brandInfo.name}</h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mt-6">
+              {brandInfo.description}
+            </p>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              {brandInfo.story}
+            </p>
+          </div>
+
+          {/* ─── Standout Features ─── */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            {brandInfo.features.map((f) => (
+              <div
+                key={f.title}
+                className="flex flex-col items-center text-center gap-4 p-6 rounded-2xl bg-secondary/50 border border-border/50 transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                  <f.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold leading-tight">{f.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                    {f.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Products ─── */}
+      <section className="container py-20 md:py-28">
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <span className="tagline-pill mb-4">Collection</span>
+            <h2 className="section-header">
+              Shop {brandInfo.name}
+            </h2>
+            <p className="section-subheader mb-0">
+              Explore the full range of products
+            </p>
+          </div>
+        </div>
+        {isLoading ? (
+          <ProductGridSkeleton count={4} />
+        ) : brandProducts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+            {brandProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground">
+            <p className="text-lg">No products available yet. Check back soon!</p>
+          </div>
+        )}
+      </section>
+    </Layout>
+  );
+}
