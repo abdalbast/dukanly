@@ -1,8 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Package, MapPin, CreditCard, Shield, Bell, Heart, Gift, Store, ChevronRight } from "lucide-react";
+import { User, Package, MapPin, CreditCard, Shield, Bell, Heart, Gift, Store, ChevronRight, LogOut } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrders } from "@/hooks/useOrders";
@@ -11,7 +11,8 @@ import { formatIQD } from "@/lib/currency";
 
 export default function AccountPage() {
   const { t, language } = useLanguage();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { data: orders = [] } = useOrders();
   const location = useLocation();
   const locale = language === "ckb" ? "ckb" : "en-US";
@@ -119,6 +120,19 @@ export default function AccountPage() {
             </div>
           )}
         </section>
+        <div className="mt-10">
+          <Button
+            variant="outline"
+            className="w-full border-destructive/30 text-destructive hover:bg-destructive/10"
+            onClick={async () => {
+              await signOut();
+              navigate("/", { replace: true });
+            }}
+          >
+            <LogOut className="w-4 h-4" />
+            {language === "ckb" ? "چوونەدەرەوە" : "Sign Out"}
+          </Button>
+        </div>
       </div>
     </Layout>
   );
