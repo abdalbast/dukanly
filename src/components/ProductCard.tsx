@@ -78,28 +78,28 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
         <LazyImage src={optimizeImageUrl(product.images[0], 250)} alt={product.title} className="w-full aspect-square object-contain transition-transform group-hover:scale-105" wrapperClassName="w-full bg-secondary rounded-t" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw" />
       </Link>
 
-      <div className="flex flex-col flex-1 pt-3">
+      <div className="flex flex-col flex-1 pt-2 sm:pt-3">
         <Link to={`/product/${product.id}`}>
           <h3 className="text-dense font-medium text-foreground line-clamp-2 hover:text-primary leading-snug">{product.title}</h3>
         </Link>
 
-        <div className="mt-1.5">
+        <div className="mt-1 sm:mt-1.5">
           <StarRating rating={product.rating} size="sm" showCount count={product.reviewCount} />
         </div>
 
-        <div className="mt-2">
+        <div className="mt-1.5 sm:mt-2">
           <PriceDisplay price={offer.price} originalPrice={offer.originalPrice} size={variant === "compact" ? "sm" : "md"} />
         </div>
 
         {product.isPrime && (
-          <div className="mt-1.5 prime-badge text-xs">
+          <div className="mt-1 sm:mt-1.5 prime-badge text-xs">
             <Truck className="w-3 h-3" />
             <span>{deliveryText}</span>
           </div>
         )}
 
-        <div className="mt-auto pt-3">
-          <Button onClick={() => addToCart(product)} className="w-full btn-cta text-sm h-9">
+        <div className="mt-auto pt-2 sm:pt-3">
+          <Button onClick={() => addToCart(product)} className="w-full btn-cta text-sm h-10 sm:h-9">
             {t("product.addToCart")}
           </Button>
         </div>
