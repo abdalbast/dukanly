@@ -79,8 +79,8 @@ export default function SearchResultsPage() {
 
   const availableBrands = [...new Set(baseProducts.map((p) => p.brand))];
   const toggleBrand = (brand: string) => setFilters((prev) => ({ ...prev, brands: prev.brands.includes(brand) ? prev.brands.filter((b) => b !== brand) : [...prev.brands, brand] }));
-  const clearFilters = () => setFilters({ primeOnly: false, deals: false, minRating: 0, brands: [] });
-  const activeFilterCount = [filters.primeOnly, filters.deals, filters.minRating > 0, filters.brands.length > 0].filter(Boolean).length;
+  const clearFilters = () => setFilters({ primeOnly: false, deals: false, handmade: false, artisan: false, minRating: 0, brands: [] });
+  const activeFilterCount = [filters.primeOnly, filters.deals, filters.handmade, filters.artisan, filters.minRating > 0, filters.brands.length > 0].filter(Boolean).length;
 
   const renderFilters = () => (
     <>
