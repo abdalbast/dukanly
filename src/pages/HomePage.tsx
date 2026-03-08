@@ -37,8 +37,7 @@ export default function HomePage() {
                 {t("home.heroTagline")}
               </p>
               <h1
-                className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5"
-                style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" }}
+                className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-primary-foreground leading-[1.08] mb-5 page-title"
               >
                 {t("home.heroTitle")}
               </h1>
