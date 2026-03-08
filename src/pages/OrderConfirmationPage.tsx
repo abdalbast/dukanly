@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { Calendar, CheckCircle, Package, Truck } from "lucide-react";
+import { AlertTriangle, Calendar, CheckCircle, Loader2, Package, Truck } from "lucide-react";
 
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -77,7 +77,9 @@ export default function OrderConfirmationPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">📦</div>
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="w-10 h-10 text-muted-foreground" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("orderConfirmation.notFoundTitle")}</h1>
             <p className="text-muted-foreground mb-6">{t("orderConfirmation.notFoundDesc")}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -99,7 +101,9 @@ export default function OrderConfirmationPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">⏳</div>
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("orderConfirmation.validatingTitle")}</h1>
             <p className="text-muted-foreground">{t("orderConfirmation.validatingDesc")}</p>
           </div>
@@ -113,7 +117,9 @@ export default function OrderConfirmationPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">⚠️</div>
+            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertTriangle className="w-10 h-10 text-destructive" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("orderConfirmation.verificationPendingTitle")}</h1>
             <p className="text-muted-foreground mb-6">{verificationError}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -135,7 +141,9 @@ export default function OrderConfirmationPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">⌛</div>
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("orderConfirmation.processingTitle")}</h1>
             <p className="text-muted-foreground mb-6">{t("orderConfirmation.processingDesc")}</p>
             <div className="bg-card border border-border rounded-lg p-6 mb-6 text-left rtl:text-right">

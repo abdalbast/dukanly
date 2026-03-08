@@ -106,7 +106,7 @@ export default function AccountPage() {
                       <p className="font-medium">{order.orderNumber}</p>
                       <p className="text-sm text-muted-foreground">
                         {new Date(order.date).toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}
-                        {" · "}{order.items.length} item{order.items.length !== 1 ? "s" : ""}
+                        {" · "}{order.items.length} {order.items.length !== 1 ? t("common.items") : t("common.item")}
                       </p>
                     </div>
                   </div>

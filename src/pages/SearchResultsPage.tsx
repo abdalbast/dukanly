@@ -3,6 +3,7 @@ import { useLocation, useSearchParams, useParams } from "react-router-dom";
 import { Grid3X3, List, X, SlidersHorizontal } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
+import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,7 +23,7 @@ export default function SearchResultsPage() {
   const [filters, setFilters] = useState({ primeOnly: false, deals: false, minRating: 0, brands: [] as string[] });
   const [showFilters, setShowFilters] = useState(false);
 
-  const { data: fetchedProducts = [] } = useSearchProducts(query);
+  const { data: fetchedProducts = [], isLoading } = useSearchProducts(query);
   const routeMode =
     location.pathname === "/deals"
       ? "deals"
@@ -57,15 +58,15 @@ export default function SearchResultsPage() {
 
   const pageTitle =
     routeMode === "deals"
-      ? "Today's Deals"
+      ? t("home.todaysDeals")
       : routeMode === "bestsellers"
-        ? "Best Sellers"
+        ? t("home.bestSellers")
         : routeMode === "trending"
-          ? "Trending Now"
+          ? t("home.trendingNow")
           : brandParam
-            ? `Brand: ${decodeURIComponent(brandParam)}`
+            ? `${t("search.brand")}: ${decodeURIComponent(brandParam)}`
             : sellerIdParam
-              ? `Seller: ${sellerIdParam}`
+              ? `${sellerIdParam}`
               : query
                 ? t("search.resultsFor").replace("{query}", query)
                 : t("search.allProducts");
@@ -187,7 +188,9 @@ export default function SearchResultsPage() {
                 {renderFilters()}
               </div>
             )}
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+              <ProductGridSkeleton count={8} columns="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" />
+            ) : filteredProducts.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-lg font-medium mb-2">{t("search.noResults")}</p>
                 <p className="text-muted-foreground mb-4">{t("search.tryAdjusting")}</p>

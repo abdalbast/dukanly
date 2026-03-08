@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ChevronRight, Heart, Share2, Truck, Shield, RotateCcw, Store, Check, Minus, Plus } from "lucide-react";
+import { ChevronRight, Heart, Share2, Truck, Shield, RotateCcw, Store, Minus, Plus } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { StarRating } from "@/components/StarRating";
 import { PriceDisplay } from "@/components/PriceDisplay";
 import { ProductCard } from "@/components/ProductCard";
 import { LazyImage } from "@/components/LazyImage";
+import { ProductDetailSkeleton } from "@/components/ProductCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useProductById, useProductsByCategory } from "@/hooks/useProducts";
@@ -21,14 +22,24 @@ export default function ProductDetailPage() {
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const { data: product, isLoading } = useProductById(id);
+  const { data: product, isLoading, isError } = useProductById(id);
   const { data: relatedProducts = [] } = useProductsByCategory(product?.category);
 
   if (isLoading) {
     return (
       <Layout>
+        <ProductDetailSkeleton />
+      </Layout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Layout>
         <div className="container py-12 text-center">
-          <p className="text-muted-foreground">Loading...</p>
+          <h1 className="text-2xl font-bold mb-4">{t("common.loading")}</h1>
+          <p className="text-muted-foreground mb-4">Something went wrong loading this product.</p>
+          <Button onClick={() => window.location.reload()} variant="outline">Try Again</Button>
         </div>
       </Layout>
     );
@@ -150,9 +161,9 @@ export default function ProductDetailPage() {
               <div className="flex items-center gap-3">
                 <span className="text-sm">{t("product.qty")}</span>
                 <div className="flex items-center border border-border rounded">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 hover:bg-muted" disabled={quantity <= 1}><Minus className="w-4 h-4" /></button>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2.5 hover:bg-muted" disabled={quantity <= 1}><Minus className="w-4 h-4" /></button>
                   <span className="px-4 py-1 text-sm font-medium">{quantity}</span>
-                  <button onClick={() => setQuantity(Math.min(offer.stock, quantity + 1))} className="p-2 hover:bg-muted" disabled={quantity >= offer.stock}><Plus className="w-4 h-4" /></button>
+                  <button onClick={() => setQuantity(Math.min(offer.stock, quantity + 1))} className="p-2.5 hover:bg-muted" disabled={quantity >= offer.stock}><Plus className="w-4 h-4" /></button>
                 </div>
               </div>
               <div className="space-y-2">
@@ -185,6 +196,14 @@ export default function ProductDetailPage() {
             </div>
           </section>
         )}
+      </div>
+
+      {/* Mobile sticky CTA */}
+      <div className="fixed bottom-0 inset-x-0 bg-card border-t border-border p-3 flex items-center gap-3 lg:hidden z-40">
+        <div className="flex-1 min-w-0">
+          <PriceDisplay price={offer.price} originalPrice={offer.originalPrice} size="md" />
+        </div>
+        <Button onClick={handleAddToCart} className="btn-cta shrink-0">{t("product.addToCart")}</Button>
       </div>
     </Layout>
   );

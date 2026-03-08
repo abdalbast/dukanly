@@ -17,6 +17,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { LazyImage } from "@/components/LazyImage";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useOrders, type Order } from "@/hooks/useOrders";
@@ -173,10 +174,11 @@ export function OrdersPreviewPanel({
               <div className="mt-4 space-y-3">
                 {order.items.slice(0, 2).map((item) => (
                   <div key={item.id} className="flex items-center gap-3">
-                    <img
+                    <LazyImage
                       src={item.image}
                       alt={item.title}
-                      className="h-14 w-14 rounded-xl bg-secondary object-contain"
+                      className="h-14 w-14 rounded-xl object-contain"
+                      wrapperClassName="h-14 w-14 rounded-xl bg-secondary"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-1 text-sm font-medium">{item.title}</p>
@@ -270,10 +272,11 @@ export function CartPreviewPanel({
           <div className="space-y-3">
             {previewItems.map((item) => (
               <div key={item.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
-                <img
+                <LazyImage
                   src={item.product.images[0]}
                   alt={item.product.title}
-                  className="h-16 w-16 rounded-xl bg-secondary object-contain"
+                  className="h-16 w-16 rounded-xl object-contain"
+                  wrapperClassName="h-16 w-16 rounded-xl bg-secondary"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="line-clamp-2 text-sm font-medium">{item.product.title}</p>

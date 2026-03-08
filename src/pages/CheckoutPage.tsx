@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Banknote, Check, Clock, CreditCard, MapPin, Package, Plus, ShieldCheck, Truck } from "lucide-react";
+import { LazyImage } from "@/components/LazyImage";
 
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -239,7 +240,9 @@ export default function CheckoutPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">🛒</div>
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-10 h-10 text-muted-foreground" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("checkout.emptyCart")}</h1>
             <p className="text-muted-foreground mb-6">{t("checkout.addItemsFirst")}</p>
             <Button asChild className="btn-cta">
@@ -488,10 +491,11 @@ export default function CheckoutPage() {
               <div className="max-h-48 space-y-3 overflow-y-auto">
                 {activeItems.map((item) => (
                   <div key={item.id} className="flex gap-3">
-                    <img
+                    <LazyImage
                       src={item.product.images[0]}
                       alt={item.product.title}
-                      className="h-12 w-12 rounded bg-secondary object-contain"
+                      className="h-12 w-12 rounded object-contain"
+                      wrapperClassName="h-12 w-12 rounded bg-secondary"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="line-clamp-1 text-sm">{item.product.title}</p>

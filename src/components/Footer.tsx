@@ -72,8 +72,8 @@ export function Footer() {
         <div className="container py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Link to="/" className="text-xl font-bold tracking-tight">
-              <span className="text-accent">market</span>
-              <span>place</span>
+              <span className="text-accent">Dukan</span>
+              <span>ly</span>
             </Link>
             
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-primary-foreground/70">

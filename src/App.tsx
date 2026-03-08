@@ -10,6 +10,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AddressBookProvider } from "@/contexts/AddressBookContext";
 import { RequireAuth } from "./components/auth/RequireAuth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
@@ -57,8 +58,14 @@ const queryClient = new QueryClient();
 
 function RouteFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">
-      Loading...
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+      <div className="text-2xl font-bold tracking-tight">
+        <span className="text-primary">Dukan</span><span className="text-foreground">ly</span>
+      </div>
+      <div className="flex flex-col items-center gap-3 w-full max-w-xs">
+        <Skeleton className="h-2 w-48 rounded-full" />
+        <Skeleton className="h-2 w-32 rounded-full" />
+      </div>
     </div>
   );
 }
@@ -210,7 +217,14 @@ const App = () => (
                       }
                     />
 
-                    <Route path="/seller" element={<SellerLayout />}>
+                    <Route
+                      path="/seller"
+                      element={
+                        <RequireAuth>
+                          <SellerLayout />
+                        </RequireAuth>
+                      }
+                    >
                       <Route index element={<SellerOverview />} />
                       <Route path="products" element={<SellerProducts />} />
                       <Route path="products/new" element={<AddProduct />} />

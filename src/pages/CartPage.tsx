@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { Trash2, Minus, Plus, Heart, Gift, Truck, ShieldCheck, ChevronRight } from "lucide-react";
+import { Trash2, Minus, Plus, Heart, Gift, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { LazyImage } from "@/components/LazyImage";
 import { useCart } from "@/contexts/CartContext";
 import { ProductCard } from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
@@ -25,7 +26,9 @@ export default function CartPage() {
       <Layout>
         <div className="container py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <div className="text-6xl mb-6">🛒</div>
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingCart className="w-10 h-10 text-muted-foreground" />
+            </div>
             <h1 className="text-2xl font-bold mb-3">{t("cart.yourCartEmpty")}</h1>
             <p className="text-muted-foreground mb-6">{t("cart.emptyMessage")}</p>
             <Button asChild className="btn-cta">
@@ -80,7 +83,7 @@ export default function CartPage() {
                 <div key={item.id} className="p-4">
                   <div className="flex gap-4">
                     <Link to={`/product/${item.product.id}`} className="shrink-0">
-                      <img src={item.product.images[0]} alt={item.product.title} className="w-24 h-24 object-contain bg-secondary rounded" />
+                      <LazyImage src={item.product.images[0]} alt={item.product.title} className="w-24 h-24 object-contain" wrapperClassName="w-24 h-24 bg-secondary rounded" />
                     </Link>
                     <div className="flex-1 min-w-0">
                       <Link to={`/product/${item.product.id}`} className="text-sm font-medium hover:text-primary line-clamp-2">{item.product.title}</Link>
@@ -99,15 +102,15 @@ export default function CartPage() {
                       </label>
                       <div className="flex items-center gap-3 mt-3 flex-wrap">
                         <div className="flex items-center border border-border rounded">
-                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 hover:bg-muted" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-2.5 hover:bg-muted" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
                           <span className="px-3 text-sm font-medium">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1.5 hover:bg-muted"><Plus className="w-3 h-3" /></button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-2.5 hover:bg-muted"><Plus className="w-3 h-3" /></button>
                         </div>
-                        <span className="text-border">|</span>
+                        <span className="border-r border-border h-4" />
                         <button onClick={() => removeFromCart(item.id)} className="text-xs text-info hover:underline">{t("common.delete")}</button>
-                        <span className="text-border">|</span>
+                        <span className="border-r border-border h-4" />
                         <button onClick={() => toggleSaveForLater(item.id)} className="text-xs text-info hover:underline">{t("cart.saveForLater")}</button>
-                        <span className="text-border">|</span>
+                        <span className="border-r border-border h-4" />
                         <button className="text-xs text-info hover:underline">{t("cart.compareWithSimilar")}</button>
                       </div>
                     </div>
@@ -136,7 +139,7 @@ export default function CartPage() {
                   {savedItems.map((item) => (
                     <div key={item.id} className="p-4 flex gap-4">
                       <Link to={`/product/${item.product.id}`} className="shrink-0">
-                        <img src={item.product.images[0]} alt={item.product.title} className="w-20 h-20 object-contain bg-secondary rounded" />
+                        <LazyImage src={item.product.images[0]} alt={item.product.title} className="w-20 h-20 object-contain" wrapperClassName="w-20 h-20 bg-secondary rounded" />
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.product.id}`} className="text-sm font-medium hover:text-primary line-clamp-2">{item.product.title}</Link>
